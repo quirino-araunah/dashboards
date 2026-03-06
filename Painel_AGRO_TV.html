@@ -124,16 +124,24 @@ th{font-size:8px}
 .change-banner .cb-label{color:var(--text-secondary);font-size:10px}
 .change-banner .cb-neutral{color:var(--amber);font-weight:600;font-size:11px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+
+.stale-banner{position:fixed;top:0;left:0;right:0;z-index:99999;padding:10px 24px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;text-align:center;display:none;animation:stalePulse 2s ease-in-out infinite}
+.stale-banner.stale-warn{display:block;background:#f39c12;color:#000}
+.stale-banner.stale-danger{display:block;background:#e74c3c;color:#fff}
+.stale-banner.stale-critical{display:block;background:#e74c3c;color:#fff;animation:staleBlink 1s step-end infinite}
+@keyframes staleBlink{50%{opacity:.3}}
+@keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.85}}
 </style></head><body>
+<div class="stale-banner" id="staleBanner"></div>
 <div class="header">
-<div class="header-left"><h1>PAINEL AGRO — PERFORMANCE 2026</h1><p>Referência: mar/2026 | Atualizado: 06/03/2026 17:05</p></div>
+<div class="header-left"><h1>PAINEL AGRO — PERFORMANCE 2026</h1><p>Referência: mar/2026 | Atualizado: 06/03/2026 17:22</p></div>
 <div class="header-right">
 
 <div class="clock-wrapper"><div class="clock" id="clock">00:00:00</div><div class="clock-date" id="clockDate"></div></div>
 <div class="refresh-info"><div class="refresh-timer" id="refreshTimer">5:00</div><div class="refresh-label">Próx. Atualização</div></div>
 <button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; Tela Cheia</button>
 </div></div>
-<div class="change-banner"><span class="cb-icon">⚡</span><span class="cb-neutral">Sem alterações desde 06/03/2026 17:05</span></div>
+<div class="change-banner"><span class="cb-icon">⚡</span><span class="cb-neutral">Sem alterações desde 06/03/2026 17:20</span></div>
 <div class="container">
 <div class="kpi-section">
 <div class="kpi-card"><div class="kpi-title">Mês Atual</div><div class="kpi-value">R$ 24.000</div>
@@ -402,7 +410,7 @@ th{font-size:8px}
 </div>
 
 </div>
-<div class="footer"><div class="footer-text"><span><strong>Dados:</strong> AGRO 2026 | Atualizado: 06/03/2026 17:05</span></div></div>
+<div class="footer"><div class="footer-text"><span><strong>Dados:</strong> AGRO 2026 | Atualizado: 06/03/2026 17:22</span><span style="color:#2ecc71">&#9679; Fonte: Rede Z: (atualizado)</span></div></div>
 <script>
 // Anti-cache: busca versão mais recente do servidor ao carregar
 (function(){
@@ -441,4 +449,39 @@ scripts.forEach(function(s){var ns=document.createElement('script');ns.textConte
 function toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(e=>{})}else{document.exitFullscreen()}}
 document.addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();toggleFullscreen()}});
 updateClock();updateRefreshTimer();setInterval(updateClock,1000);setInterval(updateRefreshTimer,1000);
+
+
+(function(){
+  var genTs = '06/03/2026 17:22';
+  var srcInfo = 'Fonte: Rede Z: (atualizado)';
+  if(!genTs) return;
+  function checkStale(){
+    var parts = genTs.split(/[\/ :]/);
+    var genDate = new Date(parts[2],parts[1]-1,parts[0],parts[3],parts[4]);
+    var now = new Date();
+    var diffH = (now - genDate) / 3600000;
+    var el = document.getElementById('staleBanner');
+    if(!el) return;
+    el.className = 'stale-banner';
+    if(diffH > 24){
+      el.textContent = '\u26A0 DADOS DE ' + (diffH>48? Math.floor(diffH/24)+' DIAS ATRAS' : 'ONTEM') + ' \u2014 POSSIVEL FALHA NO SISTEMA (ultima atualizacao: '+genTs+')';
+      el.classList.add('stale-critical');
+      document.body.style.paddingTop = '44px';
+    } else if(diffH > 6){
+      el.textContent = '\u26A0 DADOS DESATUALIZADOS \u2014 ultima atualizacao ha ' + Math.floor(diffH) + 'h ('+genTs+')';
+      el.classList.add('stale-danger');
+      document.body.style.paddingTop = '44px';
+    } else if(diffH > 2){
+      el.textContent = '\u26A0 Dados de ' + Math.floor(diffH) + 'h atras ('+genTs+') \u2014 ' + srcInfo;
+      el.classList.add('stale-warn');
+      document.body.style.paddingTop = '44px';
+    } else {
+      el.style.display = 'none';
+      document.body.style.paddingTop = '0';
+    }
+  }
+  checkStale();
+  setInterval(checkStale, 60000);
+})();
+
 </script></body></html>
