@@ -126,14 +126,14 @@ th{font-size:8px}
 @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
 </style></head><body>
 <div class="header">
-<div class="header-left"><h1>PAINEL AGRO — PERFORMANCE 2026</h1><p>Referência: mar/2026 | Atualizado: 06/03/2026 12:11</p></div>
+<div class="header-left"><h1>PAINEL AGRO — PERFORMANCE 2026</h1><p>Referência: mar/2026 | Atualizado: 06/03/2026 12:15</p></div>
 <div class="header-right">
 
 <div class="clock-wrapper"><div class="clock" id="clock">00:00:00</div><div class="clock-date" id="clockDate"></div></div>
 <div class="refresh-info"><div class="refresh-timer" id="refreshTimer">5:00</div><div class="refresh-label">Próx. Atualização</div></div>
 <button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; Tela Cheia</button>
 </div></div>
-<div class="change-banner"><span class="cb-icon">⚡</span><span class="cb-neutral">Sem alterações desde 06/03/2026 12:08</span></div>
+<div class="change-banner"><span class="cb-icon">⚡</span><span class="cb-neutral">Sem alterações desde 06/03/2026 12:11</span></div>
 <div class="container">
 <div class="kpi-section">
 <div class="kpi-card"><div class="kpi-title">Mês Atual</div><div class="kpi-value">R$ 24.000</div>
@@ -402,8 +402,15 @@ th{font-size:8px}
 </div>
 
 </div>
-<div class="footer"><div class="footer-text"><span><strong>Dados:</strong> AGRO 2026 | Atualizado: 06/03/2026 12:11</span></div></div>
+<div class="footer"><div class="footer-text"><span><strong>Dados:</strong> AGRO 2026 | Atualizado: 06/03/2026 12:15</span></div></div>
 <script>
+// Anti-cache: força reload se a URL não tem cache-buster
+(function(){
+  if(location.search.indexOf('_nc=')< 0 && location.protocol !== 'file:'){
+    var url=location.href.split('?')[0]+'?_nc='+Date.now();
+    location.replace(url);
+  }
+})();
 function updateClock(){const n=new Date();document.getElementById('clock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');var dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];var meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];document.getElementById('clockDate').textContent=dias[n.getDay()]+', '+n.getDate()+' '+meses[n.getMonth()]}
 let rc=300;
 function updateRefreshTimer(){
@@ -413,13 +420,13 @@ rc--;
 if(rc<0){rc=300;doReload()}
 }
 function doReload(){
-fetch(location.href+'?t='+Date.now()).then(function(r){return r.text()}).then(function(html){
+fetch(location.href.split('?')[0]+'?_nc='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(html){
 var parser=new DOMParser();var doc=parser.parseFromString(html,'text/html');
 var newBody=doc.body.innerHTML;
 document.body.innerHTML=newBody;
 var scripts=doc.querySelectorAll('script');
 scripts.forEach(function(s){var ns=document.createElement('script');ns.textContent=s.textContent;document.body.appendChild(ns)});
-}).catch(function(){location.reload()})
+}).catch(function(){location.replace(location.href.split('?')[0]+'?_nc='+Date.now())})
 }
 function toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(e=>{})}else{document.exitFullscreen()}}
 document.addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();toggleFullscreen()}});
