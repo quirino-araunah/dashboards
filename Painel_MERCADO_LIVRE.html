@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MERCADO LIVRE — Performance 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-tertiary:#21262d;--border-color:#30363d;--text-primary:#e6edf3;--text-secondary:#8b949e;--green:#2ecc71;--red:#e74c3c;--amber:#f39c12;--agro:#2ecc71;--agua:#3498db;--corporativo:#9b59b6;--florestas:#e67e22}
+html,body{height:100%;width:100%;overflow:hidden}
+body{background-color:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;line-height:1.4}
+.header{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border-bottom:2px solid var(--border-color);padding:16px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.header-left h1{font-size:28px;font-weight:800;letter-spacing:1px;margin-bottom:2px}
+.header-left p{font-size:11px;color:var(--text-secondary)}
+.header-right{display:flex;gap:24px;align-items:center}
+.clock-wrapper{text-align:right}
+.clock{font-size:28px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;line-height:1}
+.clock-date{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.refresh-info{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.refresh-timer{font-size:16px;font-weight:600;color:var(--amber)}
+.refresh-label{font-size:9px;color:var(--text-secondary);text-transform:uppercase}
+.fullscreen-btn{padding:8px 14px;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;text-transform:uppercase;transition:all .3s}
+.fullscreen-btn:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 10px rgba(46,204,113,.3)}
+.nav-links{display:flex;gap:10px}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:11px;padding:6px 12px;border:1px solid var(--border-color);border-radius:4px;transition:all .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--green);border-color:var(--green);background:rgba(46,204,113,.1)}
+.container{height:calc(100vh - 90px);overflow-y:auto;padding:16px 24px;padding-bottom:60px}
+.kpi-section{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;animation:slideDown .6s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.kpi-card{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border:2px solid var(--border-color);border-radius:8px;padding:20px;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:.6}
+.kpi-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.kpi-title{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.kpi-value{font-size:26px;font-weight:800;color:var(--text-primary);margin-bottom:6px}
+.kpi-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px}
+.kpi-label{color:var(--text-secondary)}.kpi-number{font-weight:600}
+.kpi-number.positive{color:var(--green)}.kpi-number.negative{color:var(--red)}.kpi-number.warning{color:var(--amber)}
+.kpi-percent{font-size:16px;font-weight:700;margin-top:6px}
+.kpi-percent.good{color:var(--green)}.kpi-percent.low{color:var(--amber)}.kpi-percent.critical{color:var(--red)}
+.progress-bar{height:5px;background:var(--bg-tertiary);border-radius:3px;margin-top:10px;overflow:hidden;border:1px solid var(--border-color)}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s;box-shadow:0 0 8px rgba(46,204,113,.5)}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;margin-top:16px;padding-bottom:8px;border-bottom:2px solid var(--border-color)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+.table-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead{background:var(--bg-tertiary);border-bottom:2px solid var(--border-color)}
+th{padding:10px 8px;text-align:right;font-weight:700;color:var(--text-secondary);text-transform:uppercase;font-size:9px;border-right:1px solid var(--border-color)}
+th:first-child{text-align:left;border-right:2px solid var(--border-color)}
+td{padding:8px;text-align:right;border-right:1px solid var(--border-color);font-weight:500}
+td:first-child{text-align:left;border-right:2px solid var(--border-color);font-weight:600}
+tbody tr{border-bottom:1px solid var(--border-color);transition:background .2s}
+tbody tr:hover{background:var(--bg-tertiary)}
+tr.total-row{background:rgba(46,204,113,.05);border-top:2px solid var(--green);border-bottom:2px solid var(--green);font-weight:700}
+.vertical-badge{display:inline-block;padding:3px 8px;border-radius:3px;font-weight:600;font-size:10px;text-transform:uppercase}
+.vertical-badge.agro{background:rgba(46,204,113,.2);color:var(--agro);border:1px solid var(--agro)}
+.vertical-badge.agua{background:rgba(52,152,219,.2);color:var(--agua);border:1px solid var(--agua)}
+.vertical-badge.corporativo{background:rgba(155,89,182,.2);color:var(--corporativo);border:1px solid var(--corporativo)}
+.vertical-badge.florestas{background:rgba(230,126,34,.2);color:var(--florestas);border:1px solid var(--florestas)}
+.metric-good{color:var(--green)}.metric-warning{color:var(--amber)}.metric-bad{color:var(--red)}.metric-neutral{color:var(--text-primary)}
+.footer{background:var(--bg-secondary);border-top:2px solid var(--border-color);padding:10px 24px;font-size:9px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0}
+.footer-text{display:flex;gap:16px}.footer-legend{display:flex;gap:16px}
+.legend-item{display:flex;align-items:center;gap:4px}.legend-dot{width:8px;height:8px;border-radius:50%}
+.container::-webkit-scrollbar{width:6px}.container::-webkit-scrollbar-track{background:var(--bg-secondary)}.container::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:10px 0}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px}
+.bar{width:100%;border-radius:3px 3px 0 0;transition:height .6s;min-height:2px}
+.bar-label{font-size:8px;color:var(--text-secondary);text-align:center;writing-mode:vertical-rl;text-orientation:mixed;max-height:60px;overflow:hidden}
+.bar-value{font-size:8px;color:var(--text-primary);font-weight:600}
+@media(max-width:1024px){
+.kpi-section{grid-template-columns:repeat(2,1fr);gap:10px}
+.grid-2,.grid-3{grid-template-columns:1fr}
+.header{flex-direction:column;gap:10px;padding:12px 16px}
+.header-right{flex-wrap:wrap;justify-content:center}
+.container{padding:10px 12px;height:auto;overflow-y:auto}
+html,body{overflow:auto;height:auto}
+.footer{position:relative}
+}
+@media(max-width:640px){
+.kpi-section{grid-template-columns:1fr}
+.kpi-value{font-size:20px}
+.kpi-percent{font-size:13px}
+.header-left h1{font-size:18px}
+.clock{font-size:20px}
+.table-container{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:600px}
+th,td{padding:6px 4px;font-size:10px}
+th{font-size:8px}
+.nav-links{flex-wrap:wrap;gap:6px}
+.nav-links a{font-size:10px;padding:4px 8px}
+.section-title{font-size:11px}
+.fullscreen-btn{display:none}
+}
+/* ── Gráfico Faturamento Diário ── */
+.daily-chart-section{margin-top:24px;margin-bottom:60px}
+.dc-summary{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:12px;font-size:11px;color:var(--text-secondary)}
+.dc-summary strong{color:var(--text-primary)}
+.dc-chart-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;padding:16px 12px 12px;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.dc-bars-area{position:relative;height:120px}
+.dc-bars{display:flex;align-items:flex-end;gap:2px;height:100%}
+.dc-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.dc-bar-col .dc-bar{width:100%;min-width:4px;border-radius:2px 2px 0 0;transition:height .3s}
+.dc-labels{display:flex;gap:2px;margin-top:4px;padding-bottom:4px}
+.dc-label-col{flex:1;display:flex;flex-direction:column;align-items:center;min-height:24px}
+.dc-val{font-size:9px;font-weight:700;white-space:nowrap;line-height:1.3;min-height:12px}
+.dc-day{font-size:9px;color:var(--text-primary);font-weight:700;line-height:1.3}
+.dc-weekend .dc-day{color:var(--amber);opacity:.7}
+.dc-future .dc-day{opacity:.3}
+.dc-meta-line{position:absolute;left:0;right:0;border-top:2px dashed var(--amber);pointer-events:none;z-index:2}
+.dc-meta-label{position:absolute;right:8px;top:-14px;font-size:8px;color:var(--amber);font-weight:600;background:var(--bg-secondary);padding:0 4px}
+@media(max-width:900px){.dc-bars-area{height:80px}.dc-val{font-size:8px}.dc-day{font-size:8px}}
+
+.header-left h1{color:#9b59b6}
+.kpi-card::before{background:linear-gradient(90deg, #9b59b6, var(--agua))}
+.progress-fill{background:linear-gradient(90deg, #9b59b6, var(--agua))}
+
+.stale-banner{position:fixed;top:0;left:0;right:0;z-index:99999;padding:10px 24px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;text-align:center;display:none;animation:stalePulse 2s ease-in-out infinite}
+.stale-banner.stale-warn{display:block;background:#f39c12;color:#000}
+.stale-banner.stale-danger{display:block;background:#e74c3c;color:#fff}
+.stale-banner.stale-critical{display:block;background:#e74c3c;color:#fff;animation:staleBlink 1s step-end infinite}
+@keyframes staleBlink{50%{opacity:.3}}
+@keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.85}}
+
+</style></head><body>
+<div class="stale-banner" id="staleBanner"></div>
+<div class="header">
+<div class="header-left"><h1>MERCADO LIVRE — Performance 2026</h1><p><span style='font-size:11px;padding:2px 8px;background:rgba(46,204,113,.15);border-radius:4px;color:#9b59b6;font-weight:600'>CORPORATIVO</span> Referência: mar/2026 | Atualizado: 07/03/2026 20:05</p></div>
+<div class="header-right">
+
+
+<div class="clock-wrapper"><div class="clock" id="clock">00:00:00</div><div class="clock-date" id="clockDate"></div></div>
+<div class="refresh-info"><div class="refresh-timer" id="refreshTimer">5:00</div><div class="refresh-label">Próx. Atualização</div></div>
+<button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; Tela Cheia</button>
+</div></div>
+
+<div class="container"><div style="margin:10px 0"><a href="Painel_Executivo_TV.html" style="color:#9b59b6;text-decoration:none;font-size:12px">← Voltar para CORPORATIVO</a></div>
+
+<div class="kpi-section">
+<div class="kpi-card"><div class="kpi-title">Mês Atual</div><div class="kpi-value">R$ 0</div>
+<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">R$ 0</span></div>
+<div class="kpi-row"><span class="kpi-label">Ating:</span><span class="kpi-number">0,0%</span></div>
+<div class="kpi-row"><span class="kpi-label">vs 2025:</span><span class="kpi-number">R$ 0</span></div>
+<div class="kpi-row" style="opacity:.5;font-size:9px"><span class="kpi-label">c/ frete:</span><span class="kpi-number">R$ 0</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div></div>
+<div class="kpi-card"><div class="kpi-title">YTD Acumulado</div><div class="kpi-value">R$ 3.220</div>
+<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">R$ 0</span></div>
+<div class="kpi-percent good">100.0%</div>
+<div class="kpi-row"><span class="kpi-label">vs 2025:</span><span class="kpi-number metric-good">0,0%</span></div>
+<div class="kpi-row" style="opacity:.5;font-size:9px"><span class="kpi-label">c/ frete:</span><span class="kpi-number">R$ 4.787</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div>
+<div class="kpi-card"><div class="kpi-title">Progresso Anual</div><div class="kpi-value">R$ 3.220</div>
+<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">R$ 0</span></div>
+<div class="kpi-percent critical">0.0%</div>
+<div class="kpi-row"><span class="kpi-label">vs 2025:</span><span class="kpi-number metric-good">0,0%</span></div>
+<div class="kpi-row" style="opacity:.5;font-size:9px"><span class="kpi-label">c/ frete:</span><span class="kpi-number">R$ 4.787</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div></div>
+<div class="kpi-card"><div class="kpi-title">Carteira Pedidos</div><div class="kpi-value">R$ 0</div>
+<div class="kpi-row"><span class="kpi-label">% Meta:</span><span class="kpi-number">0.0%</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:0%"></div></div></div>
+</div>
+
+<div class="daily-chart-section">
+<h2 class="section-title">Faturamento Diário — Mar/2026</h2>
+<div class="dc-summary">
+<span>Total: <strong style="color:var(--green)">R$ 0</strong></span>
+<span>Dias úteis: <strong>22</strong></span>
+<span>Dias faturados: <strong>0</strong></span>
+<span>Média/dia: <strong>R$ 0</strong></span>
+<span>Meta mês: <strong>R$ 0</strong></span>
+<span>Falta por dia útil: <strong style="color:var(--amber)">R$ 0</strong></span>
+</div>
+<div class="dc-chart-container">
+<div class="dc-bars-area">
+
+<div class="dc-bars"><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(139,148,158,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(139,148,158,0.3)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div></div>
+</div>
+<div class="dc-labels"><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">1</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">2</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">3</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">4</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">5</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">6</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">7</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">8</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">9</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">10</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">11</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">12</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">13</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">14</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">15</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">16</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">17</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">18</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">19</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">20</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">21</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">22</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">23</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">24</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">25</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">26</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">27</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">28</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">29</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">30</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">31</div>
+</div></div>
+</div>
+</div>
+
+<h2 class="section-title">Visão Mensal — 2026</h2>
+<div class="table-container"><table><thead><tr><th></th><th style='text-align:center'>Jan</th><th style='text-align:center'>Fev</th><th style='text-align:center'>Mar</th><th style='text-align:center'>Abr</th><th style='text-align:center'>Mai</th><th style='text-align:center'>Jun</th><th style='text-align:center'>Jul</th><th style='text-align:center'>Ago</th><th style='text-align:center'>Set</th><th style='text-align:center'>Out</th><th style='text-align:center'>Nov</th><th style='text-align:center'>Dez</th><th style='text-align:center;font-weight:700'>Total</th></tr></thead>
+<tbody><tr><td><strong>Meta</strong></td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'><strong>R$ 0</strong></td></tr><tr><td><strong>Real</strong></td><td class='metric-neutral'>R$ 2.546</td><td class='metric-neutral'>R$ 673</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td class='metric-neutral'>R$ 0</td><td><strong>R$ 3.220</strong></td></tr><tr><td><strong>Ating%</strong></td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'><strong>0,0%</strong></td></tr><tr style='opacity:.5;font-size:10px'><td>2025</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td>R$ 0</td><td><strong>R$ 0</strong></td></tr><tr style='opacity:.5;font-size:10px'><td>%var</td><td style='color:#2ecc71'>novo</td><td style='color:#2ecc71'>novo</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td>—</td><td style='color:#2ecc71'><strong>+0.0%</strong></td></tr><tr><td><strong>Part%</strong></td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td><strong>100%</strong></td></tr></tbody></table></div>
+
+<h2 class="section-title">Carteira de Pedidos — Por Consultor</h2>
+<div class="table-container"><table><thead><tr><th>Consultor</th><th>Pedidos</th><th>Clientes</th><th>Valor</th><th>% Total</th></tr></thead>
+<tbody><tr><td><strong>JOAO SUSS</strong></td><td>1</td><td>1</td><td>R$ 119.650</td><td>100.0%</td></tr><tr class='total-row'><td>TOTAL</td><td>1</td><td>1</td><td>R$ 119.650</td><td>100%</td></tr></tbody></table></div>
+<h2 class="section-title">Carteira de Pedidos — Detalhado</h2>
+<div class="table-container"><table><thead><tr><th>Consultor</th><th>Vertical</th><th>Cliente</th><th>Produto</th><th>Qtd</th><th>UF</th><th>Valor</th></tr></thead>
+<tbody><tr><td>JOAO SUSS</td><td>CORPORATIVO</td><td>LEIDE DAIANE EMERICH</td><td>RENOVA 4.0 POWER C/KIT SULCADOR 540</td><td>1</td><td>MT</td><td>R$ 119.650</td></tr></tbody></table></div>
+<h2 class="section-title">Clientes 80/20 — Plano vs Realizado</h2>
+<div class="table-container"><table><thead><tr><th>Cliente</th><th>Plano</th><th>Faturado</th><th style="opacity:.6;font-size:10px">Real 2025</th><th>Carteira</th><th>% Ating.</th><th>% Acum.</th><th>Partic%</th></tr></thead><tbody><tr><td>EVANILSON DA COSTA SILVA <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 934</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-good'>29.0%</td><td>29.0%</td></tr><tr><td>FERNANDO AUGUSTO FIGUEIREDO AR <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 606</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-good'>47.8%</td><td>18.8%</td></tr><tr><td>FELIPE DE MOURA LACERDA COCHON <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 284</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-warning'>56.7%</td><td>8.8%</td></tr><tr><td>ARISSON MACIEL BATISTA DOS SAN <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 272</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-warning'>65.2%</td><td>8.5%</td></tr><tr><td>JAISON ZARDO <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 206</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-warning'>71.6%</td><td>6.4%</td></tr><tr><td>EMERSON OLIVEIRA <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 194</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-warning'>77.6%</td><td>6.0%</td></tr><tr><td>REGIANE COSTA DE MARIA <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 141</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-neutral'>82.0%</td><td>4.4%</td></tr><tr><td>OUTROS CLIENTES</td><td>R$ 0</td><td>R$ 579</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-neutral'>100.0%</td><td>18.0%</td></tr></tbody></table></div>
+<h2 class="section-title">Produtos (Categoria) 80/20 — Plano vs Realizado</h2>
+<div class="table-container"><table><thead><tr><th>Categoria</th><th>Plano</th><th>Faturado</th><th>Carteira</th><th>% Ating.</th><th>% Acum.</th><th>Partic%</th></tr></thead><tbody><tr><td>ULEXITA <span style='font-size:9px;color:var(--agua);font-weight:700'>PROSPECÇÃO</span></td><td><span style='font-size:9px;color:var(--text-secondary)'>Prospecção</span></td><td>R$ 3.220</td><td>R$ 0</td><td class='metric-good'>—</td><td class='metric-neutral'>100.0%</td><td>100.0%</td></tr></tbody></table></div>
+<h2 class="section-title">Faturamento por UF — YTD</h2>
+<div class="table-container"><table><thead><tr><th>UF</th><th>Faturamento</th><th>Clientes</th><th>% Total</th><th style="opacity:.6;font-size:10px">Real 2025</th><th style="opacity:.6;font-size:10px">%Var</th></tr></thead><tbody><tr><td><strong>MA</strong></td><td>R$ 934</td><td>1</td><td>29.0%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>PA</strong></td><td>R$ 814</td><td>3</td><td>25.3%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>SP</strong></td><td>R$ 533</td><td>3</td><td>16.6%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>PE</strong></td><td>R$ 272</td><td>1</td><td>8.5%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>MT</strong></td><td>R$ 206</td><td>1</td><td>6.4%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>BA</strong></td><td>R$ 194</td><td>1</td><td>6.0%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>MG</strong></td><td>R$ 131</td><td>1</td><td>4.1%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>RS</strong></td><td>R$ 66</td><td>1</td><td>2.1%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr><td><strong>RJ</strong></td><td>R$ 66</td><td>1</td><td>2.1%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr><tr style='font-weight:700;border-top:2px solid var(--border-color)'><td>TOTAL</td><td>R$ 3.220</td><td>13</td><td>100%</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td class='metric-good' style='font-size:10px'>+0%</td></tr></tbody></table></div>
+<h2 class="section-title">Por Operação / CFOP — YTD</h2>
+<div class="table-container"><table><thead><tr><th>Operação / CFOP</th><th>Qtd NFs</th><th>Faturamento</th><th>% Total</th></tr></thead><tbody><tr style='background:rgba(46,204,113,.08);font-weight:700;cursor:pointer' onclick="var rows=document.querySelectorAll('.cfop_19_0');var vis=rows[0]&&rows[0].style.display==='none';rows.forEach(function(r){r.style.display=vis?'':'none'})"><td>▸ VENDA</td><td>18</td><td>R$ 3.220</td><td>100.0%</td></tr><tr class='cfop_19_0' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>6108</td><td>16</td><td>R$ 3.022</td><td>93.8%</td></tr><tr class='cfop_19_0' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>5102</td><td>1</td><td>R$ 131</td><td>4.1%</td></tr><tr class='cfop_19_0' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>6102</td><td>1</td><td>R$ 66</td><td>2.1%</td></tr><tr class='total-row'><td>TOTAL GERAL</td><td>18</td><td>R$ 3.220</td><td>100%</td></tr></tbody></table></div>
+<style>.frete-toggle-row{cursor:pointer;user-select:none}.frete-toggle-row:hover{background:var(--bg-secondary)!important}.frete-toggle-row td:first-child::before{content:"\25B6 ";font-size:10px;margin-right:4px;display:inline-block;transition:transform .2s}.frete-toggle-row.open td:first-child::before{transform:rotate(90deg)}.frete-cli-rows{display:none}.frete-cli-rows.show{display:table-row}</style>
+<h2 class="section-title">Analise de Fretes — YTD 2026 — MERCADO LIVRE</h2>
+<div class="kpi-section" style="margin-bottom:16px">
+<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Gap Frete YTD</div>
+<div class="kpi-value" style="color:var(--amber)">R$ 1.567</div>
+<div class="kpi-row"><span class="kpi-label">% do Faturamento:</span><span class="kpi-number" style="color:var(--amber)">48.7%</span></div></div>
+<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Frete Mes Atual</div>
+<div class="kpi-value" style="color:var(--amber)">R$ 0</div>
+<div class="kpi-row"><span class="kpi-label">% do Fat. Mes:</span><span class="kpi-number" style="color:var(--amber)">0.0%</span></div></div>
+<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Frete vs 2025</div>
+<div class="kpi-value metric-good">+0.0%</div>
+<div class="kpi-row"><span class="kpi-label">2025:</span><span class="kpi-number">R$ 0</span></div></div>
+</div><div class="table-container"><table><thead>
+<tr><th>Vertical / Cliente</th><th>Fat. s/ Frete</th><th style="color:var(--amber)">Frete</th><th>Fat. c/ Frete</th><th>Frete %</th></tr>
+</thead><tbody><tr class='frete-toggle-row' data-vert-group='corporativo' onclick='toggleFreteVert(this)' style='background:var(--bg-tertiary);font-weight:700'><td><span class='vertical-badge corporativo'>CORPORATIVO</span> <span style='opacity:.5;font-size:10px'>(13 clientes)</span></td><td>R$ 3.220</td><td style='color:var(--amber)'>R$ 1.567</td><td>R$ 4.787</td><td class='metric-bad'>48.7%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>EVANILSON DA COSTA SILVA</td><td>R$ 934</td><td style='color:var(--amber)'>R$ 681</td><td>R$ 1.615</td><td class='metric-bad'>73.0%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>FERNANDO AUGUSTO FIGUEIREDO ARAUJO</td><td>R$ 606</td><td style='color:var(--amber)'>R$ 475</td><td>R$ 1.081</td><td class='metric-bad'>78.4%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>FELIPE DE MOURA LACERDA COCHONI</td><td>R$ 284</td><td style='color:var(--amber)'>R$ 103</td><td>R$ 388</td><td class='metric-bad'>36.2%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>DIOGENES DE ASSIS FONTOLAN</td><td>R$ 116</td><td style='color:var(--amber)'>R$ 62</td><td>R$ 179</td><td class='metric-bad'>53.3%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>LEANDRO AUGUSTO PACOLA</td><td>R$ 131</td><td style='color:var(--amber)'>R$ 62</td><td>R$ 194</td><td class='metric-bad'>47.2%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>ANDERSON BARRETO DOS PASSOS</td><td>R$ 131</td><td style='color:var(--amber)'>R$ 62</td><td>R$ 194</td><td class='metric-bad'>47.2%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>REGIANE COSTA DE MARIA</td><td>R$ 141</td><td style='color:var(--amber)'>R$ 37</td><td>R$ 179</td><td class='metric-bad'>26.7%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>ELVIO FRANCISCO MARINI</td><td>R$ 66</td><td style='color:var(--amber)'>R$ 27</td><td>R$ 94</td><td class='metric-bad'>41.2%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>VIVIANE VIANA BORGES DE QUEIROZ</td><td>R$ 66</td><td style='color:var(--amber)'>R$ 27</td><td>R$ 94</td><td class='metric-bad'>41.2%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>ADEMIR DA CONCEICAO APARECIDO</td><td>R$ 66</td><td style='color:var(--amber)'>R$ 27</td><td>R$ 94</td><td class='metric-bad'>41.2%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>EMERSON OLIVEIRA</td><td>R$ 194</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 194</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>JAISON ZARDO</td><td>R$ 206</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 206</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-corporativo'><td style='padding-left:24px;font-weight:400'>ARISSON MACIEL BATISTA DOS SANTOS</td><td>R$ 272</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 272</td><td class='metric-good'>0.0%</td></tr><tr class='total-row'><td><strong>TOTAL GERAL</strong></td><td><strong>R$ 3.220</strong></td><td style='color:var(--amber)'><strong>R$ 1.567</strong></td><td><strong>R$ 4.787</strong></td><td class='metric-bad'><strong>48.7%</strong></td></tr></tbody></table></div><script>function toggleFreteVert(el){el.classList.toggle("open");var g=el.getAttribute("data-vert-group");var rows=document.querySelectorAll(".frete-cli-"+g);var show=el.classList.contains("open");rows.forEach(function(r){r.classList.toggle("show",show)});}</script>
+</div>
+<div class="footer"><div class="footer-text"><span><strong>Consultor:</strong> MERCADO LIVRE — CORPORATIVO 2026 | Atualizado: 07/03/2026 20:05</span><span style="color:#e74c3c">&#9679; Fonte: Copia local (rede indisponivel — dados possivelmente velhos)</span></div></div>
+<script>
+// Anti-cache: busca versão mais recente do servidor ao carregar
+(function(){
+  if(location.protocol === 'file:') return;
+  setTimeout(function(){
+    fetch(location.href.split('?')[0]+'?_nc='+Date.now(),{cache:'no-store'})
+    .then(function(r){return r.text()})
+    .then(function(html){
+      var parser=new DOMParser();var doc=parser.parseFromString(html,'text/html');
+      var newBody=doc.body.innerHTML;
+      if(newBody.length > 100 && newBody !== document.body.innerHTML){
+        document.body.innerHTML=newBody;
+        var scripts=doc.querySelectorAll('script');
+        scripts.forEach(function(s){var ns=document.createElement('script');ns.textContent=s.textContent;document.body.appendChild(ns)});
+      }
+    }).catch(function(){});
+  }, 1500);
+})();
+function updateClock(){const n=new Date();document.getElementById('clock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');var dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];var meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];document.getElementById('clockDate').textContent=dias[n.getDay()]+', '+n.getDate()+' '+meses[n.getMonth()]}
+let rc=300;
+function updateRefreshTimer(){
+var m=Math.floor(rc/60);var s=rc%60;
+document.getElementById('refreshTimer').textContent=m+':'+String(s).padStart(2,'0');
+rc--;
+if(rc<0){rc=300;doReload()}
+}
+function doReload(){
+fetch(location.href.split('?')[0]+'?_nc='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(html){
+var parser=new DOMParser();var doc=parser.parseFromString(html,'text/html');
+var newBody=doc.body.innerHTML;
+document.body.innerHTML=newBody;
+var scripts=doc.querySelectorAll('script');
+scripts.forEach(function(s){var ns=document.createElement('script');ns.textContent=s.textContent;document.body.appendChild(ns)});
+}).catch(function(){location.replace(location.href.split('?')[0]+'?_nc='+Date.now())})
+}
+function toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(e=>{})}else{document.exitFullscreen()}}
+document.addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();toggleFullscreen()}});
+updateClock();updateRefreshTimer();setInterval(updateClock,1000);setInterval(updateRefreshTimer,1000);
+
+
+
+(function(){
+  var genTs = '07/03/2026 20:05';
+  var srcInfo = 'Fonte: Copia local (rede indisponivel, dados possivelmente velhos)';
+  if(!genTs) return;
+  function checkStale(){
+    var parts = genTs.split(/[\/ :]/);
+    var genDate = new Date(parts[2],parts[1]-1,parts[0],parts[3],parts[4]);
+    var now = new Date();
+    var diffH = (now - genDate) / 3600000;
+    var el = document.getElementById('staleBanner');
+    if(!el) return;
+    el.className = 'stale-banner';
+    if(diffH > 24){
+      el.textContent = '\u26A0 DADOS DE ' + (diffH>48? Math.floor(diffH/24)+' DIAS ATRAS' : 'ONTEM') + ' \u2014 POSSIVEL FALHA NO SISTEMA (ultima atualizacao: '+genTs+')';
+      el.classList.add('stale-critical');
+      document.body.style.paddingTop = '44px';
+    } else if(diffH > 6){
+      el.textContent = '\u26A0 DADOS DESATUALIZADOS \u2014 ultima atualizacao ha ' + Math.floor(diffH) + 'h ('+genTs+')';
+      el.classList.add('stale-danger');
+      document.body.style.paddingTop = '44px';
+    } else if(diffH > 2){
+      el.textContent = '\u26A0 Dados de ' + Math.floor(diffH) + 'h atras ('+genTs+') \u2014 ' + srcInfo;
+      el.classList.add('stale-warn');
+      document.body.style.paddingTop = '44px';
+    } else {
+      el.style.display = 'none';
+      document.body.style.paddingTop = '0';
+    }
+  }
+  checkStale();
+  setInterval(checkStale, 60000);
+})();
+
+</script></body></html>

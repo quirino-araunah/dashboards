@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>MATEUS RAFAEL — Performance 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-tertiary:#21262d;--border-color:#30363d;--text-primary:#e6edf3;--text-secondary:#8b949e;--green:#2ecc71;--red:#e74c3c;--amber:#f39c12;--agro:#2ecc71;--agua:#3498db;--corporativo:#9b59b6;--florestas:#e67e22}
+html,body{height:100%;width:100%;overflow:hidden}
+body{background-color:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;line-height:1.4}
+.header{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border-bottom:2px solid var(--border-color);padding:16px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.header-left h1{font-size:28px;font-weight:800;letter-spacing:1px;margin-bottom:2px}
+.header-left p{font-size:11px;color:var(--text-secondary)}
+.header-right{display:flex;gap:24px;align-items:center}
+.clock-wrapper{text-align:right}
+.clock{font-size:28px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;line-height:1}
+.clock-date{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.refresh-info{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.refresh-timer{font-size:16px;font-weight:600;color:var(--amber)}
+.refresh-label{font-size:9px;color:var(--text-secondary);text-transform:uppercase}
+.fullscreen-btn{padding:8px 14px;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;text-transform:uppercase;transition:all .3s}
+.fullscreen-btn:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 10px rgba(46,204,113,.3)}
+.nav-links{display:flex;gap:10px}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:11px;padding:6px 12px;border:1px solid var(--border-color);border-radius:4px;transition:all .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--green);border-color:var(--green);background:rgba(46,204,113,.1)}
+.container{height:calc(100vh - 90px);overflow-y:auto;padding:16px 24px;padding-bottom:60px}
+.kpi-section{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;animation:slideDown .6s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.kpi-card{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border:2px solid var(--border-color);border-radius:8px;padding:20px;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:.6}
+.kpi-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.kpi-title{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.kpi-value{font-size:26px;font-weight:800;color:var(--text-primary);margin-bottom:6px}
+.kpi-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px}
+.kpi-label{color:var(--text-secondary)}.kpi-number{font-weight:600}
+.kpi-number.positive{color:var(--green)}.kpi-number.negative{color:var(--red)}.kpi-number.warning{color:var(--amber)}
+.kpi-percent{font-size:16px;font-weight:700;margin-top:6px}
+.kpi-percent.good{color:var(--green)}.kpi-percent.low{color:var(--amber)}.kpi-percent.critical{color:var(--red)}
+.progress-bar{height:5px;background:var(--bg-tertiary);border-radius:3px;margin-top:10px;overflow:hidden;border:1px solid var(--border-color)}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s;box-shadow:0 0 8px rgba(46,204,113,.5)}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;margin-top:16px;padding-bottom:8px;border-bottom:2px solid var(--border-color)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+.table-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead{background:var(--bg-tertiary);border-bottom:2px solid var(--border-color)}
+th{padding:10px 8px;text-align:right;font-weight:700;color:var(--text-secondary);text-transform:uppercase;font-size:9px;border-right:1px solid var(--border-color)}
+th:first-child{text-align:left;border-right:2px solid var(--border-color)}
+td{padding:8px;text-align:right;border-right:1px solid var(--border-color);font-weight:500}
+td:first-child{text-align:left;border-right:2px solid var(--border-color);font-weight:600}
+tbody tr{border-bottom:1px solid var(--border-color);transition:background .2s}
+tbody tr:hover{background:var(--bg-tertiary)}
+tr.total-row{background:rgba(46,204,113,.05);border-top:2px solid var(--green);border-bottom:2px solid var(--green);font-weight:700}
+.vertical-badge{display:inline-block;padding:3px 8px;border-radius:3px;font-weight:600;font-size:10px;text-transform:uppercase}
+.vertical-badge.agro{background:rgba(46,204,113,.2);color:var(--agro);border:1px solid var(--agro)}
+.vertical-badge.agua{background:rgba(52,152,219,.2);color:var(--agua);border:1px solid var(--agua)}
+.vertical-badge.corporativo{background:rgba(155,89,182,.2);color:var(--corporativo);border:1px solid var(--corporativo)}
+.vertical-badge.florestas{background:rgba(230,126,34,.2);color:var(--florestas);border:1px solid var(--florestas)}
+.metric-good{color:var(--green)}.metric-warning{color:var(--amber)}.metric-bad{color:var(--red)}.metric-neutral{color:var(--text-primary)}
+.footer{background:var(--bg-secondary);border-top:2px solid var(--border-color);padding:10px 24px;font-size:9px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0}
+.footer-text{display:flex;gap:16px}.footer-legend{display:flex;gap:16px}
+.legend-item{display:flex;align-items:center;gap:4px}.legend-dot{width:8px;height:8px;border-radius:50%}
+.container::-webkit-scrollbar{width:6px}.container::-webkit-scrollbar-track{background:var(--bg-secondary)}.container::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+.bar-chart{display:flex;align-items:flex-end;gap:6px;height:120px;padding:10px 0}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:4px}
+.bar{width:100%;border-radius:3px 3px 0 0;transition:height .6s;min-height:2px}
+.bar-label{font-size:8px;color:var(--text-secondary);text-align:center;writing-mode:vertical-rl;text-orientation:mixed;max-height:60px;overflow:hidden}
+.bar-value{font-size:8px;color:var(--text-primary);font-weight:600}
+@media(max-width:1024px){
+.kpi-section{grid-template-columns:repeat(2,1fr);gap:10px}
+.grid-2,.grid-3{grid-template-columns:1fr}
+.header{flex-direction:column;gap:10px;padding:12px 16px}
+.header-right{flex-wrap:wrap;justify-content:center}
+.container{padding:10px 12px;height:auto;overflow-y:auto}
+html,body{overflow:auto;height:auto}
+.footer{position:relative}
+}
+@media(max-width:640px){
+.kpi-section{grid-template-columns:1fr}
+.kpi-value{font-size:20px}
+.kpi-percent{font-size:13px}
+.header-left h1{font-size:18px}
+.clock{font-size:20px}
+.table-container{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:600px}
+th,td{padding:6px 4px;font-size:10px}
+th{font-size:8px}
+.nav-links{flex-wrap:wrap;gap:6px}
+.nav-links a{font-size:10px;padding:4px 8px}
+.section-title{font-size:11px}
+.fullscreen-btn{display:none}
+}
+/* ── Gráfico Faturamento Diário ── */
+.daily-chart-section{margin-top:24px;margin-bottom:60px}
+.dc-summary{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:12px;font-size:11px;color:var(--text-secondary)}
+.dc-summary strong{color:var(--text-primary)}
+.dc-chart-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;padding:16px 12px 12px;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.dc-bars-area{position:relative;height:120px}
+.dc-bars{display:flex;align-items:flex-end;gap:2px;height:100%}
+.dc-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.dc-bar-col .dc-bar{width:100%;min-width:4px;border-radius:2px 2px 0 0;transition:height .3s}
+.dc-labels{display:flex;gap:2px;margin-top:4px;padding-bottom:4px}
+.dc-label-col{flex:1;display:flex;flex-direction:column;align-items:center;min-height:24px}
+.dc-val{font-size:9px;font-weight:700;white-space:nowrap;line-height:1.3;min-height:12px}
+.dc-day{font-size:9px;color:var(--text-primary);font-weight:700;line-height:1.3}
+.dc-weekend .dc-day{color:var(--amber);opacity:.7}
+.dc-future .dc-day{opacity:.3}
+.dc-meta-line{position:absolute;left:0;right:0;border-top:2px dashed var(--amber);pointer-events:none;z-index:2}
+.dc-meta-label{position:absolute;right:8px;top:-14px;font-size:8px;color:var(--amber);font-weight:600;background:var(--bg-secondary);padding:0 4px}
+@media(max-width:900px){.dc-bars-area{height:80px}.dc-val{font-size:8px}.dc-day{font-size:8px}}
+
+.header-left h1{color:var(--agua)}
+.kpi-card::before{background:linear-gradient(90deg, var(--agua), var(--agua))}
+.progress-fill{background:linear-gradient(90deg, var(--agua), var(--agua))}
+
+.stale-banner{position:fixed;top:0;left:0;right:0;z-index:99999;padding:10px 24px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;text-align:center;display:none;animation:stalePulse 2s ease-in-out infinite}
+.stale-banner.stale-warn{display:block;background:#f39c12;color:#000}
+.stale-banner.stale-danger{display:block;background:#e74c3c;color:#fff}
+.stale-banner.stale-critical{display:block;background:#e74c3c;color:#fff;animation:staleBlink 1s step-end infinite}
+@keyframes staleBlink{50%{opacity:.3}}
+@keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.85}}
+
+</style></head><body>
+<div class="stale-banner" id="staleBanner"></div>
+<div class="header">
+<div class="header-left"><h1>MATEUS RAFAEL — Performance 2026</h1><p><span style='font-size:11px;padding:2px 8px;background:rgba(46,204,113,.15);border-radius:4px;color:var(--agua);font-weight:600'>AGUA</span> Referência: mar/2026 | Atualizado: 07/03/2026 20:05</p></div>
+<div class="header-right">
+
+
+<div class="clock-wrapper"><div class="clock" id="clock">00:00:00</div><div class="clock-date" id="clockDate"></div></div>
+<div class="refresh-info"><div class="refresh-timer" id="refreshTimer">5:00</div><div class="refresh-label">Próx. Atualização</div></div>
+<button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; Tela Cheia</button>
+</div></div>
+
+<div class="container"><div style="margin:10px 0"><a href="Painel_AGUA_TV.html" style="color:var(--agua);text-decoration:none;font-size:12px">← Voltar para AGUA</a></div>
+
+<div class="kpi-section">
+<div class="kpi-card"><div class="kpi-title">Mês Atual</div><div class="kpi-value">R$ 16.320</div>
+<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">R$ 72.019</span></div>
+<div class="kpi-row"><span class="kpi-label">Ating:</span><span class="kpi-number">22,7%</span></div>
+<div class="kpi-row"><span class="kpi-label">vs 2025:</span><span class="kpi-number">R$ 86.624</span></div>
+<div class="kpi-row" style="opacity:.5;font-size:9px"><span class="kpi-label">c/ frete:</span><span class="kpi-number">R$ 16.320</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:23%"></div></div></div>
+<div class="kpi-card"><div class="kpi-title">YTD Acumulado</div><div class="kpi-value">R$ 201.545</div>
+<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">R$ 191.107</span></div>
+<div class="kpi-percent good">105.5%</div>
+<div class="kpi-row"><span class="kpi-label">vs 2025:</span><span class="kpi-number metric-bad">-31,8%</span></div>
+<div class="kpi-row" style="opacity:.5;font-size:9px"><span class="kpi-label">c/ frete:</span><span class="kpi-number">R$ 202.360</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:100%"></div></div></div>
+<div class="kpi-card"><div class="kpi-title">Progresso Anual</div><div class="kpi-value">R$ 201.545</div>
+<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">R$ 1.294.775</span></div>
+<div class="kpi-percent low">15.6%</div>
+<div class="kpi-row"><span class="kpi-label">vs 2025:</span><span class="kpi-number metric-bad">-82,4%</span></div>
+<div class="kpi-row" style="opacity:.5;font-size:9px"><span class="kpi-label">c/ frete:</span><span class="kpi-number">R$ 202.360</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:16%"></div></div></div>
+<div class="kpi-card"><div class="kpi-title">Carteira Pedidos</div><div class="kpi-value">R$ 15.720</div>
+<div class="kpi-row"><span class="kpi-label">% Meta:</span><span class="kpi-number">1.2%</span></div>
+<div class="progress-bar"><div class="progress-fill" style="width:1%"></div></div></div>
+</div>
+
+<div class="daily-chart-section">
+<h2 class="section-title">Faturamento Diário — Mar/2026</h2>
+<div class="dc-summary">
+<span>Total: <strong style="color:var(--green)">R$ 16.320</strong></span>
+<span>Dias úteis: <strong>22</strong></span>
+<span>Dias faturados: <strong>3</strong></span>
+<span>Média/dia: <strong>R$ 5.440</strong></span>
+<span>Meta mês: <strong>R$ 72.019</strong></span>
+<span>Falta por dia útil: <strong style="color:var(--amber)">R$ 3.276</strong></span>
+</div>
+<div class="dc-chart-container">
+<div class="dc-bars-area">
+<div class="dc-meta-line" style="bottom:21%">
+<span class="dc-meta-label">Média necessária: R$ 3.273/dia</span></div>
+<div class="dc-bars"><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(139,148,158,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:rgba(231,76,60,0.3)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:3%;background:var(--green)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:1%;background:var(--green)"></div>
+</div><div class="dc-bar-col ">
+<div class="dc-bar" style="height:100%;background:var(--green)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(139,148,158,0.3)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-weekend">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div><div class="dc-bar-col dc-future">
+<div class="dc-bar" style="height:1%;background:rgba(48,54,61,0.4)"></div>
+</div></div>
+</div>
+<div class="dc-labels"><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">1</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">2</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--red)"></div>
+<div class="dc-day">3</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--green)">435</div>
+<div class="dc-day">4</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--green)">95</div>
+<div class="dc-day">5</div>
+</div><div class="dc-label-col ">
+<div class="dc-val" style="color:var(--green)">16k</div>
+<div class="dc-day">6</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">7</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">8</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">9</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">10</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">11</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">12</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">13</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">14</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">15</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">16</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">17</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">18</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">19</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">20</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">21</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">22</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">23</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">24</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">25</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">26</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">27</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">28</div>
+</div><div class="dc-label-col dc-weekend">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">29</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">30</div>
+</div><div class="dc-label-col dc-future">
+<div class="dc-val" style="color:var(--text-secondary)"></div>
+<div class="dc-day">31</div>
+</div></div>
+</div>
+</div>
+
+<h2 class="section-title">Visão Mensal — 2026</h2>
+<div class="table-container"><table><thead><tr><th></th><th style='text-align:center'>Jan</th><th style='text-align:center'>Fev</th><th style='text-align:center'>Mar</th><th style='text-align:center'>Abr</th><th style='text-align:center'>Mai</th><th style='text-align:center'>Jun</th><th style='text-align:center'>Jul</th><th style='text-align:center'>Ago</th><th style='text-align:center'>Set</th><th style='text-align:center'>Out</th><th style='text-align:center'>Nov</th><th style='text-align:center'>Dez</th><th style='text-align:center;font-weight:700'>Total</th></tr></thead>
+<tbody><tr><td><strong>Meta</strong></td><td class='metric-neutral'>R$ 59.001</td><td class='metric-neutral'>R$ 60.087</td><td class='metric-neutral'>R$ 72.019</td><td class='metric-neutral'>R$ 111.195</td><td class='metric-neutral'>R$ 69.763</td><td class='metric-neutral'>R$ 107.548</td><td class='metric-neutral'>R$ 141.205</td><td class='metric-neutral'>R$ 199.448</td><td class='metric-neutral'>R$ 137.423</td><td class='metric-neutral'>R$ 99.748</td><td class='metric-neutral'>R$ 147.718</td><td class='metric-neutral'>R$ 89.620</td><td class='metric-neutral'><strong>R$ 1.294.775</strong></td></tr><tr><td><strong>Real</strong></td><td class='metric-good'>R$ 114.416</td><td class='metric-good'>R$ 70.808</td><td class='metric-bad'>R$ 16.320</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td class='metric-bad'>R$ 0</td><td><strong>R$ 201.545</strong></td></tr><tr><td><strong>Ating%</strong></td><td class='metric-good'>193,9%</td><td class='metric-good'>117,8%</td><td class='metric-bad'>22,7%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'>0,0%</td><td class='metric-bad'><strong>15,6%</strong></td></tr><tr style='opacity:.5;font-size:10px'><td>2025</td><td>R$ 85.761</td><td>R$ 99.556</td><td>R$ 86.624</td><td>R$ 85.071</td><td>R$ 81.846</td><td>R$ 77.046</td><td>R$ 94.074</td><td>R$ 95.986</td><td>R$ 81.763</td><td>R$ 74.366</td><td>R$ 118.783</td><td>R$ 71.774</td><td><strong>R$ 1.052.655</strong></td></tr><tr style='opacity:.5;font-size:10px'><td>%var</td><td style='color:#2ecc71'>+33.4%</td><td style='color:#e74c3c'>-28.9%</td><td style='color:#e74c3c'>-81.2%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'>-100.0%</td><td style='color:#e74c3c'><strong>-80.9%</strong></td></tr><tr><td><strong>Part%</strong></td><td>4.6%</td><td>4.6%</td><td>5.6%</td><td>8.6%</td><td>5.4%</td><td>8.3%</td><td>10.9%</td><td>15.4%</td><td>10.6%</td><td>7.7%</td><td>11.4%</td><td>6.9%</td><td><strong>100%</strong></td></tr></tbody></table></div>
+
+<h2 class="section-title">Carteira de Pedidos — Por Consultor</h2>
+<div class="table-container"><table><thead><tr><th>Consultor</th><th>Pedidos</th><th>Clientes</th><th>Valor</th><th>% Total</th></tr></thead>
+<tbody><tr><td><strong>MAICON MARTINS DE OLIVEIRA</strong></td><td>3</td><td>3</td><td>R$ 33.000</td><td>42.6%</td></tr><tr><td><strong>MULLER HENRIQUE DA SILVA</strong></td><td>1</td><td>1</td><td>R$ 28.800</td><td>37.2%</td></tr><tr><td><strong>MATEUS RAFAEL SIQUEIRA DE OLIVEIRA</strong></td><td>3</td><td>3</td><td>R$ 15.720</td><td>20.3%</td></tr><tr class='total-row'><td>TOTAL</td><td>7</td><td>7</td><td>R$ 77.520</td><td>100%</td></tr></tbody></table></div>
+<h2 class="section-title">Carteira de Pedidos — Detalhado</h2>
+<div class="table-container"><table><thead><tr><th>Consultor</th><th>Vertical</th><th>Cliente</th><th>Produto</th><th>Qtd</th><th>UF</th><th>Valor</th></tr></thead>
+<tbody><tr><td>MAICON MARTINS DE OLIVEIRA</td><td>AGUA</td><td>JOAO FERNANDO DE ALMEIDA COAN</td><td>SISTEMA DE FILTRAGEM</td><td>1</td><td>SP</td><td>R$ 25.800</td></tr><tr><td>MAICON MARTINS DE OLIVEIRA</td><td>AGUA</td><td>FLORENCIO AUGUSTO BERGER NETO</td><td>MIXRITE TF 10 0.1%-1.0% ON/O 11/2"B</td><td>1</td><td>ES</td><td>R$ 6.200</td></tr><tr><td>MAICON MARTINS DE OLIVEIRA</td><td>AGUA</td><td>CASSIANO AUGUSTO DA SILVA</td><td>PLACA ELETRONICA</td><td>1</td><td>SP</td><td>R$ 1.000</td></tr><tr><td>MULLER HENRIQUE DA SILVA</td><td>AGUA</td><td>UBIRATAN FRANCISCO FRANCIOSI</td><td>17.12 SERVICO ADMINISTRATIVOS PLATA</td><td>1</td><td>BA</td><td>R$ 28.800</td></tr><tr><td>MATEUS RAFAEL SIQUEIRA DE OLIVEIRA</td><td>AGUA</td><td>VIA BRASIL COSMETICOS E PERFUM</td><td>MIXRITE TF 10 0.1%-1.0% ON/O 11/2"B</td><td>1</td><td>SP</td><td>R$ 6.490</td></tr><tr><td>MATEUS RAFAEL SIQUEIRA DE OLIVEIRA</td><td>AGUA</td><td>RAFAELA CRISTINA MELATO CORTE</td><td>MIXRITE 2.5, 0.3% - 2%,O/O, HYBRIDE</td><td>4</td><td>SP</td><td>R$ 6.000</td></tr><tr><td>MATEUS RAFAEL SIQUEIRA DE OLIVEIRA</td><td>AGUA</td><td>MANTIQUEIRA ALIMENTOS LTDA</td><td>FIPL 100SP10 CARTUCHO PLISSADO INOX</td><td>10</td><td>SP</td><td>R$ 3.230</td></tr></tbody></table></div>
+<h2 class="section-title">Clientes 80/20 — Plano vs Realizado</h2>
+<div class="table-container"><table><thead><tr><th>Cliente</th><th>Plano</th><th>Faturado</th><th style="opacity:.6;font-size:10px">Real 2025</th><th>Carteira</th><th>% Ating.</th><th>% Acum.</th><th>Partic%</th></tr></thead><tbody><tr style='background:rgba(52,152,219,.08);font-weight:700;cursor:pointer' onclick="var rows=document.querySelectorAll('.prosp_cli8020_29');var vis=rows[0]&&rows[0].style.display==='none';rows.forEach(function(r){r.style.display=vis?'':'none'})"><td>▸ PROSPECÇÃO <span style='font-size:9px;color:var(--agua);font-weight:700'>(25 clientes)</span></td><td>R$ 138.600</td><td>R$ 130.971</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 12.490</td><td class='metric-good'>103,5%</td><td class='metric-good'>10.7%</td><td>10.7%</td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>GT SOLUCOES LOGISTICAS S/A <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 37.480</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>UBY AGROQUIMICA A.S <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 17.780</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>FABRICIO ABILIO CARVALHO TEIXEIRA E <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 10.500</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>VIA BRASIL COSMETICOS E PERFUMARIA  <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 6.490</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 6.490</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>RAFAELA CRISTINA MELATO CORTE <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 6.000</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 6.000</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>LATICINIOS MINAS FORTE LTDA <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 4.994</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>LATICINIOS SABOR DE MINAS LTDA <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 4.994</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>SABOROSO S/A <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 4.918</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>MANTIQUEIRA ALIMENTOS S.A. <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 4.162</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>MF COMERCIO E INDUSTRIA DE EPS EIRE <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.904</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>PAULO PEDRO COSTA NETO <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.600</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>LATICINIOS VIDA COMERCIO E INDUSTRI <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.455</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>BIOTA INNOVATIONS INDUSTRIA E COMER <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.380</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>GI INDUSTRIA, COMERCIO E TECNOLOGIA <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.200</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>CARNES NELORE IMPORTACAO EXPORTACAO <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.000</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>TANGARA PECUARIA E PARTICIPACOES LT <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 3.000</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>ALEXANDRE HUMBERTO ANTUNES <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 2.188</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>FUNDACAO DE ASSISTENCIA ESTUDO E PE <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 1.900</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>FRIGORIFICO MONTES CLAROS LTDA <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 1.560</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>INDUSTRIA E COMERCIO DE DOCES TRIAN <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 1.085</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>DALLA COMERCIAL DE ALIMENTOS LTDA <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 1.021</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>NUTREPHOS NORTE INDUSTRIA E COMERCI <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 990</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>COOP CENTRAL DOS PROD RURAIS DE MIN <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 835</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>ALVES & URZEDO LTDA <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 435</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr class='prosp_cli8020_29' style='display:none'><td style='padding-left:24px;font-size:11px;color:var(--text-secondary)'>MANUELA BARBUI SANCHES <span style='font-size:8px;color:var(--agua)'>●</span></td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td style='font-size:11px'>R$ 95</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td style='font-size:11px'>R$ 0</td><td style='font-size:10px;color:var(--text-secondary)'>—</td><td></td><td></td></tr><tr><td>REGIÃO ALTO PARANAÍBA MG</td><td>R$ 116.197</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-good'>19.7%</td><td>9.0%</td></tr><tr><td>REGIÃO TRIANGULO  MG</td><td>R$ 101.487</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-good'>27.5%</td><td>7.8%</td></tr><tr><td>REGIÃO NORTE DE MG</td><td>R$ 73.548</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-good'>33.2%</td><td>5.7%</td></tr><tr><td>REGIÃO CENTRAL/ OESTE MG</td><td>R$ 60.314</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-good'>37.9%</td><td>4.7%</td></tr><tr><td>UBYFOL (VITALES)</td><td>R$ 55.200</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-good'>42.1%</td><td>4.3%</td></tr><tr><td>COND EDILICIO DO PRACA UBERABA SHOP</td><td>R$ 53.676</td><td>R$ 7.001</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>13,0%</td><td class='metric-good'>46.3%</td><td>4.1%</td></tr><tr><td>LATICINIOS CATUPIRY LTDA</td><td>R$ 50.760</td><td>R$ 1.397</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>2,8%</td><td class='metric-warning'>50.2%</td><td>3.9%</td></tr><tr><td>CONCESSIONARIA DA RODOVIA BR 262 MG</td><td>R$ 45.000</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>53.7%</td><td>3.5%</td></tr><tr><td>LAYER GENETICS BRASIL LTDA</td><td>R$ 36.449</td><td>R$ 13.898</td><td style='opacity:.6;font-size:10px'>R$ 461</td><td>R$ 0</td><td class='metric-bad'>38,1%</td><td class='metric-warning'>56.5%</td><td>2.8%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>SABOROSO SA (MANIA CRISTINA NEVES M</td><td>R$ 35.460</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>59.2%</td><td>2.7%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>FRIGORIFICO MAISA LTDA</td><td>R$ 33.852</td><td>R$ 5.641</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>16,7%</td><td class='metric-warning'>61.8%</td><td>2.6%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>LATICINIOS MINAS FORTE</td><td>R$ 29.964</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>64.1%</td><td>2.3%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>LATICINIOS SABOR DE MINAS</td><td>R$ 29.964</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>66.5%</td><td>2.3%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>ELENICE SUGUITANI MIZUSAKI E OUTRO</td><td>R$ 29.340</td><td>R$ 4.888</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>16,7%</td><td class='metric-warning'>68.7%</td><td>2.3%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>FRIGORIFICO LUCIANA LTDA</td><td>R$ 25.500</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>70.7%</td><td>2.0%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>MF COMERCIO E INDUSTRIA DE EPS EIRE</td><td>R$ 24.895</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>72.6%</td><td>1.9%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>STUDIO JUNIA GUIMARAES LTDA</td><td>R$ 24.600</td><td>R$ 4.100</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>16,7%</td><td class='metric-warning'>74.5%</td><td>1.9%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>CARNES NELORE IMPORTACAO EXPORTACAO</td><td>R$ 21.287</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>76.2%</td><td>1.6%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>LATICINIOS VIDA COMERCIO E INDUSTRI</td><td>R$ 20.736</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>77.8%</td><td>1.6%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>BIOTA INNOVATIONS IN</td><td>R$ 20.280</td><td>R$ 0</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-warning'>79.3%</td><td>1.6%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>MARTHA TOUBES PRATA</td><td>R$ 19.548</td><td>R$ 3.257</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>16,7%</td><td class='metric-neutral'>80.8%</td><td>1.5%</td></tr><tr class='extra-row-cli8020_29' style='display:none'><td>OUTROS CLIENTES</td><td>R$ 248.118</td><td>R$ 30.389</td><td style='opacity:.6;font-size:10px'>R$ 0</td><td>R$ 0</td><td class='metric-bad'>12,2%</td><td class='metric-neutral'>100.0%</td><td>19.2%</td></tr><tr id="btn-cli8020_29"><td colspan="8" style="text-align:center;cursor:pointer;color:var(--amber);font-size:11px;padding:8px" onclick="document.querySelectorAll('.extra-row-cli8020_29').forEach(function(r){r.style.display=''});document.getElementById('btn-cli8020_29').style.display='none'">
+▼ Ver todos (13 restantes) ▼</td></tr></tbody></table></div>
+<h2 class="section-title">Produtos (Categoria) 80/20 — Plano vs Realizado</h2>
+<div class="table-container"><table><thead><tr><th>Categoria</th><th>Plano</th><th>Faturado</th><th>Carteira</th><th>% Ating.</th><th>% Acum.</th><th>Partic%</th></tr></thead><tbody><tr><td>LOCAÇÕES</td><td>R$ 1.051.300</td><td>R$ 122.022</td><td>R$ 0</td><td class='metric-bad'>11,6%</td><td class='metric-neutral'>81.2%</td><td>81.2%</td></tr><tr><td>TEFEN</td><td>R$ 144.000</td><td>R$ 12.490</td><td>R$ 0</td><td class='metric-bad'>8,7%</td><td class='metric-neutral'>92.3%</td><td>11.1%</td></tr><tr><td>GERADORES</td><td>R$ 51.000</td><td>R$ 0</td><td>R$ 0</td><td class='metric-bad'>0,0%</td><td class='metric-neutral'>96.3%</td><td>3.9%</td></tr><tr><td>OUTROS CLIENTES</td><td>R$ 48.475</td><td>R$ 67.032</td><td>R$ 0</td><td class='metric-good'>138,3%</td><td class='metric-neutral'>100.0%</td><td>3.7%</td></tr></tbody></table></div>
+<h2 class="section-title">Faturamento por UF — YTD</h2>
+<div class="table-container"><table><thead><tr><th>UF</th><th>Faturamento</th><th>Clientes</th><th>% Total</th><th style="opacity:.6;font-size:10px">Real 2025</th><th style="opacity:.6;font-size:10px">%Var</th></tr></thead><tbody><tr><td><strong>MG</strong></td><td>R$ 183.775</td><td>43</td><td>91.2%</td><td style='opacity:.6;font-size:10px'>R$ 31.860</td><td class='metric-good' style='font-size:10px'>+477%</td></tr><tr><td><strong>SP</strong></td><td>R$ 17.769</td><td>5</td><td>8.8%</td><td style='opacity:.6;font-size:10px'>R$ 659</td><td class='metric-good' style='font-size:10px'>+2595%</td></tr><tr style='font-weight:700;border-top:2px solid var(--border-color)'><td>TOTAL</td><td>R$ 201.545</td><td>48</td><td>100%</td><td style='opacity:.6;font-size:10px'>R$ 32.520</td><td class='metric-good' style='font-size:10px'>+520%</td></tr></tbody></table></div>
+<h2 class="section-title">Por Operação / CFOP — YTD</h2>
+<div class="table-container"><table><thead><tr><th>Operação / CFOP</th><th>Qtd NFs</th><th>Faturamento</th><th>% Total</th></tr></thead><tbody><tr style='background:rgba(46,204,113,.08);font-weight:700'><td>LOCAÇÃO</td><td>90</td><td>R$ 122.022</td><td>59.8%</td></tr><tr class='cfop_15_0' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>LOCAÇÃO</td><td>90</td><td>R$ 122.022</td><td>59.8%</td></tr><tr style='background:rgba(46,204,113,.08);font-weight:700;cursor:pointer' onclick="var rows=document.querySelectorAll('.cfop_15_1');var vis=rows[0]&&rows[0].style.display==='none';rows.forEach(function(r){r.style.display=vis?'':'none'})"><td>▸ VENDA</td><td>23</td><td>R$ 79.558</td><td>39.0%</td></tr><tr class='cfop_15_1' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>5102</td><td>16</td><td>R$ 61.788</td><td>30.3%</td></tr><tr class='cfop_15_1' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>6102</td><td>6</td><td>R$ 17.674</td><td>8.7%</td></tr><tr class='cfop_15_1' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>6108</td><td>1</td><td>R$ 95</td><td>0.0%</td></tr><tr style='background:rgba(46,204,113,.08);font-weight:700'><td>LOGÍSTICA</td><td>5</td><td>R$ 1.600</td><td>0.8%</td></tr><tr class='cfop_15_2' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>5908</td><td>5</td><td>R$ 1.600</td><td>0.8%</td></tr><tr style='background:rgba(46,204,113,.08);font-weight:700;cursor:pointer' onclick="var rows=document.querySelectorAll('.cfop_15_3');var vis=rows[0]&&rows[0].style.display==='none';rows.forEach(function(r){r.style.display=vis?'':'none'})"><td>▸ OUTROS</td><td>3</td><td>R$ 786</td><td>0.4%</td></tr><tr class='cfop_15_3' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>5949</td><td>2</td><td>R$ 852</td><td>0.4%</td></tr><tr class='cfop_15_3' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>6949</td><td>1</td><td>-R$ 65</td><td>-0.0%</td></tr><tr style='background:rgba(46,204,113,.08);font-weight:700'><td>SERVIÇO</td><td>2</td><td>-R$ 35</td><td>-0.0%</td></tr><tr class='cfop_15_4' style='display:none'><td style='padding-left:24px;color:var(--text-secondary)'>5933</td><td>2</td><td>-R$ 35</td><td>-0.0%</td></tr><tr class='total-row'><td>TOTAL GERAL</td><td>123</td><td>R$ 203.931</td><td>100%</td></tr></tbody></table></div>
+<style>.frete-toggle-row{cursor:pointer;user-select:none}.frete-toggle-row:hover{background:var(--bg-secondary)!important}.frete-toggle-row td:first-child::before{content:"\25B6 ";font-size:10px;margin-right:4px;display:inline-block;transition:transform .2s}.frete-toggle-row.open td:first-child::before{transform:rotate(90deg)}.frete-cli-rows{display:none}.frete-cli-rows.show{display:table-row}</style>
+<h2 class="section-title">Analise de Fretes — YTD 2026 — MATEUS RAFAEL</h2>
+<div class="kpi-section" style="margin-bottom:16px">
+<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Gap Frete YTD</div>
+<div class="kpi-value" style="color:var(--amber)">R$ 814</div>
+<div class="kpi-row"><span class="kpi-label">% do Faturamento:</span><span class="kpi-number" style="color:var(--amber)">0.4%</span></div></div>
+<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Frete Mes Atual</div>
+<div class="kpi-value" style="color:var(--amber)">R$ 0</div>
+<div class="kpi-row"><span class="kpi-label">% do Fat. Mes:</span><span class="kpi-number" style="color:var(--amber)">0.0%</span></div></div>
+<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Frete vs 2025</div>
+<div class="kpi-value metric-good">+0.0%</div>
+<div class="kpi-row"><span class="kpi-label">2025:</span><span class="kpi-number">R$ 0</span></div></div>
+</div><div class="table-container"><table><thead>
+<tr><th>Vertical / Cliente</th><th>Fat. s/ Frete</th><th style="color:var(--amber)">Frete</th><th>Fat. c/ Frete</th><th>Frete %</th></tr>
+</thead><tbody><tr class='frete-toggle-row' data-vert-group='agua' onclick='toggleFreteVert(this)' style='background:var(--bg-tertiary);font-weight:700'><td><span class='vertical-badge agua'>AGUA</span> <span style='opacity:.5;font-size:10px'>(15 clientes)</span></td><td>R$ 79.522</td><td style='color:var(--amber)'>R$ 814</td><td>R$ 80.337</td><td class='metric-good'>1.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>AGRONELLI AGROINDUSTRIA LTDA</td><td>-R$ 35</td><td style='color:var(--amber)'>R$ 715</td><td>R$ 680</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>MARIA ROSARIO CARDOSO CANCADO FIGUEIREDO</td><td>R$ 345</td><td style='color:var(--amber)'>R$ 54</td><td>R$ 400</td><td class='metric-bad'>15.7%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>DALLA COMERCIAL DE ALIMENTOS LTDA</td><td>R$ 1.021</td><td style='color:var(--amber)'>R$ 45</td><td>R$ 1.067</td><td class='metric-good'>4.5%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>JONADAN HSUAN MIN MA</td><td>R$ 2.600</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 2.600</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>ALVES & URZEDO LTDA</td><td>R$ 435</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 435</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>VIA BRASIL COSMETICOS E PERFUMARIA LTDA</td><td>R$ 6.490</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 6.490</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>GT SOLUCOES LOGISTICAS S/A</td><td>R$ 37.480</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 37.480</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>TANGARA PECUARIA E PARTICIPACOES LTDA</td><td>R$ 3.000</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 3.000</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>ASSOCIACAO EDUCADORA DA INFANCIA E JUVEN</td><td>R$ 3.680</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 3.680</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>RAFAELA CRISTINA MELATO CORTE</td><td>R$ 6.000</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 6.000</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>ALEXANDRE HUMBERTO ANTUNES</td><td>R$ 2.188</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 2.188</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>FRIGORIFICO MONTES CLAROS LTDA</td><td>R$ 1.560</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 1.560</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>MANUELA BARBUI SANCHES</td><td>R$ 95</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 95</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>FABRICIO ABILIO CARVALHO TEIXEIRA E OUTR</td><td>R$ 10.500</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 10.500</td><td class='metric-good'>0.0%</td></tr><tr class='frete-cli-rows frete-cli-agua'><td style='padding-left:24px;font-weight:400'>MANTIQUEIRA ALIMENTOS S.A.</td><td>R$ 4.162</td><td style='color:var(--amber)'>R$ 0</td><td>R$ 4.162</td><td class='metric-good'>0.0%</td></tr><tr class='total-row'><td><strong>TOTAL GERAL</strong></td><td><strong>R$ 79.522</strong></td><td style='color:var(--amber)'><strong>R$ 814</strong></td><td><strong>R$ 80.337</strong></td><td class='metric-good'><strong>1.0%</strong></td></tr></tbody></table></div><script>function toggleFreteVert(el){el.classList.toggle("open");var g=el.getAttribute("data-vert-group");var rows=document.querySelectorAll(".frete-cli-"+g);var show=el.classList.contains("open");rows.forEach(function(r){r.classList.toggle("show",show)});}</script>
+</div>
+<div class="footer"><div class="footer-text"><span><strong>Consultor:</strong> MATEUS RAFAEL — AGUA 2026 | Atualizado: 07/03/2026 20:05</span><span style="color:#e74c3c">&#9679; Fonte: Copia local (rede indisponivel — dados possivelmente velhos)</span></div></div>
+<script>
+// Anti-cache: busca versão mais recente do servidor ao carregar
+(function(){
+  if(location.protocol === 'file:') return;
+  setTimeout(function(){
+    fetch(location.href.split('?')[0]+'?_nc='+Date.now(),{cache:'no-store'})
+    .then(function(r){return r.text()})
+    .then(function(html){
+      var parser=new DOMParser();var doc=parser.parseFromString(html,'text/html');
+      var newBody=doc.body.innerHTML;
+      if(newBody.length > 100 && newBody !== document.body.innerHTML){
+        document.body.innerHTML=newBody;
+        var scripts=doc.querySelectorAll('script');
+        scripts.forEach(function(s){var ns=document.createElement('script');ns.textContent=s.textContent;document.body.appendChild(ns)});
+      }
+    }).catch(function(){});
+  }, 1500);
+})();
+function updateClock(){const n=new Date();document.getElementById('clock').textContent=String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0');var dias=['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];var meses=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];document.getElementById('clockDate').textContent=dias[n.getDay()]+', '+n.getDate()+' '+meses[n.getMonth()]}
+let rc=300;
+function updateRefreshTimer(){
+var m=Math.floor(rc/60);var s=rc%60;
+document.getElementById('refreshTimer').textContent=m+':'+String(s).padStart(2,'0');
+rc--;
+if(rc<0){rc=300;doReload()}
+}
+function doReload(){
+fetch(location.href.split('?')[0]+'?_nc='+Date.now(),{cache:'no-store'}).then(function(r){return r.text()}).then(function(html){
+var parser=new DOMParser();var doc=parser.parseFromString(html,'text/html');
+var newBody=doc.body.innerHTML;
+document.body.innerHTML=newBody;
+var scripts=doc.querySelectorAll('script');
+scripts.forEach(function(s){var ns=document.createElement('script');ns.textContent=s.textContent;document.body.appendChild(ns)});
+}).catch(function(){location.replace(location.href.split('?')[0]+'?_nc='+Date.now())})
+}
+function toggleFullscreen(){if(!document.fullscreenElement){document.documentElement.requestFullscreen().catch(e=>{})}else{document.exitFullscreen()}}
+document.addEventListener('keydown',e=>{if(e.key==='F11'){e.preventDefault();toggleFullscreen()}});
+updateClock();updateRefreshTimer();setInterval(updateClock,1000);setInterval(updateRefreshTimer,1000);
+
+
+
+(function(){
+  var genTs = '07/03/2026 20:05';
+  var srcInfo = 'Fonte: Copia local (rede indisponivel, dados possivelmente velhos)';
+  if(!genTs) return;
+  function checkStale(){
+    var parts = genTs.split(/[\/ :]/);
+    var genDate = new Date(parts[2],parts[1]-1,parts[0],parts[3],parts[4]);
+    var now = new Date();
+    var diffH = (now - genDate) / 3600000;
+    var el = document.getElementById('staleBanner');
+    if(!el) return;
+    el.className = 'stale-banner';
+    if(diffH > 24){
+      el.textContent = '\u26A0 DADOS DE ' + (diffH>48? Math.floor(diffH/24)+' DIAS ATRAS' : 'ONTEM') + ' \u2014 POSSIVEL FALHA NO SISTEMA (ultima atualizacao: '+genTs+')';
+      el.classList.add('stale-critical');
+      document.body.style.paddingTop = '44px';
+    } else if(diffH > 6){
+      el.textContent = '\u26A0 DADOS DESATUALIZADOS \u2014 ultima atualizacao ha ' + Math.floor(diffH) + 'h ('+genTs+')';
+      el.classList.add('stale-danger');
+      document.body.style.paddingTop = '44px';
+    } else if(diffH > 2){
+      el.textContent = '\u26A0 Dados de ' + Math.floor(diffH) + 'h atras ('+genTs+') \u2014 ' + srcInfo;
+      el.classList.add('stale-warn');
+      document.body.style.paddingTop = '44px';
+    } else {
+      el.style.display = 'none';
+      document.body.style.paddingTop = '0';
+    }
+  }
+  checkStale();
+  setInterval(checkStale, 60000);
+})();
+
+</script></body></html>
