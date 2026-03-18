@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>TV VENDAS — AGRO / AGUA 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-tertiary:#21262d;--border-color:#30363d;--text-primary:#e6edf3;--text-secondary:#8b949e;--green:#2ecc71;--red:#e74c3c;--amber:#f39c12;--agro:#2ecc71;--agua:#3498db;--corporativo:#9b59b6;--florestas:#e67e22}
+html,body{height:100%;width:100%;overflow:hidden}
+body{background-color:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;line-height:1.4}
+.header{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border-bottom:2px solid var(--border-color);padding:16px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.header-left h1{font-size:28px;font-weight:800;letter-spacing:1px;margin-bottom:2px}
+.header-left p{font-size:11px;color:var(--text-secondary)}
+.header-right{display:flex;gap:24px;align-items:center}
+.clock-wrapper{text-align:right}
+.clock{font-size:28px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;line-height:1}
+.clock-date{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.refresh-info{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.refresh-timer{font-size:16px;font-weight:600;color:var(--amber)}
+.refresh-label{font-size:9px;color:var(--text-secondary);text-transform:uppercase}
+.fullscreen-btn{padding:8px 14px;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;text-transform:uppercase;transition:all .3s}
+.fullscreen-btn:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 10px rgba(46,204,113,.3)}
+.container{height:calc(100vh - 90px);overflow-y:auto;padding:16px 24px;padding-bottom:60px}
+.kpi-section{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;animation:slideDown .6s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.kpi-card{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border:2px solid var(--border-color);border-radius:8px;padding:20px;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:.6}
+.kpi-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.kpi-title{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.kpi-value{font-size:26px;font-weight:800;color:var(--text-primary);margin-bottom:6px}
+.kpi-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px}
+.kpi-label{color:var(--text-secondary)}.kpi-number{font-weight:600}
+.kpi-number.positive{color:var(--green)}.kpi-number.negative{color:var(--red)}.kpi-number.warning{color:var(--amber)}
+.kpi-percent{font-size:16px;font-weight:700;margin-top:6px}
+.kpi-percent.good{color:var(--green)}.kpi-percent.low{color:var(--amber)}.kpi-percent.critical{color:var(--red)}
+.progress-bar{height:5px;background:var(--bg-tertiary);border-radius:3px;margin-top:10px;overflow:hidden;border:1px solid var(--border-color)}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s;box-shadow:0 0 8px rgba(46,204,113,.5)}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;margin-top:16px;padding-bottom:8px;border-bottom:2px solid var(--border-color)}
+.table-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead{background:var(--bg-tertiary);border-bottom:2px solid var(--border-color)}
+th{padding:10px 8px;text-align:right;font-weight:700;color:var(--text-secondary);text-transform:uppercase;font-size:9px;border-right:1px solid var(--border-color)}
+th:first-child{text-align:left;border-right:2px solid var(--border-color)}
+td{padding:8px;text-align:right;border-right:1px solid var(--border-color);font-weight:500}
+td:first-child{text-align:left;border-right:2px solid var(--border-color);font-weight:600}
+tbody tr{border-bottom:1px solid var(--border-color);transition:background .2s}
+tbody tr:hover{background:var(--bg-tertiary)}
+tr.total-row{background:rgba(46,204,113,.05);border-top:2px solid var(--green);border-bottom:2px solid var(--green);font-weight:700}
+.vertical-badge{display:inline-block;padding:3px 8px;border-radius:3px;font-weight:600;font-size:10px;text-transform:uppercase}
+.vertical-badge.agro{background:rgba(46,204,113,.2);color:var(--agro);border:1px solid var(--agro)}
+.vertical-badge.agua{background:rgba(52,152,219,.2);color:var(--agua);border:1px solid var(--agua)}
+.metric-good{color:var(--green)}.metric-warning{color:var(--amber)}.metric-bad{color:var(--red)}.metric-neutral{color:var(--text-primary)}
+.footer{background:var(--bg-secondary);border-top:2px solid var(--border-color);padding:10px 24px;font-size:9px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0}
+.container::-webkit-scrollbar{width:6px}.container::-webkit-scrollbar-track{background:var(--bg-secondary)}.container::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+
+/* Panels + carousel */
+.panel{display:none;opacity:0;transition:opacity .8s ease-in-out}
+.panel.active{display:block;opacity:1}
+
+/* Panel accent colors */
+#panelAgro .kpi-card::before{background:linear-gradient(90deg,var(--agro),var(--agua))}
+#panelAgro .progress-fill{background:linear-gradient(90deg,var(--agro),var(--agua))}
+#panelAgro .total-row{border-top-color:var(--agro);border-bottom-color:var(--agro)}
+
+#panelAgua .kpi-card::before{background:linear-gradient(90deg,var(--agua),var(--agua))}
+#panelAgua .progress-fill{background:var(--agua);box-shadow:0 0 8px rgba(52,152,219,.5)}
+#panelAgua .total-row{border-top-color:var(--agua);border-bottom-color:var(--agua)}
+
+/* Indicator dots */
+.indicator{position:fixed;bottom:12px;left:50%;transform:translateX(-50%);display:flex;gap:10px;z-index:9999;background:rgba(13,17,23,0.8);padding:6px 16px;border-radius:20px;border:1px solid #30363d}
+.indicator .dot{width:10px;height:10px;border-radius:50%;background:#30363d;transition:all .5s}
+.indicator .dot.on-agro{background:#2ecc71;box-shadow:0 0 8px #2ecc71}
+.indicator .dot.on-agua{background:#3498db;box-shadow:0 0 8px #3498db}
+.indicator .label{font-size:10px;color:#8b949e;display:flex;align-items:center;gap:6px}
+
+/* Timer bar */
+.timer-bar{position:fixed;top:0;left:0;height:3px;background:#2ecc71;z-index:9999;transition:width 1s linear;box-shadow:0 0 6px rgba(46,204,113,0.5)}
+
+/* Loading overlay */
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-primary);display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:99999}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border-color);border-top-color:var(--green);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{margin-top:16px;color:var(--text-secondary);font-size:12px}
+
+@media(max-width:1024px){
+.kpi-section{grid-template-columns:repeat(2,1fr);gap:10px}
+.header{flex-direction:column;gap:10px;padding:12px 16px}
+.header-right{flex-wrap:wrap;justify-content:center}
+.container{padding:10px 12px;height:auto;overflow-y:auto}
+html,body{overflow:auto;height:auto}
+.footer{position:relative}
+}
+@media(max-width:640px){
+.kpi-section{grid-template-columns:1fr}
+.kpi-value{font-size:20px}
+.kpi-percent{font-size:13px}
+.header-left h1{font-size:18px}
+.clock{font-size:20px}
+.table-container{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:600px}
+th,td{padding:6px 4px;font-size:10px}
+th{font-size:8px}
+.section-title{font-size:11px}
+.fullscreen-btn{display:none}
+}
+</style></head><body>
+
+<div class="loading-overlay" id="loadingOverlay">
+<div class="loading-spinner"></div>
+<div class="loading-text">Carregando dados AGRO + AGUA do Supabase...</div>
+</div>
+
+<div class="timer-bar" id="timerBar" style="width:100%"></div>
+
+<div class="header">
+<div class="header-left"><div style="display:flex;align-items:center;gap:10px"><div>
+<h1 id="tvTitle">TV VENDAS &#8212; AGRO / AGUA 2026</h1>
+<p id="headerRef">Carregando...</p>
+</div></div></div>
+<div class="header-right">
+<div class="clock-wrapper"><div class="clock" id="clock">00:00:00</div><div class="clock-date" id="clockDate"></div></div>
+<div class="refresh-info"><div class="refresh-timer" id="refreshTimer">AGRO</div><div class="refresh-label">Painel Atual</div></div>
+<button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; Tela Cheia</button>
+</div></div>
+
+<div class="container" id="scrollContainer">
+  <div class="panel active" id="panelAgro">
+    <div class="kpi-section" id="kpiAgro"></div>
+    <div id="consultoresAgro"></div>
+    <div id="carteiraAgro"></div>
+  </div>
+  <div class="panel" id="panelAgua">
+    <div class="kpi-section" id="kpiAgua"></div>
+    <div id="consultoresAgua"></div>
+    <div id="carteiraAgua"></div>
+  </div>
+</div>
+
+<div class="indicator">
+<span class="label">AGRO</span><div class="dot on-agro" id="dotAgro"></div>
+<div class="dot" id="dotAgua"></div><span class="label">AGUA</span>
+</div>
+
+<div class="footer"><div class="footer-text"><span>TV Vendas &#8212; AGRO / AGUA</span><span>Fonte: Supabase (tempo real)</span></div></div>
+
+<script>
+/* ── CONFIG ── */
+var SUPABASE_URL = 'https://ripnqnytrwbaueadrtry.supabase.co';
+var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpcG5xbnl0cndiYXVlYWRydHJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTk3NjAsImV4cCI6MjA4ODg5NTc2MH0.Ut7V6rG5AoKRbdqpvCeXsQJ4eozZ_nPxE7xKY4FuKOQ';
+
+var MONTH_NAMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+var DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+
+/* ── CURRENT DATE HELPERS ── */
+var NOW = new Date();
+var CURRENT_YEAR = NOW.getFullYear();
+var CURRENT_MONTH = NOW.getMonth() + 1;
+var CURRENT_MONTH_STR = CURRENT_YEAR + '-' + (CURRENT_MONTH < 10 ? '0' : '') + CURRENT_MONTH;
+
+function buildYtdMonths() {
+  var months = [];
+  for (var m = 1; m <= CURRENT_MONTH; m++) {
+    months.push(CURRENT_YEAR + '-' + (m < 10 ? '0' : '') + m);
+  }
+  return months;
+}
+var YTD_MONTHS = buildYtdMonths();
+
+/* ── FORMAT FUNCTIONS ── */
+function fmtBRL(v) {
+  if (v === null || v === undefined || isNaN(v)) return 'R$ 0';
+  var neg = v < 0;
+  v = Math.abs(Math.round(v));
+  var s = String(v);
+  var parts = [];
+  while (s.length > 3) {
+    parts.unshift(s.slice(s.length - 3));
+    s = s.slice(0, s.length - 3);
+  }
+  parts.unshift(s);
+  return (neg ? '-' : '') + 'R$ ' + parts.join('.');
+}
+
+function fmtPctRaw(v) {
+  if (v === null || v === undefined || isNaN(v)) return '0,0%';
+  return v.toFixed(1).replace('.', ',') + '%';
+}
+
+function pctClass(v) {
+  if (v >= 80) return 'good';
+  if (v >= 50) return 'low';
+  return 'critical';
+}
+
+function safeNum(v) {
+  var n = parseFloat(v);
+  return isNaN(n) ? 0 : n;
+}
+
+/* ── SUPABASE FETCH ── */
+function sbFetch(view, params, cb) {
+  var url = SUPABASE_URL + '/rest/v1/' + view + '?select=*';
+  if (params) url += '&' + params;
+  fetch(url, {
+    headers: {
+      'apikey': ANON_KEY,
+      'Authorization': 'Bearer ' + ANON_KEY
+    }
+  }).then(function(r) { return r.json(); })
+  .then(function(data) { cb(null, data); })
+  .catch(function(err) { cb(err, []); });
+}
+
+/* ── DATA STORE ── */
+var DATA = {
+  agroVertical: [],
+  agroConsultor: [],
+  agroCarteira: [],
+  aguaVertical: [],
+  aguaConsultor: [],
+  aguaCarteira: []
+};
+
+var loadCount = 0;
+var totalLoads = 4;
+
+function checkAllLoaded() {
+  loadCount++;
+  if (loadCount >= totalLoads) {
+    renderAll();
+    var el = document.getElementById('loadingOverlay');
+    if (el) el.style.display = 'none';
+  }
+}
+
+function loadData() {
+  loadCount = 0;
+
+  /* vw_plan_vs_real_vertical for AGRO + AGUA */
+  sbFetch('vw_plan_vs_real_vertical', 'id_tempo=like.' + CURRENT_YEAR + '-*&or=(vertical.eq.AGRO,vertical.eq.AGUA)', function(err, data) {
+    var all = data || [];
+    DATA.agroVertical = all.filter(function(r) { return (r.vertical || '').toUpperCase() === 'AGRO'; });
+    DATA.aguaVertical = all.filter(function(r) { return (r.vertical || '').toUpperCase() === 'AGUA'; });
+    checkAllLoaded();
+  });
+
+  /* vw_plan_vs_real_consultor for AGRO + AGUA active */
+  sbFetch('vw_plan_vs_real_consultor', 'id_tempo=like.' + CURRENT_YEAR + '-*&vendedor_ativo=eq.true&or=(vertical.eq.AGRO,vertical.eq.AGUA)', function(err, data) {
+    var all = data || [];
+    DATA.agroConsultor = all.filter(function(r) { return (r.vertical || '').toUpperCase() === 'AGRO'; });
+    DATA.aguaConsultor = all.filter(function(r) { return (r.vertical || '').toUpperCase() === 'AGUA'; });
+    checkAllLoaded();
+  });
+
+  /* vw_carteira_pedidos_unificada - all open */
+  sbFetch('vw_carteira_pedidos_unificada', 'status_pedido=eq.ABERTO', function(err, data) {
+    var all = data || [];
+    DATA.agroCarteira = all.filter(function(r) { return (r.vertical || '').toUpperCase() === 'AGRO'; });
+    DATA.aguaCarteira = all.filter(function(r) { return (r.vertical || '').toUpperCase() === 'AGUA'; });
+    checkAllLoaded();
+  });
+
+  /* Dummy 4th load to keep totalLoads consistent — carteira already split above */
+  checkAllLoaded();
+}
+
+/* ── RENDER ALL ── */
+function renderAll() {
+  var now = new Date();
+  var dateStr = (CURRENT_MONTH < 10 ? '0' : '') + CURRENT_MONTH + '/' + CURRENT_YEAR;
+  var timeStr = (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+  document.getElementById('headerRef').textContent = 'Referencia: ' + MONTH_NAMES[CURRENT_MONTH - 1].toLowerCase() + '/' + CURRENT_YEAR + ' | Atualizado: ' + now.getDate() + '/' + dateStr + ' ' + timeStr;
+
+  renderKPIs('AGRO', DATA.agroVertical, DATA.agroCarteira, 'kpiAgro');
+  renderKPIs('AGUA', DATA.aguaVertical, DATA.aguaCarteira, 'kpiAgua');
+  renderConsultores('AGRO', DATA.agroConsultor, DATA.agroCarteira, 'consultoresAgro');
+  renderConsultores('AGUA', DATA.aguaConsultor, DATA.aguaCarteira, 'consultoresAgua');
+  renderCarteira('AGRO', DATA.agroCarteira, 'carteiraAgro');
+  renderCarteira('AGUA', DATA.aguaCarteira, 'carteiraAgua');
+}
+
+/* ── KPIs ── */
+function renderKPIs(vertical, planReal, carteira, targetId) {
+  var mesReal = 0, mesMeta = 0;
+  var ytdReal = 0, ytdMeta = 0;
+  var anoReal = 0, anoMeta = 0;
+
+  planReal.forEach(function(r) {
+    var meta = safeNum(r.meta);
+    var real = safeNum(r.realizado);
+    if (r.id_tempo === CURRENT_MONTH_STR) {
+      mesReal += real;
+      mesMeta += meta;
+    }
+    if (YTD_MONTHS.indexOf(r.id_tempo) >= 0) {
+      ytdReal += real;
+      ytdMeta += meta;
+    }
+    anoReal += real;
+    anoMeta += meta;
+  });
+
+  var carteiraTotal = 0;
+  carteira.forEach(function(r) {
+    carteiraTotal += safeNum(r.vlr_carteira);
+  });
+
+  var mesAtingPct = mesMeta > 0 ? (mesReal / mesMeta * 100) : 0;
+  var ytdAtingPct = ytdMeta > 0 ? (ytdReal / ytdMeta * 100) : 0;
+  var anoAtingPct = anoMeta > 0 ? (anoReal / anoMeta * 100) : 0;
+  var carteiraPctMeta = anoMeta > 0 ? (carteiraTotal / anoMeta * 100) : 0;
+
+  var html = '';
+  html += '<div class="kpi-card"><div class="kpi-title">Mes Atual &#8212; ' + vertical + '</div>';
+  html += '<div class="kpi-value">' + fmtBRL(mesReal) + '</div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">' + fmtBRL(mesMeta) + '</span></div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Ating:</span><span class="kpi-number">' + fmtPctRaw(mesAtingPct) + '</span></div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(mesAtingPct, 100) + '%"></div></div></div>';
+
+  html += '<div class="kpi-card"><div class="kpi-title">YTD Acumulado</div>';
+  html += '<div class="kpi-value">' + fmtBRL(ytdReal) + '</div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">' + fmtBRL(ytdMeta) + '</span></div>';
+  html += '<div class="kpi-percent ' + pctClass(ytdAtingPct) + '">' + fmtPctRaw(ytdAtingPct) + '</div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(ytdAtingPct, 100) + '%"></div></div></div>';
+
+  html += '<div class="kpi-card"><div class="kpi-title">Progresso Anual</div>';
+  html += '<div class="kpi-value">' + fmtBRL(anoReal) + '</div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">' + fmtBRL(anoMeta) + '</span></div>';
+  html += '<div class="kpi-percent ' + pctClass(anoAtingPct) + '">' + fmtPctRaw(anoAtingPct) + '</div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(anoAtingPct, 100) + '%"></div></div></div>';
+
+  html += '<div class="kpi-card"><div class="kpi-title">Carteira Pedidos</div>';
+  html += '<div class="kpi-value">' + fmtBRL(carteiraTotal) + '</div>';
+  html += '<div class="kpi-row"><span class="kpi-label">% Meta:</span><span class="kpi-number">' + fmtPctRaw(carteiraPctMeta) + '</span></div>';
+  var carteiraStatus = carteiraPctMeta >= 15 ? 'Bom' : carteiraPctMeta >= 8 ? 'Moderado' : 'Critico';
+  var carteiraStatusClass = carteiraPctMeta >= 15 ? 'positive' : carteiraPctMeta >= 8 ? 'warning' : 'warning';
+  html += '<div class="kpi-row"><span class="kpi-label">Status:</span><span class="kpi-number ' + carteiraStatusClass + '">' + carteiraStatus + '</span></div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(carteiraPctMeta, 100) + '%"></div></div></div>';
+
+  document.getElementById(targetId).innerHTML = html;
+}
+
+/* ── CONSULTORES ── */
+function renderConsultores(vertical, consultorData, carteiraData, targetId) {
+  var consultores = {};
+  consultorData.forEach(function(r) {
+    var c = r.consultor || r.vendedor || 'OUTROS';
+    if (!consultores[c]) {
+      consultores[c] = { consultor: c, mesMeta: 0, mesReal: 0, ytdMeta: 0, ytdReal: 0, anoMeta: 0, anoReal: 0 };
+    }
+    var meta = safeNum(r.meta);
+    var real = safeNum(r.realizado);
+    if (r.id_tempo === CURRENT_MONTH_STR) {
+      consultores[c].mesMeta += meta;
+      consultores[c].mesReal += real;
+    }
+    if (YTD_MONTHS.indexOf(r.id_tempo) >= 0) {
+      consultores[c].ytdMeta += meta;
+      consultores[c].ytdReal += real;
+    }
+    consultores[c].anoMeta += meta;
+    consultores[c].anoReal += real;
+  });
+
+  var carteiraByC = {};
+  carteiraData.forEach(function(r) {
+    var c = r.consultor || r.vendedor || 'OUTROS';
+    if (!carteiraByC[c]) carteiraByC[c] = 0;
+    carteiraByC[c] += safeNum(r.vlr_carteira);
+  });
+
+  var rows = [];
+  for (var k in consultores) {
+    if (consultores.hasOwnProperty(k)) rows.push(consultores[k]);
+  }
+  rows.sort(function(a, b) { return b.ytdReal - a.ytdReal; });
+
+  var html = '<h2 class="section-title">Consultores ' + vertical + ' \u2014 Mes + YTD + Ano</h2>';
+  html += '<div class="table-container"><table><thead>';
+  html += '<tr><th>Consultor</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">MES</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">YTD</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">ANO</th>';
+  html += '<th>Carteira</th></tr>';
+  html += '<tr><th></th><th>Meta</th><th>Real</th><th>Ating%</th><th>Meta</th><th>Real</th><th>Ating%</th><th>Meta</th><th>Real</th><th>%Meta</th><th>Valor</th></tr>';
+  html += '</thead><tbody>';
+
+  var totals = { mesMeta: 0, mesReal: 0, ytdMeta: 0, ytdReal: 0, anoMeta: 0, anoReal: 0, carteira: 0 };
+
+  rows.forEach(function(d) {
+    var cart = carteiraByC[d.consultor] || 0;
+    var mesPct = d.mesMeta > 0 ? (d.mesReal / d.mesMeta * 100) : 0;
+    var ytdPct = d.ytdMeta > 0 ? (d.ytdReal / d.ytdMeta * 100) : 0;
+    var anoPct = d.anoMeta > 0 ? (d.anoReal / d.anoMeta * 100) : 0;
+    var shortName = d.consultor.split(' ').slice(0, 2).join(' ');
+
+    html += '<tr><td><strong>' + shortName + '</strong></td>';
+    html += '<td>' + fmtBRL(d.mesMeta) + '</td><td>' + fmtBRL(d.mesReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(mesPct) + '" style="font-size:11px">' + fmtPctRaw(mesPct) + '</td>';
+    html += '<td>' + fmtBRL(d.ytdMeta) + '</td><td>' + fmtBRL(d.ytdReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(ytdPct) + '" style="font-size:11px">' + fmtPctRaw(ytdPct) + '</td>';
+    html += '<td>' + fmtBRL(d.anoMeta) + '</td><td>' + fmtBRL(d.anoReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(anoPct) + '" style="font-size:11px">' + fmtPctRaw(anoPct) + '</td>';
+    html += '<td>' + fmtBRL(cart) + '</td></tr>';
+
+    totals.mesMeta += d.mesMeta; totals.mesReal += d.mesReal;
+    totals.ytdMeta += d.ytdMeta; totals.ytdReal += d.ytdReal;
+    totals.anoMeta += d.anoMeta; totals.anoReal += d.anoReal;
+    totals.carteira += cart;
+  });
+
+  var tMesPct = totals.mesMeta > 0 ? (totals.mesReal / totals.mesMeta * 100) : 0;
+  var tYtdPct = totals.ytdMeta > 0 ? (totals.ytdReal / totals.ytdMeta * 100) : 0;
+  var tAnoPct = totals.anoMeta > 0 ? (totals.anoReal / totals.anoMeta * 100) : 0;
+
+  html += '<tr class="total-row"><td><strong>TOTAL ' + vertical + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.mesMeta) + '</strong></td><td><strong>' + fmtBRL(totals.mesReal) + '</strong></td>';
+  html += '<td class="kpi-percent ' + pctClass(tMesPct) + '" style="font-size:11px"><strong>' + fmtPctRaw(tMesPct) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.ytdMeta) + '</strong></td><td><strong>' + fmtBRL(totals.ytdReal) + '</strong></td>';
+  html += '<td class="kpi-percent ' + pctClass(tYtdPct) + '" style="font-size:11px"><strong>' + fmtPctRaw(tYtdPct) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.anoMeta) + '</strong></td><td><strong>' + fmtBRL(totals.anoReal) + '</strong></td>';
+  html += '<td class="kpi-percent ' + pctClass(tAnoPct) + '" style="font-size:11px"><strong>' + fmtPctRaw(tAnoPct) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.carteira) + '</strong></td></tr>';
+
+  html += '</tbody></table></div>';
+  document.getElementById(targetId).innerHTML = html;
+}
+
+/* ── CARTEIRA RESUMO ── */
+function renderCarteira(vertical, carteiraData, targetId) {
+  var byConsultor = {};
+  carteiraData.forEach(function(r) {
+    var c = r.consultor || r.vendedor || 'OUTROS';
+    if (!byConsultor[c]) byConsultor[c] = { pedidos: 0, clientes: {}, valor: 0 };
+    byConsultor[c].pedidos++;
+    byConsultor[c].clientes[r.cliente || ''] = true;
+    byConsultor[c].valor += safeNum(r.vlr_carteira);
+  });
+
+  var totalVal = 0;
+  var rows = [];
+  for (var k in byConsultor) {
+    if (byConsultor.hasOwnProperty(k)) {
+      var d = byConsultor[k];
+      totalVal += d.valor;
+      rows.push({ consultor: k, pedidos: d.pedidos, clientes: Object.keys(d.clientes).length, valor: d.valor });
+    }
+  }
+  rows.sort(function(a, b) { return b.valor - a.valor; });
+
+  var html = '<h2 class="section-title">Carteira de Pedidos ' + vertical + ' \u2014 Por Consultor</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>Consultor</th><th>Pedidos</th><th>Clientes</th><th>Valor</th><th>% Total</th></tr></thead><tbody>';
+
+  rows.forEach(function(r) {
+    var pct = totalVal > 0 ? (r.valor / totalVal * 100) : 0;
+    html += '<tr><td>' + r.consultor + '</td><td>' + r.pedidos + '</td><td>' + r.clientes + '</td>';
+    html += '<td>' + fmtBRL(r.valor) + '</td><td>' + fmtPctRaw(pct) + '</td></tr>';
+  });
+
+  html += '<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td></td>';
+  html += '<td><strong>' + fmtBRL(totalVal) + '</strong></td><td><strong>100%</strong></td></tr>';
+  html += '</tbody></table></div>';
+  document.getElementById(targetId).innerHTML = html;
+}
+
+/* ── CLOCK ── */
+function updateClock() {
+  var n = new Date();
+  var h = n.getHours(); var m = n.getMinutes(); var s = n.getSeconds();
+  document.getElementById('clock').textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  document.getElementById('clockDate').textContent = DIAS_SEMANA[n.getDay()] + ', ' + n.getDate() + ' ' + MONTH_NAMES[n.getMonth()];
+}
+
+/* ── FULLSCREEN ── */
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(function() {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+document.addEventListener('click', function() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(function() {});
+  }
+});
+
+/* ── CAROUSEL (8s auto-rotate with scroll) ── */
+var currentPanel = 0;
+var titles = ['TV VENDAS \u2014 AGRO 2026', 'TV VENDAS \u2014 AGUA 2026'];
+var colors = ['#2ecc71', '#3498db'];
+
+var SCROLL_SPEED = 0.08;
+var PAUSE_MS = 5000;
+var scrollDir = 1;
+var scrollPos = 0;
+var pausedUntil = 0;
+var scrollPhase = 'down';
+
+function switchPanel() {
+  currentPanel = currentPanel === 0 ? 1 : 0;
+  document.getElementById('panelAgro').className = 'panel' + (currentPanel === 0 ? ' active' : '');
+  document.getElementById('panelAgua').className = 'panel' + (currentPanel === 1 ? ' active' : '');
+  document.getElementById('tvTitle').textContent = titles[currentPanel];
+  document.getElementById('dotAgro').className = 'dot' + (currentPanel === 0 ? ' on-agro' : '');
+  document.getElementById('dotAgua').className = 'dot' + (currentPanel === 1 ? ' on-agua' : '');
+  document.getElementById('timerBar').style.background = colors[currentPanel];
+  document.getElementById('clock').style.color = colors[currentPanel];
+  document.getElementById('scrollContainer').scrollTop = 0;
+  scrollPos = 0;
+  scrollDir = 1;
+  scrollPhase = 'down';
+  pausedUntil = Date.now() + 3000;
+}
+
+setInterval(function() {
+  var label = currentPanel === 0 ? 'AGRO' : 'AGUA';
+  document.getElementById('refreshTimer').textContent = label;
+}, 1000);
+
+function autoScroll() {
+  var now = Date.now();
+  if (now < pausedUntil) { requestAnimationFrame(autoScroll); return; }
+
+  var el = document.getElementById('scrollContainer');
+  var maxScroll = el.scrollHeight - el.clientHeight;
+
+  if (maxScroll <= 5) {
+    pausedUntil = now + 8000;
+    setTimeout(function() { switchPanel(); }, 8000);
+    requestAnimationFrame(autoScroll);
+    return;
+  }
+
+  scrollPos += scrollDir * SCROLL_SPEED;
+
+  if (scrollPhase === 'down' && scrollPos >= maxScroll) {
+    scrollPos = maxScroll;
+    scrollPhase = 'pause_bottom';
+    pausedUntil = now + PAUSE_MS;
+    el.scrollTop = Math.round(scrollPos);
+    requestAnimationFrame(autoScroll);
+    return;
+  }
+
+  if (scrollPhase === 'pause_bottom') {
+    scrollDir = -1;
+    scrollPhase = 'up';
+  }
+
+  if (scrollPhase === 'up' && scrollPos <= 0) {
+    scrollPos = 0;
+    scrollPhase = 'pause_top_switch';
+    pausedUntil = now + PAUSE_MS;
+    el.scrollTop = 0;
+    requestAnimationFrame(autoScroll);
+    return;
+  }
+
+  if (scrollPhase === 'pause_top_switch') {
+    switchPanel();
+    requestAnimationFrame(autoScroll);
+    return;
+  }
+
+  el.scrollTop = Math.round(scrollPos);
+  requestAnimationFrame(autoScroll);
+}
+setTimeout(function() { requestAnimationFrame(autoScroll); }, 3000);
+
+/* ── AUTO-REFRESH every 5 minutes ── */
+setInterval(function() {
+  loadData();
+}, 300000);
+
+/* ── INIT ── */
+updateClock();
+setInterval(updateClock, 1000);
+loadData();
+</script></body></html>

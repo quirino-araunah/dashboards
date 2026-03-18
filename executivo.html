@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<title>PAINEL EXECUTIVO — PERFORMANCE COMERCIAL 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-tertiary:#21262d;--border-color:#30363d;--text-primary:#e6edf3;--text-secondary:#8b949e;--green:#2ecc71;--red:#e74c3c;--amber:#f39c12;--agro:#2ecc71;--agua:#3498db;--corporativo:#9b59b6;--florestas:#e67e22}
+html,body{height:100%;width:100%;overflow:hidden}
+body{background-color:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;line-height:1.4}
+.header{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border-bottom:2px solid var(--border-color);padding:16px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.header-left h1{font-size:28px;font-weight:800;letter-spacing:1px;margin-bottom:2px;color:var(--green)}
+.header-left p{font-size:11px;color:var(--text-secondary)}
+.header-right{display:flex;gap:24px;align-items:center}
+.clock-wrapper{text-align:right}
+.clock{font-size:28px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums;line-height:1}
+.clock-date{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.refresh-info{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.refresh-timer{font-size:16px;font-weight:600;color:var(--amber)}
+.refresh-label{font-size:9px;color:var(--text-secondary);text-transform:uppercase}
+.fullscreen-btn{padding:8px 14px;background:var(--bg-tertiary);border:1px solid var(--border-color);color:var(--text-primary);border-radius:4px;cursor:pointer;font-size:10px;font-weight:600;text-transform:uppercase;transition:all .3s}
+.fullscreen-btn:hover{border-color:var(--green);color:var(--green);box-shadow:0 0 10px rgba(46,204,113,.3)}
+.nav-links{display:flex;gap:10px}
+.nav-links a{color:var(--text-secondary);text-decoration:none;font-size:11px;padding:6px 12px;border:1px solid var(--border-color);border-radius:4px;transition:all .3s}
+.nav-links a:hover,.nav-links a.active{color:var(--green);border-color:var(--green);background:rgba(46,204,113,.1)}
+.container{height:calc(100vh - 90px);overflow-y:auto;padding:16px 24px;padding-bottom:60px}
+.kpi-section{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;animation:slideDown .6s ease-out}
+@keyframes slideDown{from{opacity:0;transform:translateY(-20px)}to{opacity:1;transform:translateY(0)}}
+.kpi-card{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border:2px solid var(--border-color);border-radius:8px;padding:20px;position:relative;overflow:hidden;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;opacity:.6;background:linear-gradient(90deg, var(--green), var(--agua))}
+.kpi-card:hover{border-color:var(--green);transform:translateY(-2px)}
+.kpi-title{font-size:11px;font-weight:700;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px}
+.kpi-value{font-size:26px;font-weight:800;color:var(--text-primary);margin-bottom:6px}
+.kpi-row{display:flex;justify-content:space-between;margin-bottom:8px;font-size:11px}
+.kpi-label{color:var(--text-secondary)}.kpi-number{font-weight:600}
+.kpi-number.positive{color:var(--green)}.kpi-number.negative{color:var(--red)}.kpi-number.warning{color:var(--amber)}
+.kpi-percent{font-size:16px;font-weight:700;margin-top:6px}
+.kpi-percent.good{color:var(--green)}.kpi-percent.low{color:var(--amber)}.kpi-percent.critical{color:var(--red)}
+.progress-bar{height:5px;background:var(--bg-tertiary);border-radius:3px;margin-top:10px;overflow:hidden;border:1px solid var(--border-color)}
+.progress-fill{height:100%;border-radius:3px;transition:width .6s;box-shadow:0 0 8px rgba(46,204,113,.5);background:linear-gradient(90deg, var(--green), var(--agua))}
+.section-title{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;margin-top:16px;padding-bottom:8px;border-bottom:2px solid var(--border-color)}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:20px}
+.table-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;overflow:hidden;margin-bottom:20px;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+table{width:100%;border-collapse:collapse;font-size:11px}
+thead{background:var(--bg-tertiary);border-bottom:2px solid var(--border-color)}
+th{padding:10px 8px;text-align:right;font-weight:700;color:var(--text-secondary);text-transform:uppercase;font-size:9px;border-right:1px solid var(--border-color)}
+th:first-child{text-align:left;border-right:2px solid var(--border-color)}
+td{padding:8px;text-align:right;border-right:1px solid var(--border-color);font-weight:500}
+td:first-child{text-align:left;border-right:2px solid var(--border-color);font-weight:600}
+tbody tr{border-bottom:1px solid var(--border-color);transition:background .2s}
+tbody tr:hover{background:var(--bg-tertiary)}
+tr.total-row{background:rgba(46,204,113,.05);border-top:2px solid var(--green);border-bottom:2px solid var(--green);font-weight:700}
+.vertical-badge{display:inline-block;padding:3px 8px;border-radius:3px;font-weight:600;font-size:10px;text-transform:uppercase}
+.vertical-badge.agro{background:rgba(46,204,113,.2);color:var(--agro);border:1px solid var(--agro)}
+.vertical-badge.agua{background:rgba(52,152,219,.2);color:var(--agua);border:1px solid var(--agua)}
+.vertical-badge.corporativo{background:rgba(155,89,182,.2);color:var(--corporativo);border:1px solid var(--corporativo)}
+.vertical-badge.florestas{background:rgba(230,126,34,.2);color:var(--florestas);border:1px solid var(--florestas)}
+.metric-good{color:var(--green)}.metric-warning{color:var(--amber)}.metric-bad{color:var(--red)}.metric-neutral{color:var(--text-primary)}
+.footer{background:var(--bg-secondary);border-top:2px solid var(--border-color);padding:10px 24px;font-size:9px;color:var(--text-secondary);display:flex;justify-content:space-between;align-items:center;position:fixed;bottom:0;left:0;right:0}
+.footer-text{display:flex;gap:16px}.footer-legend{display:flex;gap:16px}
+.legend-item{display:flex;align-items:center;gap:4px}.legend-dot{width:8px;height:8px;border-radius:50%}
+.container::-webkit-scrollbar{width:6px}.container::-webkit-scrollbar-track{background:var(--bg-secondary)}.container::-webkit-scrollbar-thumb{background:var(--border-color);border-radius:3px}
+.daily-chart-section{margin-top:24px;margin-bottom:60px}
+.dc-summary{display:flex;flex-wrap:wrap;gap:8px 20px;margin-bottom:12px;font-size:11px;color:var(--text-secondary)}
+.dc-summary strong{color:var(--text-primary)}
+.dc-chart-container{background:var(--bg-secondary);border:1px solid var(--border-color);border-radius:6px;padding:16px 12px 12px;position:relative;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.dc-bars-area{position:relative;height:120px}
+.dc-bars{display:flex;align-items:flex-end;gap:2px;height:100%}
+.dc-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%}
+.dc-bar-col .dc-bar{width:100%;min-width:4px;border-radius:2px 2px 0 0;transition:height .3s}
+.dc-labels{display:flex;gap:2px;margin-top:4px;padding-bottom:4px}
+.dc-label-col{flex:1;display:flex;flex-direction:column;align-items:center;min-height:24px}
+.dc-val{font-size:9px;font-weight:700;white-space:nowrap;line-height:1.3;min-height:12px}
+.dc-day{font-size:9px;color:var(--text-primary);font-weight:700;line-height:1.3}
+.dc-weekend .dc-day{color:var(--amber);opacity:.7}
+.dc-future .dc-day{opacity:.3}
+.dc-meta-line{position:absolute;left:0;right:0;border-top:2px dashed var(--amber);pointer-events:none;z-index:2}
+.dc-meta-label{position:absolute;right:8px;top:-14px;font-size:8px;color:var(--amber);font-weight:600;background:var(--bg-secondary);padding:0 4px}
+@media(max-width:900px){.dc-bars-area{height:80px}.dc-val{font-size:8px}.dc-day{font-size:8px}}
+.change-banner{background:linear-gradient(90deg,rgba(46,204,113,.12),rgba(52,152,219,.08));border:1px solid rgba(46,204,113,.3);border-radius:6px;padding:8px 16px;margin:10px 24px 0;font-size:11px;color:var(--text-secondary);display:flex;align-items:center;gap:10px;animation:fadeIn 1s ease-out}
+.change-banner .cb-icon{font-size:16px}
+.change-banner .cb-neutral{color:var(--amber);font-weight:600;font-size:11px}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.stale-banner{position:fixed;top:0;left:0;right:0;z-index:99999;padding:10px 24px;font-family:Inter,sans-serif;font-size:14px;font-weight:700;text-align:center;display:none;animation:stalePulse 2s ease-in-out infinite}
+.stale-banner.stale-warn{display:block;background:#f39c12;color:#000}
+.stale-banner.stale-danger{display:block;background:#e74c3c;color:#fff}
+.stale-banner.stale-critical{display:block;background:#e74c3c;color:#fff;animation:staleBlink 1s step-end infinite}
+@keyframes staleBlink{50%{opacity:.3}}
+@keyframes stalePulse{0%,100%{opacity:1}50%{opacity:.85}}
+.frete-toggle{cursor:pointer;padding:6px 16px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px;border:2px solid var(--amber);background:transparent;color:var(--amber);transition:all .3s ease;white-space:nowrap}.frete-toggle:hover{background:rgba(243,156,18,.15)}.frete-toggle.active{background:var(--amber);color:#000;box-shadow:0 0 12px rgba(243,156,18,.4)}.frete-indicator{font-size:10px;color:var(--text-secondary);text-align:center;padding:2px 0}
+.loading-overlay{position:fixed;top:0;left:0;right:0;bottom:0;background:var(--bg-primary);z-index:99998;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.loading-spinner{width:40px;height:40px;border:3px solid var(--border-color);border-top:3px solid var(--green);border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-text{color:var(--text-secondary);font-size:13px}
+.frete-cli-rows{display:none}.frete-cli-rows.show{display:table-row}
+@media(max-width:1024px){
+.kpi-section{grid-template-columns:repeat(2,1fr);gap:10px}
+.grid-2,.grid-3{grid-template-columns:1fr}
+.header{flex-direction:column;gap:10px;padding:12px 16px}
+.header-right{flex-wrap:wrap;justify-content:center}
+.container{padding:10px 12px;height:auto;overflow-y:auto}
+html,body{overflow:auto;height:auto}
+.footer{position:relative}
+}
+@media(max-width:640px){
+.kpi-section{grid-template-columns:1fr}
+.kpi-value{font-size:20px}
+.kpi-percent{font-size:13px}
+.header-left h1{font-size:18px}
+.clock{font-size:20px}
+.table-container{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{min-width:600px}
+th,td{padding:6px 4px;font-size:10px}
+th{font-size:8px}
+.nav-links{flex-wrap:wrap;gap:6px}
+.nav-links a{font-size:10px;padding:4px 8px}
+.section-title{font-size:11px}
+.fullscreen-btn{display:none}
+}
+</style></head><body>
+<div class="loading-overlay" id="loadingOverlay">
+<div class="loading-spinner"></div>
+<div class="loading-text">Carregando dados do Supabase...</div>
+</div>
+<div class="stale-banner" id="staleBanner"></div>
+<div class="header">
+<div class="header-left"><div style="display:flex;align-items:center;gap:10px"><div><h1>PAINEL EXECUTIVO — PERFORMANCE COMERCIAL 2026</h1><p id="headerRef">Carregando...</p></div></div></div>
+<div class="header-right">
+<div class="nav-links"><a href="executivo.html" class="active">Executivo</a><a href="agro.html">Agro</a><a href="agua.html">Agua</a></div>
+<div style="display:flex;flex-direction:column;align-items:center;gap:2px"><button class="frete-toggle" id="freteToggle" onclick="toggleFrete()">SEM FRETE</button><div class="frete-indicator" id="freteIndicator">Valores: SEM frete (liquido)</div></div>
+<div class="clock-wrapper"><div class="clock" id="clock">00:00:00</div><div class="clock-date" id="clockDate"></div></div>
+<div class="refresh-info"><div class="refresh-timer" id="refreshTimer">5:00</div><div class="refresh-label">Prox. Atualizacao</div></div>
+<button class="fullscreen-btn" onclick="toggleFullscreen()">&#x26F6; Tela Cheia</button>
+</div></div>
+<div class="change-banner"><span class="cb-icon">&#9889;</span><span class="cb-neutral" id="changeBannerText">Carregando dados...</span></div>
+<div class="container" id="mainContainer">
+<div class="kpi-section" id="kpiSection"></div>
+<div id="clienteTableSection"></div>
+<div id="dailyChartSection"></div>
+<div id="visaoMensalSection"></div>
+<div id="verticalSection"></div>
+<div id="consultoresSection"></div>
+<div id="carteiraResumoSection"></div>
+<div id="carteiraDetalhadoSection"></div>
+<div id="ufSection"></div>
+<div id="clientes8020Section"></div>
+<div id="produtos8020Section"></div>
+<div id="cfopSection"></div>
+<div id="freteSection"></div>
+</div>
+<div class="footer"><div class="footer-text"><span class="frete-indicator"><strong>Faturamento:</strong> sem frete (liquido)</span><span><strong>Corporativo:</strong> sem meta</span><span>Fonte: Supabase (tempo real)</span></div></div>
+<script>
+/* ── CONFIG ── */
+var SUPABASE_URL = 'https://ripnqnytrwbaueadrtry.supabase.co';
+var ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpcG5xbnl0cndiYXVlYWRydHJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTk3NjAsImV4cCI6MjA4ODg5NTc2MH0.Ut7V6rG5AoKRbdqpvCeXsQJ4eozZ_nPxE7xKY4FuKOQ';
+
+var _showFrete = false;
+var rc = 300;
+var MONTH_NAMES = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+var MONTH_NAMES_FULL = ['Janeiro','Fevereiro','Marco','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var DIAS_SEMANA = ['Dom','Seg','Ter','Qua','Qui','Sex','Sab'];
+
+/* ── CURRENT DATE HELPERS ── */
+var NOW = new Date();
+var CURRENT_YEAR = NOW.getFullYear();
+var CURRENT_MONTH = NOW.getMonth() + 1;
+var CURRENT_MONTH_STR = CURRENT_YEAR + '-' + (CURRENT_MONTH < 10 ? '0' : '') + CURRENT_MONTH;
+var MONTH_LABEL = MONTH_NAMES[CURRENT_MONTH - 1];
+
+function buildYtdMonths() {
+  var months = [];
+  for (var m = 1; m <= CURRENT_MONTH; m++) {
+    months.push(CURRENT_YEAR + '-' + (m < 10 ? '0' : '') + m);
+  }
+  return months;
+}
+var YTD_MONTHS = buildYtdMonths();
+
+function buildAllMonths() {
+  var months = [];
+  for (var m = 1; m <= 12; m++) {
+    months.push(CURRENT_YEAR + '-' + (m < 10 ? '0' : '') + m);
+  }
+  return months;
+}
+var ALL_MONTHS = buildAllMonths();
+
+/* ── FORMAT FUNCTIONS ── */
+function fmtBRL(v) {
+  if (v === null || v === undefined || isNaN(v)) return 'R$ 0';
+  var neg = v < 0;
+  v = Math.abs(Math.round(v));
+  var s = String(v);
+  var parts = [];
+  while (s.length > 3) {
+    parts.unshift(s.slice(s.length - 3));
+    s = s.slice(0, s.length - 3);
+  }
+  parts.unshift(s);
+  return (neg ? '-' : '') + 'R$ ' + parts.join('.');
+}
+
+function fmtBRLShort(v) {
+  if (v === null || v === undefined || isNaN(v)) return '0';
+  v = Math.round(v);
+  if (Math.abs(v) >= 1000000) return Math.round(v / 1000000) + 'M';
+  if (Math.abs(v) >= 1000) return Math.round(v / 1000) + 'k';
+  return String(v);
+}
+
+function fmtPct(v) {
+  if (v === null || v === undefined || isNaN(v)) return '0,0%';
+  var s = (v * 100).toFixed(1);
+  return s.replace('.', ',') + '%';
+}
+
+function fmtPctRaw(v) {
+  if (v === null || v === undefined || isNaN(v)) return '0,0%';
+  return v.toFixed(1).replace('.', ',') + '%';
+}
+
+function pctClass(v) {
+  if (v >= 80) return 'good';
+  if (v >= 50) return 'low';
+  return 'critical';
+}
+
+function metricClass(v) {
+  if (v >= 5) return 'metric-good';
+  if (v >= 0) return 'metric-warning';
+  return 'metric-bad';
+}
+
+function vertBadge(v) {
+  var vl = (v || '').toLowerCase().replace(/[^a-z]/g, '');
+  if (vl.indexOf('agro') >= 0) return '<span class="vertical-badge agro">AGRO</span>';
+  if (vl.indexOf('agua') >= 0) return '<span class="vertical-badge agua">AGUA</span>';
+  if (vl.indexOf('corp') >= 0) return '<span class="vertical-badge corporativo">CORPORATIVO</span>';
+  if (vl.indexOf('flor') >= 0) return '<span class="vertical-badge florestas">FLORESTAS</span>';
+  return '<span class="vertical-badge">' + (v || '') + '</span>';
+}
+
+function safeNum(v) {
+  var n = parseFloat(v);
+  return isNaN(n) ? 0 : n;
+}
+
+/* ── SUPABASE FETCH ── */
+function sbFetch(view, params, cb) {
+  var url = SUPABASE_URL + '/rest/v1/' + view + '?select=*';
+  if (params) url += '&' + params;
+  fetch(url, {
+    headers: {
+      'apikey': ANON_KEY,
+      'Authorization': 'Bearer ' + ANON_KEY
+    }
+  }).then(function(r) { return r.json(); })
+  .then(function(data) { cb(null, data); })
+  .catch(function(err) { cb(err, []); });
+}
+
+/* ── DATA STORE ── */
+var DATA = {
+  planReal: [],
+  planRealConsultor: [],
+  movFiscal: [],
+  carteira: [],
+  planRealCliente: [],
+  planRealProduto: [],
+  locacao: []
+};
+
+var loadCount = 0;
+var totalLoads = 7;
+
+function checkAllLoaded() {
+  loadCount++;
+  if (loadCount >= totalLoads) {
+    renderAll();
+    var el = document.getElementById('loadingOverlay');
+    if (el) el.style.display = 'none';
+  }
+}
+
+function loadData() {
+  loadCount = 0;
+
+  sbFetch('vw_plan_vs_real_vertical', 'id_tempo=like.' + CURRENT_YEAR + '-*', function(err, data) {
+    DATA.planReal = data || [];
+    checkAllLoaded();
+  });
+
+  sbFetch('vw_plan_vs_real_consultor', 'id_tempo=like.' + CURRENT_YEAR + '-*&vendedor_ativo=eq.true', function(err, data) {
+    DATA.planRealConsultor = data || [];
+    checkAllLoaded();
+  });
+
+  sbFetch('vw_movimento_fiscal', 'id_tempo=like.' + CURRENT_YEAR + '-*&limit=10000', function(err, data) {
+    DATA.movFiscal = data || [];
+    checkAllLoaded();
+  });
+
+  sbFetch('vw_carteira_pedidos_unificada', 'status_pedido=eq.ABERTO', function(err, data) {
+    DATA.carteira = data || [];
+    checkAllLoaded();
+  });
+
+  sbFetch('vw_plan_vs_real_cliente', 'id_tempo=like.' + CURRENT_YEAR + '-*', function(err, data) {
+    DATA.planRealCliente = data || [];
+    checkAllLoaded();
+  });
+
+  sbFetch('vw_plan_vs_real_produto', 'id_tempo=like.' + CURRENT_YEAR + '-*', function(err, data) {
+    DATA.planRealProduto = data || [];
+    checkAllLoaded();
+  });
+
+  sbFetch('vw_locacao_completa', '', function(err, data) {
+    DATA.locacao = data || [];
+    checkAllLoaded();
+  });
+}
+
+/* ── RENDER ALL ── */
+function renderAll() {
+  var now = new Date();
+  var dateStr = (CURRENT_MONTH < 10 ? '0' : '') + CURRENT_MONTH + '/' + CURRENT_YEAR;
+  var timeStr = (now.getHours() < 10 ? '0' : '') + now.getHours() + ':' + (now.getMinutes() < 10 ? '0' : '') + now.getMinutes();
+  document.getElementById('headerRef').textContent = 'Referencia: ' + MONTH_NAMES[CURRENT_MONTH - 1].toLowerCase() + '/' + CURRENT_YEAR + ' | Atualizado: ' + now.getDate() + '/' + dateStr + ' ' + timeStr;
+  document.getElementById('changeBannerText').textContent = 'Dados carregados do Supabase em tempo real';
+
+  renderKPIs();
+  renderClienteTable();
+  renderDailyChart();
+  renderVisaoMensal();
+  renderVertical();
+  renderConsultores();
+  renderCarteiraResumo();
+  renderCarteiraDetalhado();
+  renderUF();
+  renderClientes8020();
+  renderProdutos8020();
+  renderCFOP();
+  renderFreteSection();
+  applyFreteState();
+}
+
+/* ── KPIs ── */
+function renderKPIs() {
+  var mesReal = 0, mesMeta = 0;
+  var ytdReal = 0, ytdMeta = 0;
+  var anoReal = 0, anoMeta = 0;
+  var mesFrete = 0, ytdFrete = 0;
+
+  DATA.planReal.forEach(function(r) {
+    var meta = safeNum(r.meta);
+    var real = safeNum(r.realizado);
+    if (r.id_tempo === CURRENT_MONTH_STR) {
+      mesReal += real;
+      mesMeta += meta;
+    }
+    if (YTD_MONTHS.indexOf(r.id_tempo) >= 0) {
+      ytdReal += real;
+      ytdMeta += meta;
+    }
+    anoReal += real;
+    anoMeta += meta;
+  });
+
+  // Get frete for current month from movFiscal
+  DATA.movFiscal.forEach(function(r) {
+    var frete = safeNum(r.frete_rateado);
+    if (r.id_tempo === CURRENT_MONTH_STR) {
+      mesFrete += frete;
+    }
+    if (YTD_MONTHS.indexOf(r.id_tempo) >= 0) {
+      ytdFrete += frete;
+    }
+  });
+
+  var carteiraTotal = 0;
+  DATA.carteira.forEach(function(r) {
+    carteiraTotal += safeNum(r.vlr_carteira);
+  });
+
+  var mesAtingPct = mesMeta > 0 ? (mesReal / mesMeta * 100) : 0;
+  var mesAtingPctCF = mesMeta > 0 ? ((mesReal + mesFrete) / mesMeta * 100) : 0;
+  var ytdAtingPct = ytdMeta > 0 ? (ytdReal / ytdMeta * 100) : 0;
+  var ytdAtingPctCF = ytdMeta > 0 ? ((ytdReal + ytdFrete) / ytdMeta * 100) : 0;
+  var anoAtingPct = anoMeta > 0 ? (anoReal / anoMeta * 100) : 0;
+  var anoAtingPctCF = anoMeta > 0 ? ((anoReal + ytdFrete) / anoMeta * 100) : 0;
+  var carteiraPctMeta = anoMeta > 0 ? (carteiraTotal / anoMeta * 100) : 0;
+
+  var html = '';
+  // KPI 1 - Mes Atual
+  html += '<div class="kpi-card"><div class="kpi-title">Mes Atual</div>';
+  html += '<div class="kpi-value"><span data-sf="' + fmtBRL(mesReal) + '" data-cf="' + fmtBRL(mesReal + mesFrete) + '">' + fmtBRL(mesReal) + '</span></div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">' + fmtBRL(mesMeta) + '</span></div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Ating:</span><span class="kpi-number"><span data-sf="' + fmtPctRaw(mesAtingPct) + '" data-cf="' + fmtPctRaw(mesAtingPctCF) + '">' + fmtPctRaw(mesAtingPct) + '</span></span></div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(mesAtingPct, 100) + '%"></div></div></div>';
+
+  // KPI 2 - YTD
+  html += '<div class="kpi-card"><div class="kpi-title">YTD Acumulado</div>';
+  html += '<div class="kpi-value"><span data-sf="' + fmtBRL(ytdReal) + '" data-cf="' + fmtBRL(ytdReal + ytdFrete) + '">' + fmtBRL(ytdReal) + '</span></div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">' + fmtBRL(ytdMeta) + '</span></div>';
+  html += '<div class="kpi-percent ' + pctClass(ytdAtingPct) + '"><span data-sf="' + fmtPctRaw(ytdAtingPct) + '" data-cf="' + fmtPctRaw(ytdAtingPctCF) + '">' + fmtPctRaw(ytdAtingPct) + '</span></div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(ytdAtingPct, 100) + '%"></div></div></div>';
+
+  // KPI 3 - Progresso Anual
+  html += '<div class="kpi-card"><div class="kpi-title">Progresso Anual</div>';
+  html += '<div class="kpi-value"><span data-sf="' + fmtBRL(anoReal) + '" data-cf="' + fmtBRL(anoReal + ytdFrete) + '">' + fmtBRL(anoReal) + '</span></div>';
+  html += '<div class="kpi-row"><span class="kpi-label">Meta:</span><span class="kpi-number">' + fmtBRL(anoMeta) + '</span></div>';
+  html += '<div class="kpi-percent ' + pctClass(anoAtingPct) + '"><span data-sf="' + fmtPctRaw(anoAtingPct) + '" data-cf="' + fmtPctRaw(anoAtingPctCF) + '">' + fmtPctRaw(anoAtingPct) + '</span></div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(anoAtingPct, 100) + '%"></div></div></div>';
+
+  // KPI 4 - Carteira
+  html += '<div class="kpi-card"><div class="kpi-title">Carteira Pedidos</div>';
+  html += '<div class="kpi-value">' + fmtBRL(carteiraTotal) + '</div>';
+  html += '<div class="kpi-row"><span class="kpi-label">% Meta:</span><span class="kpi-number">' + fmtPctRaw(carteiraPctMeta) + '</span></div>';
+  var carteiraStatus = carteiraPctMeta >= 15 ? 'Bom' : carteiraPctMeta >= 8 ? 'Moderado' : 'Critico';
+  var carteiraStatusClass = carteiraPctMeta >= 15 ? 'positive' : carteiraPctMeta >= 8 ? 'warning' : 'warning';
+  html += '<div class="kpi-row"><span class="kpi-label">Status:</span><span class="kpi-number ' + carteiraStatusClass + '">' + carteiraStatus + '</span></div>';
+  html += '<div class="progress-bar"><div class="progress-fill" style="width:' + Math.min(carteiraPctMeta, 100) + '%"></div></div></div>';
+
+  document.getElementById('kpiSection').innerHTML = html;
+}
+
+/* ── CLIENTE TABLE (Faturamento por Cliente) ── */
+function renderClienteTable() {
+  var monthData = DATA.movFiscal.filter(function(r) { return r.id_tempo === CURRENT_MONTH_STR; });
+  // Group by date + client
+  var grouped = {};
+  var totalSF = 0, totalCF = 0;
+  monthData.forEach(function(r) {
+    var key = (r.data_emissao || r.id_tempo) + '|' + (r.cliente || '');
+    if (!grouped[key]) {
+      grouped[key] = {
+        data: r.data_emissao || r.id_tempo,
+        cliente: r.cliente || '',
+        produto: r.produto || r.categoria_produto || '',
+        vertical: r.vertical || '',
+        consultor: r.consultor || r.vendedor || '',
+        vlr_contabil: 0,
+        frete: 0
+      };
+    }
+    grouped[key].vlr_contabil += safeNum(r.vlr_contabil);
+    grouped[key].frete += safeNum(r.frete_rateado);
+  });
+
+  var rows = [];
+  for (var k in grouped) {
+    if (grouped.hasOwnProperty(k)) {
+      rows.push(grouped[k]);
+      totalSF += grouped[k].vlr_contabil;
+      totalCF += grouped[k].vlr_contabil + grouped[k].frete;
+    }
+  }
+  rows.sort(function(a, b) { return b.vlr_contabil - a.vlr_contabil; });
+
+  var html = '<h2 class="section-title">Faturamento por Cliente \u2014 ' + MONTH_NAMES[CURRENT_MONTH - 1] + '/' + CURRENT_YEAR + '</h2>';
+  html += '<div class="table-container"><table style="font-size:12px"><thead><tr>';
+  html += '<th>Cliente</th><th>Vertical</th><th>Consultor</th><th style="text-align:right">Faturamento</th><th style="text-align:right">%</th>';
+  html += '</tr></thead><tbody>';
+
+  var showCount = Math.min(rows.length, 20);
+  for (var i = 0; i < showCount; i++) {
+    var r = rows[i];
+    var pct = totalSF > 0 ? (r.vlr_contabil / totalSF * 100) : 0;
+    var vlSF = r.vlr_contabil;
+    var vlCF = r.vlr_contabil + r.frete;
+    html += '<tr><td>' + r.cliente + '</td>';
+    html += '<td>' + vertBadge(r.vertical) + '</td>';
+    html += '<td>' + r.consultor + '</td>';
+    html += '<td><span data-sf="' + fmtBRL(vlSF) + '" data-cf="' + fmtBRL(vlCF) + '">' + fmtBRL(vlSF) + '</span></td>';
+    html += '<td>' + fmtPctRaw(pct) + '</td></tr>';
+  }
+  if (rows.length > showCount) {
+    html += '<tr><td colspan="5" style="text-align:center;opacity:.5;font-size:10px">... +' + (rows.length - showCount) + ' clientes</td></tr>';
+  }
+  html += '<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td></td>';
+  html += '<td><strong><span data-sf="' + fmtBRL(totalSF) + '" data-cf="' + fmtBRL(totalCF) + '">' + fmtBRL(totalSF) + '</span></strong></td>';
+  html += '<td><strong>100%</strong></td></tr>';
+  html += '</tbody></table></div>';
+  document.getElementById('clienteTableSection').innerHTML = html;
+}
+
+/* ── DAILY CHART ── */
+function renderDailyChart() {
+  var monthData = DATA.movFiscal.filter(function(r) { return r.id_tempo === CURRENT_MONTH_STR; });
+  var year = CURRENT_YEAR;
+  var month = CURRENT_MONTH;
+  var daysInMonth = new Date(year, month, 0).getDate();
+  var today = NOW.getDate();
+
+  // Sum by day
+  var dailyTotals = {};
+  var dailyFrete = {};
+  for (var d = 1; d <= daysInMonth; d++) { dailyTotals[d] = 0; dailyFrete[d] = 0; }
+  monthData.forEach(function(r) {
+    var dt = r.data_emissao || '';
+    var day = 0;
+    if (dt) {
+      var parts = dt.split('-');
+      if (parts.length >= 3) day = parseInt(parts[2], 10);
+      else {
+        parts = dt.split('/');
+        if (parts.length >= 1) day = parseInt(parts[0], 10);
+      }
+    }
+    if (day >= 1 && day <= daysInMonth) {
+      dailyTotals[day] += safeNum(r.vlr_contabil);
+      dailyFrete[day] += safeNum(r.frete_rateado);
+    }
+  });
+
+  var maxVal = 1;
+  var totalMes = 0;
+  var diasFaturados = 0;
+  var diasUteis = 0;
+  for (var d = 1; d <= daysInMonth; d++) {
+    if (dailyTotals[d] > maxVal) maxVal = dailyTotals[d];
+    totalMes += dailyTotals[d];
+    var dow = new Date(year, month - 1, d).getDay();
+    if (dow > 0 && dow < 6 && d <= today) diasUteis++;
+    if (dailyTotals[d] > 0) diasFaturados++;
+  }
+
+  var totalDiasUteis = 0;
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dow = new Date(year, month - 1, d).getDay();
+    if (dow > 0 && dow < 6) totalDiasUteis++;
+  }
+
+  var totalFreteMonth = 0;
+  for (var d = 1; d <= daysInMonth; d++) totalFreteMonth += dailyFrete[d];
+  var mediaDia = diasFaturados > 0 ? totalMes / diasFaturados : 0;
+  var mesMeta = 0;
+  DATA.planReal.forEach(function(r) {
+    if (r.id_tempo === CURRENT_MONTH_STR) mesMeta += safeNum(r.meta);
+  });
+  var faltaTotal = mesMeta - totalMes;
+  var diasUteisRestantes = totalDiasUteis - diasUteis;
+  var faltaPorDia = diasUteisRestantes > 0 ? faltaTotal / diasUteisRestantes : 0;
+  var metaDiaria = totalDiasUteis > 0 ? mesMeta / totalDiasUteis : 0;
+  var metaDiaPct = maxVal > 0 ? (metaDiaria / maxVal * 100) : 0;
+
+  var html = '<div class="daily-chart-section">';
+  html += '<h2 class="section-title">Faturamento Diario \u2014 ' + MONTH_NAMES[CURRENT_MONTH - 1] + '/' + CURRENT_YEAR + '</h2>';
+  html += '<div class="dc-summary">';
+  html += '<span>Total: <strong style="color:var(--green)"><span data-sf="' + fmtBRL(totalMes) + '" data-cf="' + fmtBRL(totalMes + totalFreteMonth) + '">' + fmtBRL(totalMes) + '</span></strong></span>';
+  html += '<span>Dias uteis: <strong>' + totalDiasUteis + '</strong></span>';
+  html += '<span>Dias faturados: <strong>' + diasFaturados + '</strong></span>';
+  html += '<span>Media/dia: <strong><span data-sf="' + fmtBRL(mediaDia) + '" data-cf="' + fmtBRL(mediaDia + (diasFaturados > 0 ? totalFreteMonth / diasFaturados : 0)) + '">' + fmtBRL(mediaDia) + '</span></strong></span>';
+  html += '<span>Meta mes: <strong>' + fmtBRL(mesMeta) + '</strong></span>';
+  html += '<span>Falta por dia util: <strong style="color:var(--amber)"><span data-sf="' + fmtBRL(Math.max(0, faltaPorDia)) + '" data-cf="' + fmtBRL(Math.max(0, faltaPorDia - (diasUteisRestantes > 0 ? totalFreteMonth / diasUteisRestantes : 0))) + '">' + fmtBRL(Math.max(0, faltaPorDia)) + '</span></strong></span>';
+  html += '</div>';
+
+  html += '<div class="dc-chart-container"><div class="dc-bars-area">';
+  if (metaDiaPct > 0 && metaDiaPct < 95) {
+    html += '<div class="dc-meta-line" style="bottom:' + Math.min(metaDiaPct, 95) + '%">';
+    html += '<span class="dc-meta-label">Media necessaria: ' + fmtBRL(metaDiaria) + '/dia</span></div>';
+  }
+  html += '<div class="dc-bars">';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dow = new Date(year, month - 1, d).getDay();
+    var isWeekend = dow === 0 || dow === 6;
+    var isFuture = d > today;
+    var pctH = maxVal > 0 ? Math.max(1, Math.round(dailyTotals[d] / maxVal * 100)) : 1;
+    var colClass = isWeekend ? 'dc-weekend' : (isFuture ? 'dc-future' : '');
+    var barColor;
+    if (isFuture) barColor = 'rgba(48,54,61,0.4)';
+    else if (isWeekend && dailyTotals[d] === 0) barColor = 'rgba(139,148,158,0.3)';
+    else if (dailyTotals[d] === 0) barColor = 'rgba(231,76,60,0.3)';
+    else barColor = 'var(--green)';
+    html += '<div class="dc-bar-col ' + colClass + '">';
+    html += '<div class="dc-bar" style="height:' + pctH + '%;background:' + barColor + '"></div></div>';
+  }
+  html += '</div></div>';
+
+  html += '<div class="dc-labels">';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dow = new Date(year, month - 1, d).getDay();
+    var isWeekend = dow === 0 || dow === 6;
+    var isFuture = d > today;
+    var colClass = isWeekend ? 'dc-weekend' : (isFuture ? 'dc-future' : '');
+    var valColor = dailyTotals[d] > 0 ? 'var(--green)' : (isFuture || isWeekend ? 'var(--text-secondary)' : 'var(--red)');
+    var valText = dailyTotals[d] > 0 ? fmtBRLShort(dailyTotals[d]) : '';
+    html += '<div class="dc-label-col ' + colClass + '">';
+    html += '<div class="dc-val" style="color:' + valColor + '">' + valText + '</div>';
+    html += '<div class="dc-day">' + d + '</div></div>';
+  }
+  html += '</div></div></div>';
+  document.getElementById('dailyChartSection').innerHTML = html;
+}
+
+/* ── VISAO MENSAL ── */
+function renderVisaoMensal() {
+  var monthMap = {};
+  ALL_MONTHS.forEach(function(m) { monthMap[m] = { meta: 0, real: 0 }; });
+  DATA.planReal.forEach(function(r) {
+    if (monthMap[r.id_tempo]) {
+      monthMap[r.id_tempo].meta += safeNum(r.meta);
+      monthMap[r.id_tempo].real += safeNum(r.realizado);
+    }
+  });
+
+  var html = '<h2 class="section-title">Visao Mensal \u2014 ' + CURRENT_YEAR + '</h2>';
+  html += '<div class="table-container"><table><thead><tr><th></th>';
+  ALL_MONTHS.forEach(function(m, i) { html += '<th>' + MONTH_NAMES[i] + '</th>'; });
+  html += '<th style="border-left:2px solid var(--green)">Total</th></tr></thead><tbody>';
+
+  // Meta row
+  html += '<tr><td>Meta</td>';
+  var totalMeta = 0;
+  ALL_MONTHS.forEach(function(m) {
+    html += '<td>' + fmtBRLShort(monthMap[m].meta) + '</td>';
+    totalMeta += monthMap[m].meta;
+  });
+  html += '<td style="border-left:2px solid var(--green)">' + fmtBRLShort(totalMeta) + '</td></tr>';
+
+  // Real row
+  html += '<tr><td>Real</td>';
+  var totalReal = 0;
+  ALL_MONTHS.forEach(function(m) {
+    html += '<td>' + (monthMap[m].real > 0 ? fmtBRLShort(monthMap[m].real) : '-') + '</td>';
+    totalReal += monthMap[m].real;
+  });
+  html += '<td style="border-left:2px solid var(--green)">' + fmtBRLShort(totalReal) + '</td></tr>';
+
+  // Ating% row
+  html += '<tr><td>Ating%</td>';
+  ALL_MONTHS.forEach(function(m) {
+    var pct = monthMap[m].meta > 0 ? (monthMap[m].real / monthMap[m].meta * 100) : 0;
+    var cls = monthMap[m].real > 0 ? pctClass(pct) : '';
+    html += '<td class="kpi-percent ' + cls + '" style="font-size:11px">' + (monthMap[m].real > 0 ? fmtPctRaw(pct) : '-') + '</td>';
+  });
+  var totalPct = totalMeta > 0 ? (totalReal / totalMeta * 100) : 0;
+  html += '<td style="border-left:2px solid var(--green)" class="kpi-percent ' + pctClass(totalPct) + '" style="font-size:11px">' + fmtPctRaw(totalPct) + '</td></tr>';
+
+  html += '</tbody></table></div>';
+  document.getElementById('visaoMensalSection').innerHTML = html;
+}
+
+/* ── PERFORMANCE POR VERTICAL ── */
+function renderVertical() {
+  var verticals = {};
+  DATA.planReal.forEach(function(r) {
+    var v = r.vertical || 'OUTROS';
+    if (!verticals[v]) verticals[v] = { mesMeta: 0, mesReal: 0, ytdMeta: 0, ytdReal: 0, anoMeta: 0, anoReal: 0 };
+    var meta = safeNum(r.meta);
+    var real = safeNum(r.realizado);
+    if (r.id_tempo === CURRENT_MONTH_STR) {
+      verticals[v].mesMeta += meta;
+      verticals[v].mesReal += real;
+    }
+    if (YTD_MONTHS.indexOf(r.id_tempo) >= 0) {
+      verticals[v].ytdMeta += meta;
+      verticals[v].ytdReal += real;
+    }
+    verticals[v].anoMeta += meta;
+    verticals[v].anoReal += real;
+  });
+
+  // Carteira by vertical
+  var carteiraByVert = {};
+  DATA.carteira.forEach(function(r) {
+    var v = r.vertical || 'OUTROS';
+    if (!carteiraByVert[v]) carteiraByVert[v] = 0;
+    carteiraByVert[v] += safeNum(r.vlr_carteira);
+  });
+
+  var html = '<h2 class="section-title">Performance por Vertical</h2>';
+  html += '<div class="table-container"><table><thead>';
+  html += '<tr><th>Vertical</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">MES</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">YTD</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">ANO</th>';
+  html += '<th colspan="2" style="text-align:center">CARTEIRA</th></tr>';
+  html += '<tr><th></th><th>Meta</th><th>Real</th><th>Ating%</th><th>Meta</th><th>Real</th><th>Ating%</th><th>Meta</th><th>Real</th><th>%Meta</th><th>Valor</th><th>%Meta</th></tr>';
+  html += '</thead><tbody>';
+
+  var totals = { mesMeta: 0, mesReal: 0, ytdMeta: 0, ytdReal: 0, anoMeta: 0, anoReal: 0, carteira: 0 };
+  var vertOrder = ['AGRO', 'AGUA', 'CORPORATIVO', 'FLORESTAS'];
+  var vKeys = Object.keys(verticals).sort(function(a, b) {
+    var ia = vertOrder.indexOf(a.toUpperCase());
+    var ib = vertOrder.indexOf(b.toUpperCase());
+    if (ia < 0) ia = 99;
+    if (ib < 0) ib = 99;
+    return ia - ib;
+  });
+
+  vKeys.forEach(function(v) {
+    var d = verticals[v];
+    var cart = carteiraByVert[v] || 0;
+    var mesPct = d.mesMeta > 0 ? (d.mesReal / d.mesMeta * 100) : 0;
+    var ytdPct = d.ytdMeta > 0 ? (d.ytdReal / d.ytdMeta * 100) : 0;
+    var anoPct = d.anoMeta > 0 ? (d.anoReal / d.anoMeta * 100) : 0;
+    var cartPct = d.anoMeta > 0 ? (cart / d.anoMeta * 100) : 0;
+
+    html += '<tr><td>' + vertBadge(v) + '</td>';
+    html += '<td>' + fmtBRL(d.mesMeta) + '</td><td>' + fmtBRL(d.mesReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(mesPct) + '" style="font-size:11px">' + fmtPctRaw(mesPct) + '</td>';
+    html += '<td>' + fmtBRL(d.ytdMeta) + '</td><td>' + fmtBRL(d.ytdReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(ytdPct) + '" style="font-size:11px">' + fmtPctRaw(ytdPct) + '</td>';
+    html += '<td>' + fmtBRL(d.anoMeta) + '</td><td>' + fmtBRL(d.anoReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(anoPct) + '" style="font-size:11px">' + fmtPctRaw(anoPct) + '</td>';
+    html += '<td>' + fmtBRL(cart) + '</td>';
+    html += '<td>' + fmtPctRaw(cartPct) + '</td></tr>';
+
+    totals.mesMeta += d.mesMeta; totals.mesReal += d.mesReal;
+    totals.ytdMeta += d.ytdMeta; totals.ytdReal += d.ytdReal;
+    totals.anoMeta += d.anoMeta; totals.anoReal += d.anoReal;
+    totals.carteira += cart;
+  });
+
+  var tMesPct = totals.mesMeta > 0 ? (totals.mesReal / totals.mesMeta * 100) : 0;
+  var tYtdPct = totals.ytdMeta > 0 ? (totals.ytdReal / totals.ytdMeta * 100) : 0;
+  var tAnoPct = totals.anoMeta > 0 ? (totals.anoReal / totals.anoMeta * 100) : 0;
+  var tCartPct = totals.anoMeta > 0 ? (totals.carteira / totals.anoMeta * 100) : 0;
+
+  html += '<tr class="total-row"><td><strong>TOTAL</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.mesMeta) + '</strong></td><td><strong>' + fmtBRL(totals.mesReal) + '</strong></td>';
+  html += '<td class="kpi-percent ' + pctClass(tMesPct) + '" style="font-size:11px"><strong>' + fmtPctRaw(tMesPct) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.ytdMeta) + '</strong></td><td><strong>' + fmtBRL(totals.ytdReal) + '</strong></td>';
+  html += '<td class="kpi-percent ' + pctClass(tYtdPct) + '" style="font-size:11px"><strong>' + fmtPctRaw(tYtdPct) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.anoMeta) + '</strong></td><td><strong>' + fmtBRL(totals.anoReal) + '</strong></td>';
+  html += '<td class="kpi-percent ' + pctClass(tAnoPct) + '" style="font-size:11px"><strong>' + fmtPctRaw(tAnoPct) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(totals.carteira) + '</strong></td>';
+  html += '<td><strong>' + fmtPctRaw(tCartPct) + '</strong></td></tr>';
+
+  html += '</tbody></table></div>';
+  document.getElementById('verticalSection').innerHTML = html;
+}
+
+/* ── CONSULTORES ── */
+function renderConsultores() {
+  var consultores = {};
+  DATA.planRealConsultor.forEach(function(r) {
+    var c = r.consultor || r.vendedor || 'OUTROS';
+    var v = r.vertical || '';
+    var key = c + '|' + v;
+    if (!consultores[key]) {
+      consultores[key] = { consultor: c, vertical: v, mesMeta: 0, mesReal: 0, ytdMeta: 0, ytdReal: 0, anoMeta: 0, anoReal: 0 };
+    }
+    var meta = safeNum(r.meta);
+    var real = safeNum(r.realizado);
+    if (r.id_tempo === CURRENT_MONTH_STR) {
+      consultores[key].mesMeta += meta;
+      consultores[key].mesReal += real;
+    }
+    if (YTD_MONTHS.indexOf(r.id_tempo) >= 0) {
+      consultores[key].ytdMeta += meta;
+      consultores[key].ytdReal += real;
+    }
+    consultores[key].anoMeta += meta;
+    consultores[key].anoReal += real;
+  });
+
+  // Carteira by consultor
+  var carteiraByC = {};
+  DATA.carteira.forEach(function(r) {
+    var c = r.consultor || r.vendedor || 'OUTROS';
+    if (!carteiraByC[c]) carteiraByC[c] = 0;
+    carteiraByC[c] += safeNum(r.vlr_carteira);
+  });
+
+  var rows = [];
+  for (var k in consultores) {
+    if (consultores.hasOwnProperty(k)) rows.push(consultores[k]);
+  }
+  rows.sort(function(a, b) { return b.ytdReal - a.ytdReal; });
+
+  var html = '<h2 class="section-title">Consultores \u2014 Mes + YTD + Ano</h2>';
+  html += '<div class="table-container"><table><thead>';
+  html += '<tr><th>Consultor</th><th>Vertical</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">MES</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">YTD</th>';
+  html += '<th colspan="3" style="text-align:center;border-right:2px solid var(--border-color)">ANO</th>';
+  html += '<th colspan="2" style="text-align:center">CARTEIRA</th></tr>';
+  html += '<tr><th></th><th></th><th>Meta</th><th>Real</th><th>Ating%</th><th>Meta</th><th>Real</th><th>Ating%</th><th>Meta</th><th>Real</th><th>%Meta</th><th>Valor</th><th>%Meta</th></tr>';
+  html += '</thead><tbody>';
+
+  var totals = { mesMeta: 0, mesReal: 0, ytdMeta: 0, ytdReal: 0, anoMeta: 0, anoReal: 0, carteira: 0 };
+
+  rows.forEach(function(d) {
+    var cart = carteiraByC[d.consultor] || 0;
+    var mesPct = d.mesMeta > 0 ? (d.mesReal / d.mesMeta * 100) : 0;
+    var ytdPct = d.ytdMeta > 0 ? (d.ytdReal / d.ytdMeta * 100) : 0;
+    var anoPct = d.anoMeta > 0 ? (d.anoReal / d.anoMeta * 100) : 0;
+    var cartPct = d.anoMeta > 0 ? (cart / d.anoMeta * 100) : 0;
+
+    html += '<tr><td>' + d.consultor + '</td>';
+    html += '<td>' + vertBadge(d.vertical) + '</td>';
+    html += '<td>' + fmtBRL(d.mesMeta) + '</td><td>' + fmtBRL(d.mesReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(mesPct) + '" style="font-size:11px">' + fmtPctRaw(mesPct) + '</td>';
+    html += '<td>' + fmtBRL(d.ytdMeta) + '</td><td>' + fmtBRL(d.ytdReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(ytdPct) + '" style="font-size:11px">' + fmtPctRaw(ytdPct) + '</td>';
+    html += '<td>' + fmtBRL(d.anoMeta) + '</td><td>' + fmtBRL(d.anoReal) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(anoPct) + '" style="font-size:11px">' + fmtPctRaw(anoPct) + '</td>';
+    html += '<td>' + fmtBRL(cart) + '</td>';
+    html += '<td>' + fmtPctRaw(cartPct) + '</td></tr>';
+
+    totals.mesMeta += d.mesMeta; totals.mesReal += d.mesReal;
+    totals.ytdMeta += d.ytdMeta; totals.ytdReal += d.ytdReal;
+    totals.anoMeta += d.anoMeta; totals.anoReal += d.anoReal;
+    totals.carteira += cart;
+  });
+
+  html += '</tbody></table></div>';
+  document.getElementById('consultoresSection').innerHTML = html;
+}
+
+/* ── CARTEIRA RESUMO ── */
+function renderCarteiraResumo() {
+  var byConsultor = {};
+  DATA.carteira.forEach(function(r) {
+    var c = r.consultor || r.vendedor || 'OUTROS';
+    if (!byConsultor[c]) byConsultor[c] = { pedidos: 0, clientes: {}, valor: 0 };
+    byConsultor[c].pedidos++;
+    byConsultor[c].clientes[r.cliente || ''] = true;
+    byConsultor[c].valor += safeNum(r.vlr_carteira);
+  });
+
+  var totalVal = 0;
+  var rows = [];
+  for (var k in byConsultor) {
+    if (byConsultor.hasOwnProperty(k)) {
+      var d = byConsultor[k];
+      totalVal += d.valor;
+      rows.push({ consultor: k, pedidos: d.pedidos, clientes: Object.keys(d.clientes).length, valor: d.valor });
+    }
+  }
+  rows.sort(function(a, b) { return b.valor - a.valor; });
+
+  var html = '<h2 class="section-title">Carteira de Pedidos \u2014 Por Consultor</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>Consultor</th><th>Pedidos</th><th>Clientes</th><th>Valor</th><th>% Total</th></tr></thead><tbody>';
+
+  rows.forEach(function(r) {
+    var pct = totalVal > 0 ? (r.valor / totalVal * 100) : 0;
+    html += '<tr><td>' + r.consultor + '</td><td>' + r.pedidos + '</td><td>' + r.clientes + '</td>';
+    html += '<td>' + fmtBRL(r.valor) + '</td><td>' + fmtPctRaw(pct) + '</td></tr>';
+  });
+
+  html += '<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td></td>';
+  html += '<td><strong>' + fmtBRL(totalVal) + '</strong></td><td><strong>100%</strong></td></tr>';
+  html += '</tbody></table></div>';
+  document.getElementById('carteiraResumoSection').innerHTML = html;
+}
+
+/* ── CARTEIRA DETALHADO ── */
+function renderCarteiraDetalhado() {
+  var rows = DATA.carteira.slice().sort(function(a, b) { return safeNum(b.vlr_carteira) - safeNum(a.vlr_carteira); });
+
+  var html = '<h2 class="section-title">Carteira de Pedidos \u2014 Detalhado</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>Consultor</th><th>Vertical</th><th>Cliente</th><th>Produto</th><th>Qtd</th><th>UF</th><th>Valor</th></tr></thead><tbody>';
+
+  var showCount = Math.min(rows.length, 30);
+  for (var i = 0; i < showCount; i++) {
+    var r = rows[i];
+    html += '<tr><td>' + (r.consultor || r.vendedor || '') + '</td>';
+    html += '<td>' + vertBadge(r.vertical || '') + '</td>';
+    html += '<td>' + (r.cliente || '') + '</td>';
+    html += '<td>' + (r.produto || r.categoria_produto || '') + '</td>';
+    html += '<td>' + (r.qtd || r.quantidade || '') + '</td>';
+    html += '<td>' + (r.uf || '') + '</td>';
+    html += '<td>' + fmtBRL(safeNum(r.vlr_carteira)) + '</td></tr>';
+  }
+  if (rows.length > showCount) {
+    html += '<tr><td colspan="7" style="text-align:center;opacity:.5;font-size:10px">... +' + (rows.length - showCount) + ' pedidos</td></tr>';
+  }
+  html += '</tbody></table></div>';
+  document.getElementById('carteiraDetalhadoSection').innerHTML = html;
+}
+
+/* ── FATURAMENTO POR UF ── */
+function renderUF() {
+  var ytdData = DATA.movFiscal.filter(function(r) { return YTD_MONTHS.indexOf(r.id_tempo) >= 0; });
+  var byUF = {};
+  var totalUF = 0;
+  ytdData.forEach(function(r) {
+    var uf = r.uf || 'N/A';
+    if (!byUF[uf]) byUF[uf] = { vlr: 0, frete: 0 };
+    byUF[uf].vlr += safeNum(r.vlr_contabil);
+    byUF[uf].frete += safeNum(r.frete_rateado);
+    totalUF += safeNum(r.vlr_contabil);
+  });
+
+  var rows = [];
+  for (var k in byUF) {
+    if (byUF.hasOwnProperty(k)) rows.push({ uf: k, vlr: byUF[k].vlr, frete: byUF[k].frete });
+  }
+  rows.sort(function(a, b) { return b.vlr - a.vlr; });
+
+  var html = '<h2 class="section-title">Faturamento por UF \u2014 YTD</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>UF</th><th>Faturamento</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
+
+  var acum = 0;
+  rows.forEach(function(r) {
+    var pct = totalUF > 0 ? (r.vlr / totalUF * 100) : 0;
+    acum += pct;
+    html += '<tr><td>' + r.uf + '</td>';
+    html += '<td><span data-sf="' + fmtBRL(r.vlr) + '" data-cf="' + fmtBRL(r.vlr + r.frete) + '">' + fmtBRL(r.vlr) + '</span></td>';
+    html += '<td>' + fmtPctRaw(pct) + '</td>';
+    html += '<td>' + fmtPctRaw(acum) + '</td></tr>';
+  });
+
+  html += '<tr class="total-row"><td><strong>TOTAL</strong></td>';
+  html += '<td><strong>' + fmtBRL(totalUF) + '</strong></td><td><strong>100%</strong></td><td></td></tr>';
+  html += '</tbody></table></div>';
+  document.getElementById('ufSection').innerHTML = html;
+}
+
+/* ── CLIENTES 80/20 ── */
+function renderClientes8020() {
+  var byCliente = {};
+  var totalReal = 0;
+  DATA.planRealCliente.forEach(function(r) {
+    if (YTD_MONTHS.indexOf(r.id_tempo) < 0) return;
+    var c = r.cliente || 'N/A';
+    if (!byCliente[c]) byCliente[c] = { meta: 0, real: 0, vertical: r.vertical || '' };
+    byCliente[c].meta += safeNum(r.meta);
+    byCliente[c].real += safeNum(r.realizado);
+    totalReal += safeNum(r.realizado);
+  });
+
+  var rows = [];
+  for (var k in byCliente) {
+    if (byCliente.hasOwnProperty(k)) rows.push({ cliente: k, meta: byCliente[k].meta, real: byCliente[k].real, vertical: byCliente[k].vertical });
+  }
+  rows.sort(function(a, b) { return b.real - a.real; });
+
+  var html = '<h2 class="section-title">Clientes 80/20 \u2014 Plano vs Realizado</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>Cliente</th><th>Vertical</th><th>Meta</th><th>Real</th><th>Ating%</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
+
+  var acum = 0;
+  var showCount = Math.min(rows.length, 30);
+  for (var i = 0; i < showCount; i++) {
+    var r = rows[i];
+    var pct = r.meta > 0 ? (r.real / r.meta * 100) : 0;
+    var pctTotal = totalReal > 0 ? (r.real / totalReal * 100) : 0;
+    acum += pctTotal;
+    html += '<tr><td>' + r.cliente + '</td>';
+    html += '<td>' + vertBadge(r.vertical) + '</td>';
+    html += '<td>' + fmtBRL(r.meta) + '</td>';
+    html += '<td>' + fmtBRL(r.real) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(pct) + '" style="font-size:11px">' + fmtPctRaw(pct) + '</td>';
+    html += '<td>' + fmtPctRaw(pctTotal) + '</td>';
+    html += '<td>' + fmtPctRaw(acum) + '</td></tr>';
+  }
+  if (rows.length > showCount) {
+    html += '<tr><td colspan="7" style="text-align:center;opacity:.5;font-size:10px">... +' + (rows.length - showCount) + ' clientes</td></tr>';
+  }
+  html += '</tbody></table></div>';
+  document.getElementById('clientes8020Section').innerHTML = html;
+}
+
+/* ── PRODUTOS 80/20 ── */
+function renderProdutos8020() {
+  var byProduto = {};
+  var totalReal = 0;
+  DATA.planRealProduto.forEach(function(r) {
+    if (YTD_MONTHS.indexOf(r.id_tempo) < 0) return;
+    var p = r.produto || r.categoria_produto || 'N/A';
+    if (!byProduto[p]) byProduto[p] = { meta: 0, real: 0 };
+    byProduto[p].meta += safeNum(r.meta);
+    byProduto[p].real += safeNum(r.realizado);
+    totalReal += safeNum(r.realizado);
+  });
+
+  var rows = [];
+  for (var k in byProduto) {
+    if (byProduto.hasOwnProperty(k)) rows.push({ produto: k, meta: byProduto[k].meta, real: byProduto[k].real });
+  }
+  rows.sort(function(a, b) { return b.real - a.real; });
+
+  var html = '<h2 class="section-title">Produtos (Categoria) 80/20 \u2014 Plano vs Realizado</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>Produto</th><th>Meta</th><th>Real</th><th>Ating%</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
+
+  var acum = 0;
+  rows.forEach(function(r) {
+    var pct = r.meta > 0 ? (r.real / r.meta * 100) : 0;
+    var pctTotal = totalReal > 0 ? (r.real / totalReal * 100) : 0;
+    acum += pctTotal;
+    html += '<tr><td>' + r.produto + '</td>';
+    html += '<td>' + fmtBRL(r.meta) + '</td>';
+    html += '<td>' + fmtBRL(r.real) + '</td>';
+    html += '<td class="kpi-percent ' + pctClass(pct) + '" style="font-size:11px">' + fmtPctRaw(pct) + '</td>';
+    html += '<td>' + fmtPctRaw(pctTotal) + '</td>';
+    html += '<td>' + fmtPctRaw(acum) + '</td></tr>';
+  });
+  html += '</tbody></table></div>';
+  document.getElementById('produtos8020Section').innerHTML = html;
+}
+
+/* ── CFOP ── */
+function renderCFOP() {
+  var ytdData = DATA.movFiscal.filter(function(r) { return YTD_MONTHS.indexOf(r.id_tempo) >= 0; });
+  var byCfop = {};
+  var totalVlr = 0;
+  ytdData.forEach(function(r) {
+    var cfop = r.cfop || 'N/A';
+    var op = r.operacao || '';
+    var key = cfop + '|' + op;
+    if (!byCfop[key]) byCfop[key] = { cfop: cfop, operacao: op, vlr: 0, frete: 0, nfs: 0 };
+    byCfop[key].vlr += safeNum(r.vlr_contabil);
+    byCfop[key].frete += safeNum(r.frete_rateado);
+    byCfop[key].nfs++;
+    totalVlr += safeNum(r.vlr_contabil);
+  });
+
+  var rows = [];
+  for (var k in byCfop) {
+    if (byCfop.hasOwnProperty(k)) rows.push(byCfop[k]);
+  }
+  rows.sort(function(a, b) { return b.vlr - a.vlr; });
+
+  var html = '<h2 class="section-title">Por Operacao / CFOP \u2014 YTD</h2>';
+  html += '<div class="table-container"><table><thead><tr><th>CFOP</th><th>Operacao</th><th>NFs</th><th>Faturamento</th><th>% Total</th></tr></thead><tbody>';
+
+  rows.forEach(function(r) {
+    var pct = totalVlr > 0 ? (r.vlr / totalVlr * 100) : 0;
+    html += '<tr><td>' + r.cfop + '</td>';
+    html += '<td>' + r.operacao + '</td>';
+    html += '<td>' + r.nfs + '</td>';
+    html += '<td><span data-sf="' + fmtBRL(r.vlr) + '" data-cf="' + fmtBRL(r.vlr + r.frete) + '">' + fmtBRL(r.vlr) + '</span></td>';
+    html += '<td>' + fmtPctRaw(pct) + '</td></tr>';
+  });
+
+  html += '<tr class="total-row"><td><strong>TOTAL</strong></td><td></td><td></td>';
+  html += '<td><strong>' + fmtBRL(totalVlr) + '</strong></td><td><strong>100%</strong></td></tr>';
+  html += '</tbody></table></div>';
+  document.getElementById('cfopSection').innerHTML = html;
+}
+
+/* ── FRETE SECTION ── */
+function renderFreteSection() {
+  var ytdData = DATA.movFiscal.filter(function(r) { return YTD_MONTHS.indexOf(r.id_tempo) >= 0; });
+  var mesData = DATA.movFiscal.filter(function(r) { return r.id_tempo === CURRENT_MONTH_STR; });
+
+  var totalFreteMes = 0, totalFatMes = 0;
+  mesData.forEach(function(r) {
+    totalFreteMes += safeNum(r.frete_rateado);
+    totalFatMes += safeNum(r.vlr_contabil);
+  });
+
+  var totalFreteYtd = 0, totalFatYtd = 0;
+  ytdData.forEach(function(r) {
+    totalFreteYtd += safeNum(r.frete_rateado);
+    totalFatYtd += safeNum(r.vlr_contabil);
+  });
+
+  var fretePctMes = totalFatMes > 0 ? (totalFreteMes / totalFatMes * 100) : 0;
+
+  // By vertical then client
+  var byVert = {};
+  ytdData.forEach(function(r) {
+    var v = (r.vertical || 'OUTROS').toLowerCase();
+    var c = r.cliente || 'N/A';
+    if (!byVert[v]) byVert[v] = { total: 0, frete: 0, clients: {} };
+    byVert[v].total += safeNum(r.vlr_contabil);
+    byVert[v].frete += safeNum(r.frete_rateado);
+    if (!byVert[v].clients[c]) byVert[v].clients[c] = { vlr: 0, frete: 0 };
+    byVert[v].clients[c].vlr += safeNum(r.vlr_contabil);
+    byVert[v].clients[c].frete += safeNum(r.frete_rateado);
+  });
+
+  var html = '<h2 class="section-title">Analise de Fretes \u2014 YTD ' + CURRENT_YEAR + '</h2>';
+  html += '<div class="grid-2">';
+  html += '<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Frete Mes Atual</div>';
+  html += '<div class="kpi-value" style="color:var(--amber)">' + fmtBRL(totalFreteMes) + '</div>';
+  html += '<div class="kpi-row"><span class="kpi-label">% do Fat. Mes:</span><span class="kpi-number" style="color:var(--amber)">' + fmtPctRaw(fretePctMes) + '</span></div></div>';
+  html += '<div class="kpi-card" style="border-top:3px solid var(--amber)"><div class="kpi-title">Frete YTD</div>';
+  html += '<div class="kpi-value" style="color:var(--amber)">' + fmtBRL(totalFreteYtd) + '</div>';
+  var fretePctYtd = totalFatYtd > 0 ? (totalFreteYtd / totalFatYtd * 100) : 0;
+  html += '<div class="kpi-row"><span class="kpi-label">% do Fat. YTD:</span><span class="kpi-number" style="color:var(--amber)">' + fmtPctRaw(fretePctYtd) + '</span></div></div>';
+  html += '</div>';
+
+  // Frete table by vertical + clients
+  html += '<div class="table-container"><table><thead>';
+  html += '<tr><th>Vertical / Cliente</th><th>Fat. s/ Frete</th><th style="color:var(--amber)">Frete</th><th>Fat. c/ Frete</th><th>Frete %</th></tr>';
+  html += '</thead><tbody>';
+
+  var vertOrder = ['agro', 'agua', 'corporativo', 'florestas'];
+  var vKeys = Object.keys(byVert).sort(function(a, b) {
+    var ia = vertOrder.indexOf(a);
+    var ib = vertOrder.indexOf(b);
+    if (ia < 0) ia = 99;
+    if (ib < 0) ib = 99;
+    return ia - ib;
+  });
+
+  var grandTotal = 0, grandFrete = 0;
+
+  vKeys.forEach(function(v) {
+    var d = byVert[v];
+    var clientCount = Object.keys(d.clients).length;
+    var fretePct = d.total > 0 ? (d.frete / d.total * 100) : 0;
+    var fretePctClass = fretePct > 5 ? 'metric-bad' : 'metric-good';
+    grandTotal += d.total;
+    grandFrete += d.frete;
+
+    html += '<tr class="frete-toggle-row" data-vert-group="' + v + '" onclick="toggleFreteVert(this)" style="background:var(--bg-tertiary);font-weight:700">';
+    html += '<td>' + vertBadge(v) + ' <span style="opacity:.5;font-size:10px">(' + clientCount + ' clientes)</span></td>';
+    html += '<td>' + fmtBRL(d.total) + '</td>';
+    html += '<td style="color:var(--amber)">' + fmtBRL(d.frete) + '</td>';
+    html += '<td>' + fmtBRL(d.total + d.frete) + '</td>';
+    html += '<td class="' + fretePctClass + '">' + fmtPctRaw(fretePct) + '</td></tr>';
+
+    // Client rows (sorted by frete desc)
+    var cRows = [];
+    for (var ck in d.clients) {
+      if (d.clients.hasOwnProperty(ck)) {
+        cRows.push({ cliente: ck, vlr: d.clients[ck].vlr, frete: d.clients[ck].frete });
+      }
+    }
+    cRows.sort(function(a, b) { return b.frete - a.frete; });
+
+    var showMax = Math.min(cRows.length, 20);
+    for (var ci = 0; ci < showMax; ci++) {
+      var cr = cRows[ci];
+      var cfp = cr.vlr > 0 ? (cr.frete / cr.vlr * 100) : 0;
+      var cfpClass = cfp > 10 ? 'metric-bad' : cfp > 5 ? 'metric-warning' : 'metric-good';
+      html += '<tr class="frete-cli-rows frete-cli-' + v + '">';
+      html += '<td style="padding-left:24px;font-weight:400">' + cr.cliente + '</td>';
+      html += '<td>' + fmtBRL(cr.vlr) + '</td>';
+      html += '<td style="color:var(--amber)">' + fmtBRL(cr.frete) + '</td>';
+      html += '<td>' + fmtBRL(cr.vlr + cr.frete) + '</td>';
+      html += '<td class="' + cfpClass + '">' + fmtPctRaw(cfp) + '</td></tr>';
+    }
+    if (cRows.length > showMax) {
+      html += '<tr class="frete-cli-rows frete-cli-' + v + '"><td style="padding-left:24px;opacity:.5;font-size:10px">... +' + (cRows.length - showMax) + ' clientes</td><td colspan="4"></td></tr>';
+    }
+  });
+
+  var grandFretePct = grandTotal > 0 ? (grandFrete / grandTotal * 100) : 0;
+  html += '<tr class="total-row"><td><strong>TOTAL GERAL</strong></td>';
+  html += '<td><strong>' + fmtBRL(grandTotal) + '</strong></td>';
+  html += '<td style="color:var(--amber)"><strong>' + fmtBRL(grandFrete) + '</strong></td>';
+  html += '<td><strong>' + fmtBRL(grandTotal + grandFrete) + '</strong></td>';
+  html += '<td class="metric-good"><strong>' + fmtPctRaw(grandFretePct) + '</strong></td></tr>';
+  html += '</tbody></table></div>';
+
+  document.getElementById('freteSection').innerHTML = html;
+}
+
+/* ── FRETE TOGGLE ── */
+function toggleFrete() {
+  _showFrete = !_showFrete;
+  applyFreteState();
+}
+
+function applyFreteState() {
+  var els = document.querySelectorAll('[data-sf]');
+  for (var i = 0; i < els.length; i++) {
+    var el = els[i];
+    el.textContent = _showFrete ? el.getAttribute('data-cf') : el.getAttribute('data-sf');
+    if (el.hasAttribute('data-cls-sf') && el.hasAttribute('data-cls-cf')) {
+      el.className = _showFrete ? el.getAttribute('data-cls-cf') : el.getAttribute('data-cls-sf');
+    }
+  }
+  var btn = document.getElementById('freteToggle');
+  var ind = document.getElementById('freteIndicator');
+  if (btn) { btn.textContent = _showFrete ? 'COM FRETE' : 'SEM FRETE'; if (_showFrete) { btn.classList.add('active'); } else { btn.classList.remove('active'); } }
+  if (ind) { ind.textContent = _showFrete ? 'Valores: COM frete (bruto)' : 'Valores: SEM frete (liquido)'; }
+}
+
+function toggleFreteVert(el) {
+  if (el.classList.contains('open')) { el.classList.remove('open'); } else { el.classList.add('open'); }
+  var g = el.getAttribute('data-vert-group');
+  var rows = document.querySelectorAll('.frete-cli-' + g);
+  var show = el.classList.contains('open');
+  for (var i = 0; i < rows.length; i++) {
+    if (show) { rows[i].classList.add('show'); } else { rows[i].classList.remove('show'); }
+  }
+}
+
+/* ── CLOCK ── */
+function updateClock() {
+  var n = new Date();
+  var h = n.getHours(); var m = n.getMinutes(); var s = n.getSeconds();
+  document.getElementById('clock').textContent = (h < 10 ? '0' : '') + h + ':' + (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+  document.getElementById('clockDate').textContent = DIAS_SEMANA[n.getDay()] + ', ' + n.getDate() + ' ' + MONTH_NAMES[n.getMonth()];
+}
+
+/* ── REFRESH TIMER ── */
+function updateRefreshTimer() {
+  var m = Math.floor(rc / 60);
+  var s = rc % 60;
+  document.getElementById('refreshTimer').textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  rc--;
+  if (rc < 0) {
+    rc = 300;
+    loadData();
+  }
+}
+
+/* ── FULLSCREEN ── */
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(function(e) {});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'F11') { e.preventDefault(); toggleFullscreen(); }
+});
+
+/* ── INIT ── */
+updateClock();
+updateRefreshTimer();
+setInterval(updateClock, 1000);
+setInterval(updateRefreshTimer, 1000);
+loadData();
+</script></body></html>
