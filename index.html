@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboards Araunah</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body {
+    height: 100%; font-family: 'Inter', -apple-system, sans-serif;
+    background: #0a0f1a; color: #f0f6fc;
+    display: flex; align-items: center; justify-content: center;
+}
+.menu { text-align: center; }
+.menu h1 { font-size: 28px; font-weight: 800; margin-bottom: 8px; }
+.menu p { color: #8b949e; font-size: 13px; margin-bottom: 32px; }
+.cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; max-width: 600px; }
+.card {
+    background: linear-gradient(135deg, #161b22, #0a0f1a);
+    border: 2px solid rgba(255,255,255,0.1); border-radius: 12px;
+    padding: 28px 24px; text-decoration: none; color: #f0f6fc;
+    transition: all 0.3s; position: relative; overflow: hidden;
+}
+.card:hover { transform: translateY(-4px); border-color: #2ecc71; box-shadow: 0 8px 32px rgba(46,204,113,0.2); }
+.card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; opacity: 0.7; }
+.card.exec::before { background: linear-gradient(90deg, #E76F51, #2ecc71); }
+.card.agro::before { background: #2ecc71; }
+.card.agua::before { background: #3498db; }
+.card.vendas::before { background: linear-gradient(90deg, #2ecc71, #3498db); }
+.card h2 { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+.card span { font-size: 11px; color: #8b949e; }
+.card.exec h2 { color: #E76F51; }
+.card.agro h2 { color: #2ecc71; }
+.card.agua h2 { color: #3498db; }
+.card.vendas h2 { color: #f39c12; }
+@media (max-width: 500px) { .cards { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body>
+<div class="menu">
+    <h1>Dashboards Araunah</h1>
+    <p>Paineis de performance comercial em tempo real</p>
+    <div class="cards">
+        <a href="executivo.html" class="card exec">
+            <h2>EXECUTIVO</h2>
+            <span>Visao consolidada de todas as verticais</span>
+        </a>
+        <a href="agro.html" class="card agro">
+            <h2>AGRO</h2>
+            <span>Performance da vertical Agro</span>
+        </a>
+        <a href="agua.html" class="card agua">
+            <h2>AGUA</h2>
+            <span>Performance da vertical Agua</span>
+        </a>
+        <a href="vendas.html" class="card vendas">
+            <h2>TV VENDAS</h2>
+            <span>Alternancia automatica AGRO / AGUA</span>
+        </a>
+    </div>
+</div>
+</body>
+</html>
