@@ -209,7 +209,7 @@ function sbFetch(view, params, cb) {
       'Authorization': 'Bearer ' + ANON_KEY
     }
   }).then(function(r) { return r.json(); })
-  .then(function(data) { cb(null, data); })
+  .then(function(data) { if(Array.isArray(data)){cb(null,data)}else{console.warn("sbFetch non-array:",data);cb(null,[])} })
   .catch(function(err) { cb(err, []); });
 }
 
@@ -229,7 +229,7 @@ var totalLoads = 4;
 function checkAllLoaded() {
   loadCount++;
   if (loadCount >= totalLoads) {
-    renderAll();
+    try{renderAll()}catch(e){console.error("renderAll error:",e)}
     var el = document.getElementById('loadingOverlay');
     if (el) el.style.display = 'none';
   }

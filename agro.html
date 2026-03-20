@@ -259,8 +259,11 @@ function sbFetch(view, params, cb) {
       'Authorization': 'Bearer ' + ANON_KEY
     }
   }).then(function(r) { return r.json(); })
-  .then(function(data) { cb(null, data); })
-  .catch(function(err) { cb(err, []); });
+  .then(function(data) {
+    if (Array.isArray(data)) { cb(null, data); }
+    else { console.warn('sbFetch '+view+' returned non-array:', data); cb(null, []); }
+  })
+  .catch(function(err) { console.error('sbFetch '+view+' error:', err); cb(err, []); });
 }
 
 /* ── DATA STORE ── */
@@ -280,11 +283,20 @@ var totalLoads = 6;
 function checkAllLoaded() {
   loadCount++;
   if (loadCount >= totalLoads) {
-    renderAll();
+    try { renderAll(); } catch(e) { console.error('renderAll error:', e); }
     var el = document.getElementById('loadingOverlay');
     if (el) el.style.display = 'none';
   }
 }
+/* Safety: force hide overlay after 20s even if some fetch fails */
+setTimeout(function(){
+  var el = document.getElementById('loadingOverlay');
+  if (el && el.style.display !== 'none') {
+    console.warn('Force hiding overlay after timeout. loadCount='+loadCount+'/'+totalLoads);
+    try { renderAll(); } catch(e) { console.error('renderAll timeout error:', e); }
+    el.style.display = 'none';
+  }
+}, 20000);
 
 function loadData() {
   loadCount = 0;
@@ -308,30 +320,54 @@ function loadData() {
     checkAllLoaded();
   });
 
-  /* vw_movimento_fiscal filtered to AGRO */
+  /* vw_movimento_fiscal filtered to AGRO — normalize column names */
   sbFetch('vw_movimento_fiscal', 'id_tempo=like.' + CURRENT_YEAR + '-*&vertical=eq.AGRO&limit=10000', function(err, data) {
-    DATA.movFiscal = data || [];
-    checkAllLoaded();
-  });
-
-  /* vw_carteira_pedidos_unificada - filter after load by AGRO consultants */
-  sbFetch('vw_carteira_pedidos_unificada', 'status_pedido=eq.ABERTO', function(err, data) {
-    DATA.carteira = (data || []).filter(function(r) {
-      var v = (r.vertical || '').toUpperCase();
-      return v === 'AGRO';
+    DATA.movFiscal = (data || []).map(function(r) {
+      r.data_emissao = r.data_faturamento;
+      r.cliente = r.nome_cliente;
+      r.consultor = r.consultor_agrupado;
+      r.vendedor = r.representante;
+      r.vlr_contabil = safeNum(r.receita_liquida);
+      r.produto = r.produto_nome;
+      r.categoria_produto = r.produto_nome;
+      r.operacao = r.operacao_gerencial;
+      return r;
     });
     checkAllLoaded();
   });
 
-  /* vw_plan_vs_real_cliente filtered to AGRO */
-  sbFetch('vw_plan_vs_real_cliente', 'id_tempo=like.' + CURRENT_YEAR + '-*&vertical=eq.AGRO', function(err, data) {
-    DATA.planRealCliente = data || [];
+  /* vw_carteira_pedidos_unificada - filter after load by AGRO — normalize column names */
+  sbFetch('vw_carteira_pedidos_unificada', 'status_pedido=eq.ABERTO', function(err, data) {
+    DATA.carteira = (data || []).filter(function(r) {
+      var v = (r.vertical || '').toUpperCase();
+      return v === 'AGRO';
+    }).map(function(r) {
+      r.consultor = r.representante;
+      r.vendedor = r.representante;
+      r.cliente = r.nome_cliente;
+      r.produto = r.produto_nome;
+      return r;
+    });
     checkAllLoaded();
   });
 
-  /* vw_plan_vs_real_produto - load all (no vertical column guaranteed) */
-  sbFetch('vw_plan_vs_real_produto', 'id_tempo=like.' + CURRENT_YEAR + '-*', function(err, data) {
-    DATA.planRealProduto = data || [];
+  /* vw_plan_vs_real_cliente filtered to AGRO (view has no id_tempo — annual aggregate) */
+  sbFetch('vw_plan_vs_real_cliente', 'vertical=eq.AGRO', function(err, data) {
+    DATA.planRealCliente = (data || []).map(function(r) {
+      r.meta = safeNum(r.receita_plan);
+      r.realizado = safeNum(r.receita_real);
+      return r;
+    });
+    checkAllLoaded();
+  });
+
+  /* vw_plan_vs_real_produto — normalize column names */
+  sbFetch('vw_plan_vs_real_produto', 'id_tempo=like.' + CURRENT_YEAR + '-*&vertical=eq.AGRO', function(err, data) {
+    DATA.planRealProduto = (data || []).map(function(r) {
+      r.meta = safeNum(r.receita_plan);
+      r.realizado = safeNum(r.receita_real);
+      return r;
+    });
     checkAllLoaded();
   });
 }
@@ -437,16 +473,17 @@ function renderKPIs() {
 /* ── CLIENTE TABLE (Faturamento por Cliente) ── */
 function renderClienteTable() {
   var monthData = DATA.movFiscal.filter(function(r) { return r.id_tempo === CURRENT_MONTH_STR; });
+
+  /* Group by date + client for daily subtotals */
   var grouped = {};
   var totalSF = 0, totalCF = 0;
   monthData.forEach(function(r) {
-    var key = (r.data_emissao || r.id_tempo) + '|' + (r.cliente || '');
+    var dt = r.data_emissao || r.id_tempo || '';
+    var key = dt + '|' + (r.cliente || '');
     if (!grouped[key]) {
       grouped[key] = {
-        data: r.data_emissao || r.id_tempo,
+        data: dt,
         cliente: r.cliente || '',
-        produto: r.produto || r.categoria_produto || '',
-        vertical: r.vertical || '',
         consultor: r.consultor || r.vendedor || '',
         vlr_contabil: 0,
         frete: 0
@@ -464,30 +501,48 @@ function renderClienteTable() {
       totalCF += grouped[k].vlr_contabil + grouped[k].frete;
     }
   }
-  rows.sort(function(a, b) { return b.vlr_contabil - a.vlr_contabil; });
+  /* Sort by date (asc), then by value (desc) within same date */
+  rows.sort(function(a, b) {
+    if (a.data < b.data) return -1;
+    if (a.data > b.data) return 1;
+    return b.vlr_contabil - a.vlr_contabil;
+  });
 
   var html = '<h2 class="section-title">Faturamento por Cliente \u2014 ' + MONTH_NAMES[CURRENT_MONTH - 1] + '/' + CURRENT_YEAR + ' \u2014 AGRO</h2>';
   html += '<div class="table-container"><table style="font-size:12px"><thead><tr>';
-  html += '<th>Cliente</th><th>Consultor</th><th style="text-align:right">Faturamento</th><th style="text-align:right">%</th>';
+  html += '<th>Data</th><th>Cliente</th><th>Consultor</th><th style="text-align:right">Faturamento</th><th style="text-align:right">Acumulado</th>';
   html += '</tr></thead><tbody>';
 
-  var showCount = Math.min(rows.length, 20);
+  var acum = 0;
+  var lastDate = '';
+  var showCount = Math.min(rows.length, 40);
   for (var i = 0; i < showCount; i++) {
     var r = rows[i];
-    var pct = totalSF > 0 ? (r.vlr_contabil / totalSF * 100) : 0;
+    acum += r.vlr_contabil;
     var vlSF = r.vlr_contabil;
     var vlCF = r.vlr_contabil + r.frete;
-    html += '<tr><td>' + r.cliente + '</td>';
+    /* Format date dd/mm */
+    var dtDisplay = '';
+    if (r.data && r.data.length >= 10) {
+      dtDisplay = r.data.substring(8, 10) + '/' + r.data.substring(5, 7);
+    }
+    /* Show date only on first row of that date */
+    var showDate = (r.data !== lastDate);
+    lastDate = r.data;
+
+    html += '<tr' + (showDate && i > 0 ? ' style="border-top:2px solid var(--border-color)"' : '') + '>';
+    html += '<td style="font-weight:700;color:var(--text-secondary)">' + (showDate ? dtDisplay : '') + '</td>';
+    html += '<td>' + r.cliente + '</td>';
     html += '<td>' + r.consultor + '</td>';
     html += '<td><span data-sf="' + fmtBRL(vlSF) + '" data-cf="' + fmtBRL(vlCF) + '">' + fmtBRL(vlSF) + '</span></td>';
-    html += '<td>' + fmtPctRaw(pct) + '</td></tr>';
+    html += '<td style="color:var(--green);font-weight:600">' + fmtBRL(acum) + '</td></tr>';
   }
   if (rows.length > showCount) {
-    html += '<tr><td colspan="4" style="text-align:center;opacity:.5;font-size:10px">... +' + (rows.length - showCount) + ' clientes</td></tr>';
+    html += '<tr><td colspan="5" style="text-align:center;opacity:.5;font-size:10px">... +' + (rows.length - showCount) + ' registros</td></tr>';
   }
-  html += '<tr class="total-row"><td><strong>TOTAL</strong></td><td></td>';
+  html += '<tr class="total-row"><td></td><td><strong>TOTAL</strong></td><td></td>';
   html += '<td><strong><span data-sf="' + fmtBRL(totalSF) + '" data-cf="' + fmtBRL(totalCF) + '">' + fmtBRL(totalSF) + '</span></strong></td>';
-  html += '<td><strong>100%</strong></td></tr>';
+  html += '<td><strong>' + fmtBRL(totalSF) + '</strong></td></tr>';
   html += '</tbody></table></div>';
   document.getElementById('clienteTableSection').innerHTML = html;
 }
@@ -718,6 +773,15 @@ function renderConsultores() {
     totals.carteira += cart;
   });
 
+  /* Use vw_plan_vs_real_vertical for accurate annual totals (has all 12 months) */
+  var vertAnoMeta = 0, vertAnoReal = 0;
+  DATA.planReal.forEach(function(r) {
+    vertAnoMeta += safeNum(r.meta);
+    vertAnoReal += safeNum(r.realizado);
+  });
+  totals.anoMeta = vertAnoMeta;
+  totals.anoReal = vertAnoReal;
+
   var tMesPct = totals.mesMeta > 0 ? (totals.mesReal / totals.mesMeta * 100) : 0;
   var tYtdPct = totals.ytdMeta > 0 ? (totals.ytdReal / totals.ytdMeta * 100) : 0;
   var tAnoPct = totals.anoMeta > 0 ? (totals.anoReal / totals.anoMeta * 100) : 0;
@@ -840,8 +904,8 @@ function renderUF() {
 function renderClientes8020() {
   var byCliente = {};
   var totalReal = 0;
+  /* vw_plan_vs_real_cliente has no id_tempo — it's already annual aggregate */
   DATA.planRealCliente.forEach(function(r) {
-    if (YTD_MONTHS.indexOf(r.id_tempo) < 0) return;
     var c = r.cliente || 'N/A';
     if (!byCliente[c]) byCliente[c] = { meta: 0, real: 0 };
     byCliente[c].meta += safeNum(r.meta);
@@ -879,34 +943,35 @@ function renderClientes8020() {
   document.getElementById('clientes8020Section').innerHTML = html;
 }
 
-/* ── PRODUTOS 80/20 ── */
+/* ── PRODUTOS (CATEGORIA) 80/20 ── */
 function renderProdutos8020() {
-  var byProduto = {};
+  var byCat = {};
   var totalReal = 0;
+  /* Group by categoria (from plano_comercial_ciclo + mapa_produtos) */
   DATA.planRealProduto.forEach(function(r) {
     if (YTD_MONTHS.indexOf(r.id_tempo) < 0) return;
-    var p = r.produto || r.categoria_produto || 'N/A';
-    if (!byProduto[p]) byProduto[p] = { meta: 0, real: 0 };
-    byProduto[p].meta += safeNum(r.meta);
-    byProduto[p].real += safeNum(r.realizado);
+    var cat = r.categoria || 'OUTROS';
+    if (!byCat[cat]) byCat[cat] = { meta: 0, real: 0 };
+    byCat[cat].meta += safeNum(r.meta);
+    byCat[cat].real += safeNum(r.realizado);
     totalReal += safeNum(r.realizado);
   });
 
   var rows = [];
-  for (var k in byProduto) {
-    if (byProduto.hasOwnProperty(k)) rows.push({ produto: k, meta: byProduto[k].meta, real: byProduto[k].real });
+  for (var k in byCat) {
+    if (byCat.hasOwnProperty(k)) rows.push({ categoria: k, meta: byCat[k].meta, real: byCat[k].real });
   }
   rows.sort(function(a, b) { return b.real - a.real; });
 
   var html = '<h2 class="section-title">Produtos (Categoria) 80/20 AGRO \u2014 Plano vs Realizado</h2>';
-  html += '<div class="table-container"><table><thead><tr><th>Produto</th><th>Meta</th><th>Real</th><th>Ating%</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
+  html += '<div class="table-container"><table><thead><tr><th>Categoria</th><th>Meta</th><th>Real</th><th>Ating%</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
 
   var acum = 0;
   rows.forEach(function(r) {
     var pct = r.meta > 0 ? (r.real / r.meta * 100) : 0;
     var pctTotal = totalReal > 0 ? (r.real / totalReal * 100) : 0;
     acum += pctTotal;
-    html += '<tr><td>' + r.produto + '</td>';
+    html += '<tr><td><strong>' + r.categoria + '</strong></td>';
     html += '<td>' + fmtBRL(r.meta) + '</td>';
     html += '<td>' + fmtBRL(r.real) + '</td>';
     html += '<td class="kpi-percent ' + pctClass(pct) + '" style="font-size:11px">' + fmtPctRaw(pct) + '</td>';

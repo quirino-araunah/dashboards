@@ -273,7 +273,7 @@ function sbFetch(view, params, cb) {
       'Authorization': 'Bearer ' + ANON_KEY
     }
   }).then(function(r) { return r.json(); })
-  .then(function(data) { cb(null, data); })
+  .then(function(data) { if(Array.isArray(data)){cb(null,data)}else{console.warn("sbFetch non-array:",data);cb(null,[])} })
   .catch(function(err) { cb(err, []); });
 }
 
@@ -294,11 +294,19 @@ var totalLoads = 7;
 function checkAllLoaded() {
   loadCount++;
   if (loadCount >= totalLoads) {
-    renderAll();
+    try{renderAll()}catch(e){console.error("renderAll error:",e)}
     var el = document.getElementById('loadingOverlay');
     if (el) el.style.display = 'none';
   }
 }
+setTimeout(function(){
+  var el = document.getElementById('loadingOverlay');
+  if (el && el.style.display !== 'none') {
+    console.warn('Force hiding overlay after timeout. loadCount='+loadCount+'/'+totalLoads);
+    try { renderAll(); } catch(e) { console.error('renderAll timeout error:', e); }
+    el.style.display = 'none';
+  }
+}, 20000);
 
 function loadData() {
   loadCount = 0;
@@ -314,33 +322,60 @@ function loadData() {
   });
 
   sbFetch('vw_movimento_fiscal', 'id_tempo=like.' + CURRENT_YEAR + '-*&vertical=eq.AGUA&limit=10000', function(err, data) {
-    DATA.movFiscal = data || [];
+    DATA.movFiscal = (data || []).map(function(r) {
+      r.data_emissao = r.data_faturamento;
+      r.cliente = r.nome_cliente;
+      r.consultor = r.consultor_agrupado;
+      r.vendedor = r.representante;
+      r.vlr_contabil = safeNum(r.receita_liquida);
+      r.produto = r.produto_nome;
+      r.categoria_produto = r.produto_nome;
+      r.operacao = r.operacao_gerencial;
+      return r;
+    });
     checkAllLoaded();
   });
 
   sbFetch('vw_carteira_pedidos_unificada', 'status_pedido=eq.ABERTO', function(err, data) {
-    var all = data || [];
+    var all = (data || []).map(function(r) {
+      r.consultor = r.representante;
+      r.vendedor = r.representante;
+      r.cliente = r.nome_cliente;
+      r.produto = r.produto_nome;
+      return r;
+    });
     DATA.carteira = all.filter(function(r) {
       return isAguaConsultant(r.consultor || r.vendedor || '');
     });
     checkAllLoaded();
   });
 
-  sbFetch('vw_plan_vs_real_cliente', 'id_tempo=like.' + CURRENT_YEAR + '-*&vertical=eq.AGUA', function(err, data) {
-    DATA.planRealCliente = data || [];
+  sbFetch('vw_plan_vs_real_cliente', 'vertical=eq.AGUA', function(err, data) {
+    DATA.planRealCliente = (data || []).map(function(r) {
+      r.meta = safeNum(r.receita_plan);
+      r.realizado = safeNum(r.receita_real);
+      return r;
+    });
     checkAllLoaded();
   });
 
-  sbFetch('vw_plan_vs_real_produto', 'id_tempo=like.' + CURRENT_YEAR + '-*', function(err, data) {
-    var all = data || [];
-    DATA.planRealProduto = all.filter(function(r) {
-      return (r.vertical || '').toUpperCase() === 'AGUA';
+  sbFetch('vw_plan_vs_real_produto', 'id_tempo=like.' + CURRENT_YEAR + '-*&vertical=eq.AGUA', function(err, data) {
+    DATA.planRealProduto = (data || []).map(function(r) {
+      r.meta = safeNum(r.receita_plan);
+      r.realizado = safeNum(r.receita_real);
+      return r;
     });
     checkAllLoaded();
   });
 
   sbFetch('vw_locacao_completa', 'id_tempo=like.' + CURRENT_YEAR + '-*', function(err, data) {
-    var all = data || [];
+    var all = (data || []).map(function(r) {
+      r.consultor = r.profissional;
+      r.vendedor = r.profissional;
+      r.vlr_locacao = safeNum(r.vlr_liquido);
+      r.produto = r.nome_produto;
+      return r;
+    });
     DATA.locacao = all.filter(function(r) {
       return isAguaConsultant(r.consultor || r.vendedor || '');
     });
@@ -726,6 +761,15 @@ function renderConsultores() {
     totals.carteira += cart;
   });
 
+  /* Use vw_plan_vs_real_vertical for accurate annual totals (has all 12 months) */
+  var vertAnoMeta = 0, vertAnoReal = 0;
+  DATA.planReal.forEach(function(r) {
+    vertAnoMeta += safeNum(r.meta);
+    vertAnoReal += safeNum(r.realizado);
+  });
+  totals.anoMeta = vertAnoMeta;
+  totals.anoReal = vertAnoReal;
+
   var tMesPct = totals.mesMeta > 0 ? (totals.mesReal / totals.mesMeta * 100) : 0;
   var tYtdPct = totals.ytdMeta > 0 ? (totals.ytdReal / totals.ytdMeta * 100) : 0;
   var tAnoPct = totals.anoMeta > 0 ? (totals.anoReal / totals.anoMeta * 100) : 0;
@@ -920,8 +964,8 @@ function renderUF() {
 function renderClientes8020() {
   var byCliente = {};
   var totalReal = 0;
+  /* vw_plan_vs_real_cliente has no id_tempo — already annual aggregate */
   DATA.planRealCliente.forEach(function(r) {
-    if (YTD_MONTHS.indexOf(r.id_tempo) < 0) return;
     var c = r.cliente || 'N/A';
     if (!byCliente[c]) byCliente[c] = { meta: 0, real: 0 };
     byCliente[c].meta += safeNum(r.meta);
@@ -965,28 +1009,28 @@ function renderProdutos8020() {
   var totalReal = 0;
   DATA.planRealProduto.forEach(function(r) {
     if (YTD_MONTHS.indexOf(r.id_tempo) < 0) return;
-    var p = r.produto || r.categoria_produto || 'N/A';
-    if (!byProduto[p]) byProduto[p] = { meta: 0, real: 0 };
-    byProduto[p].meta += safeNum(r.meta);
-    byProduto[p].real += safeNum(r.realizado);
+    var cat = r.categoria || 'OUTROS';
+    if (!byProduto[cat]) byProduto[cat] = { meta: 0, real: 0 };
+    byProduto[cat].meta += safeNum(r.meta);
+    byProduto[cat].real += safeNum(r.realizado);
     totalReal += safeNum(r.realizado);
   });
 
   var rows = [];
   for (var k in byProduto) {
-    if (byProduto.hasOwnProperty(k)) rows.push({ produto: k, meta: byProduto[k].meta, real: byProduto[k].real });
+    if (byProduto.hasOwnProperty(k)) rows.push({ categoria: k, meta: byProduto[k].meta, real: byProduto[k].real });
   }
   rows.sort(function(a, b) { return b.real - a.real; });
 
   var html = '<h2 class="section-title">Produtos (Categoria) 80/20 \u2014 Plano vs Realizado</h2>';
-  html += '<div class="table-container"><table><thead><tr><th>Produto</th><th>Meta</th><th>Real</th><th>Ating%</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
+  html += '<div class="table-container"><table><thead><tr><th>Categoria</th><th>Meta</th><th>Real</th><th>Ating%</th><th>% Total</th><th>Acum%</th></tr></thead><tbody>';
 
   var acum = 0;
   rows.forEach(function(r) {
     var pct = r.meta > 0 ? (r.real / r.meta * 100) : 0;
     var pctTotal = totalReal > 0 ? (r.real / totalReal * 100) : 0;
     acum += pctTotal;
-    html += '<tr><td>' + r.produto + '</td>';
+    html += '<tr><td><strong>' + r.categoria + '</strong></td>';
     html += '<td>' + fmtBRL(r.meta) + '</td>';
     html += '<td>' + fmtBRL(r.real) + '</td>';
     html += '<td class="kpi-percent ' + pctClass(pct) + '" style="font-size:11px">' + fmtPctRaw(pct) + '</td>';
