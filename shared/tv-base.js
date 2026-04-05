@@ -3,6 +3,7 @@
    Shared: fetch, formatters, clock, chart, ranking, carteira
    ══════════════════════════════════════════════════════════ */
 
+// Public anon keys — safe for frontend. RLS policies MUST be enforced on all tables.
 var SUPABASE_URL = 'https://ripnqnytrwbaueadrtry.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpcG5xbnl0cndiYXVlYWRydHJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTk3NjAsImV4cCI6MjA4ODg5NTc2MH0.Ut7V6rG5AoKRbdqpvCeXsQJ4eozZ_nPxE7xKY4FuKOQ';
 

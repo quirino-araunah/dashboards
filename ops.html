@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OPS — Araunah Observabilidade</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0a0f1a;--card:#161b22;--border:rgba(255,255,255,0.08);
+  --green:#2ecc71;--amber:#f39c12;--red:#e74c3c;--blue:#3498db;--gray:#8b949e;
+  --text:#f0f6fc;--text2:#c9d1d9;
+}
+html,body{height:100%;font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text)}
+.header{display:flex;justify-content:space-between;align-items:center;padding:16px 24px;border-bottom:1px solid var(--border)}
+.header h1{font-size:20px;font-weight:800}
+.header .meta{font-size:11px;color:var(--gray)}
+.header .status-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:16px;padding:20px 24px}
+.section{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px;overflow:hidden}
+.section h2{font-size:13px;font-weight:700;color:var(--gray);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section h2 .count{background:var(--border);border-radius:10px;padding:1px 8px;font-size:11px;color:var(--text2)}
+.item{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border)}
+.item:last-child{border-bottom:none}
+.item-name{font-size:13px;font-weight:500}
+.item-detail{font-size:11px;color:var(--gray);margin-top:2px}
+.badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:12px;text-transform:uppercase;white-space:nowrap}
+.badge.ok{background:rgba(46,204,113,.15);color:var(--green)}
+.badge.warning{background:rgba(243,156,18,.15);color:var(--amber)}
+.badge.critical{background:rgba(231,76,60,.15);color:var(--red)}
+.badge.info{background:rgba(52,152,219,.15);color:var(--blue)}
+.gauge{margin-top:6px;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:2px;transition:width .6s}
+.resource-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.resource-row:last-child{border-bottom:none}
+.resource-label{font-size:13px;font-weight:500;min-width:70px}
+.resource-bar{flex:1}
+.resource-val{font-size:13px;font-weight:700;min-width:50px;text-align:right}
+.timeline{max-height:300px;overflow-y:auto}
+.timeline::-webkit-scrollbar{width:4px}
+.timeline::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+.alert-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:12px}
+.alert-item:last-child{border-bottom:none}
+.alert-time{color:var(--gray);font-size:10px}
+.alert-msg{margin-top:2px}
+.summary-bar{display:flex;gap:16px;padding:12px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+.summary-item{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:600}
+.summary-dot{width:10px;height:10px;border-radius:50%}
+.loading{text-align:center;padding:40px;color:var(--gray);font-size:13px}
+@media(max-width:600px){.grid{grid-template-columns:1fr;padding:12px}.header{padding:12px 16px}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1><span class="status-dot" id="live-dot" style="background:var(--green)"></span>OPS — Observabilidade</h1>
+  </div>
+  <div class="meta">
+    <span id="clock"></span> &middot; refresh <span id="countdown">60</span>s
+  </div>
+</div>
+
+<div class="summary-bar" id="summary-bar">
+  <div class="loading">Carregando...</div>
+</div>
+
+<div class="grid">
+  <div class="section" id="sec-services">
+    <h2>Servicos <span class="count" id="cnt-services">-</span></h2>
+    <div id="list-services"><div class="loading">...</div></div>
+  </div>
+  <div class="section" id="sec-sites">
+    <h2>Sites <span class="count" id="cnt-sites">-</span></h2>
+    <div id="list-sites"><div class="loading">...</div></div>
+  </div>
+  <div class="section" id="sec-syncs">
+    <h2>Syncs / Crons <span class="count" id="cnt-syncs">-</span></h2>
+    <div id="list-syncs"><div class="loading">...</div></div>
+  </div>
+  <div class="section" id="sec-resources">
+    <h2>Recursos</h2>
+    <div id="list-resources"><div class="loading">...</div></div>
+  </div>
+  <div class="section" id="sec-backups">
+    <h2>Backups</h2>
+    <div id="list-backups"><div class="loading">...</div></div>
+  </div>
+  <div class="section" id="sec-alerts">
+    <h2>Alertas recentes <span class="count" id="cnt-alerts">-</span></h2>
+    <div class="timeline" id="list-alerts"><div class="loading">...</div></div>
+  </div>
+</div>
+
+<script>
+var SB_URL='https://ripnqnytrwbaueadrtry.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJpcG5xbnl0cndiYXVlYWRydHJ5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMzMTk3NjAsImV4cCI6MjA4ODg5NTc2MH0.Ut7V6rG5AoKRbdqpvCeXsQJ4eozZ_nPxE7xKY4FuKOQ';
+
+function sbGet(params){
+  return fetch(SB_URL+'/rest/v1/ops_health_events?'+params,{
+    headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}
+  }).then(function(r){return r.json()});
+}
+
+function escH(s){return s?s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'):''}
+function badge(status){return '<span class="badge '+escH(status)+'">'+escH(status)+'</span>'}
+function gaugeColor(v){return v>90?'var(--red)':v>80?'var(--amber)':'var(--green)'}
+function timeAgo(d){
+  var m=Math.floor((Date.now()-new Date(d).getTime())/60000);
+  if(m<1)return 'agora';if(m<60)return m+'min';
+  var h=Math.floor(m/60);if(h<24)return h+'h';return Math.floor(h/24)+'d';
+}
+
+function renderItems(containerId,items,renderFn){
+  var el=document.getElementById(containerId);
+  if(!items.length){el.innerHTML='<div class="loading">Sem dados</div>';return}
+  el.innerHTML=items.map(renderFn).join('');
+}
+
+function loadDashboard(){
+  // Latest event per item (last 1h for freshness)
+  sbGet('select=*&order=created_at.desc&limit=500&created_at=gte.'+new Date(Date.now()-3600000).toISOString())
+  .then(function(rows){
+    // Deduplicate: keep latest per category+item
+    var latest={};
+    rows.forEach(function(r){
+      var key=r.category+'::'+r.item;
+      if(!latest[key])latest[key]=r;
+    });
+    var all=Object.values(latest);
+
+    var services=all.filter(function(r){return r.category==='service'});
+    var sites=all.filter(function(r){return r.category==='site'});
+    var syncs=all.filter(function(r){return r.category==='sync'});
+    var resources=all.filter(function(r){return r.category==='resource'});
+    var backups=all.filter(function(r){return r.category==='backup'});
+
+    // Summary
+    var total=all.length;
+    var ok=all.filter(function(r){return r.status==='ok'}).length;
+    var warn=all.filter(function(r){return r.status==='warning'}).length;
+    var crit=all.filter(function(r){return r.status==='critical'}).length;
+    document.getElementById('summary-bar').innerHTML=
+      '<div class="summary-item"><div class="summary-dot" style="background:var(--green)"></div>'+ok+' OK</div>'+
+      '<div class="summary-item"><div class="summary-dot" style="background:var(--amber)"></div>'+warn+' Warning</div>'+
+      '<div class="summary-item"><div class="summary-dot" style="background:var(--red)"></div>'+crit+' Critical</div>'+
+      '<div class="summary-item" style="color:var(--gray)">Total: '+total+'</div>';
+
+    document.getElementById('live-dot').style.background=crit>0?'var(--red)':warn>0?'var(--amber)':'var(--green)';
+
+    // Services
+    services.sort(function(a,b){return a.status==='critical'?-1:1});
+    document.getElementById('cnt-services').textContent=services.length;
+    renderItems('list-services',services,function(r){
+      return '<div class="item"><div><div class="item-name">'+escH(r.item)+'</div>'+
+        '<div class="item-detail">'+timeAgo(r.created_at)+'</div></div>'+badge(r.status)+'</div>';
+    });
+
+    // Sites
+    sites.sort(function(a,b){return a.status==='critical'?-1:1});
+    document.getElementById('cnt-sites').textContent=sites.length;
+    renderItems('list-sites',sites,function(r){
+      return '<div class="item"><div><div class="item-name">'+escH(r.item)+'</div>'+
+        '<div class="item-detail">'+escH(r.message)+' &middot; '+timeAgo(r.created_at)+'</div></div>'+badge(r.status)+'</div>';
+    });
+
+    // Syncs
+    syncs.sort(function(a,b){return a.status==='ok'?1:-1});
+    document.getElementById('cnt-syncs').textContent=syncs.length;
+    renderItems('list-syncs',syncs,function(r){
+      return '<div class="item"><div><div class="item-name">'+escH(r.item)+'</div>'+
+        '<div class="item-detail">'+escH(r.message)+' &middot; '+timeAgo(r.created_at)+'</div></div>'+badge(r.status)+'</div>';
+    });
+
+    // Resources
+    renderItems('list-resources',resources,function(r){
+      var v=parseFloat(r.value)||0;
+      return '<div class="resource-row"><div class="resource-label">'+escH(r.item)+'</div>'+
+        '<div class="resource-bar"><div class="gauge"><div class="gauge-fill" style="width:'+v+'%;background:'+gaugeColor(v)+'"></div></div></div>'+
+        '<div class="resource-val" style="color:'+gaugeColor(v)+'">'+v+'%</div></div>';
+    });
+
+    // Backups
+    renderItems('list-backups',backups,function(r){
+      return '<div class="item"><div><div class="item-name">'+escH(r.item)+'</div>'+
+        '<div class="item-detail">'+escH(r.message)+' &middot; '+timeAgo(r.created_at)+'</div></div>'+badge(r.status)+'</div>';
+    });
+  });
+
+  // Alerts (non-ok events, last 24h)
+  sbGet('select=*&order=created_at.desc&limit=50&status=neq.ok&created_at=gte.'+new Date(Date.now()-86400000).toISOString())
+  .then(function(rows){
+    document.getElementById('cnt-alerts').textContent=rows.length;
+    if(!rows.length){
+      document.getElementById('list-alerts').innerHTML='<div class="loading" style="color:var(--green)">Nenhum alerta nas ultimas 24h</div>';
+      return;
+    }
+    document.getElementById('list-alerts').innerHTML=rows.map(function(r){
+      return '<div class="alert-item"><div class="alert-time">'+new Date(r.created_at).toLocaleString('pt-BR')+' &middot; '+escH(r.source)+'</div>'+
+        '<div class="alert-msg">'+badge(r.status)+' <strong>'+escH(r.item)+'</strong> — '+escH(r.message)+'</div></div>';
+    }).join('');
+  });
+}
+
+// Clock + countdown
+var countdown=60;
+function tick(){
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString('pt-BR');
+  countdown--;
+  document.getElementById('countdown').textContent=countdown;
+  if(countdown<=0){countdown=60;loadDashboard()}
+}
+setInterval(tick,1000);
+tick();
+loadDashboard();
+</script>
+</body>
+</html>
