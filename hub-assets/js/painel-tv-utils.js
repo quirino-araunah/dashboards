@@ -22,11 +22,14 @@
             fetchSupabase('vw_plano_norm', 'select=consultor_nome,cliente,chave_cliente,vertical,tipo,valor,id_tempo&ano=eq.' + year + '&tipo=eq.RECEITA&limit=60000'),
             fetchSupabase('vw_pedidos_lifecycle', 'select=num_pedido,etapa,dt_pedido,vertical,vlr_total,vlr_faturado,representante,consultor_nome,arquivado_legado&etapa=in.(carteira,faturando)&arquivado_legado=is.false&order=dt_pedido.desc&limit=2000'),
             fetchSupabase('colaboradores', 'select=nome,nome_agrupado,vertical,ativo'),
-            fetchSupabase('operacao', 'select=cfop,operacao_gerencial,descricao,entra_meta')
+            fetchSupabase('operacao', 'select=cfop,operacao_gerencial,descricao,entra_meta'),
+            fetchSupabase('vw_servico_norm', 'select=dt_faturamento,id_tempo,cliente,chave_cliente,nome_produto,vlr_liquido,vertical_norm,natureza&order=dt_faturamento.desc&limit=5000')
         ];
 
+        var locacaoIdx = -1;
         if (!verticalFilter || verticalFilter === 'AGUA') {
             queries.push(fetchSupabase('vw_locacao_norm', 'select=*,consultor_nome,vertical_norm&limit=2000'));
+            locacaoIdx = 6;
         }
 
         var results = await Promise.all(queries);
@@ -36,7 +39,8 @@
         var carteira = results[2] || [];
         var profs = results[3] || [];
         var operacoes = results[4] || [];
-        var locacao = results[5] || [];
+        var servico = results[5] || [];
+        var locacao = locacaoIdx >= 0 ? (results[locacaoIdx] || []) : [];
 
         var cfopMap = {};
         operacoes.forEach(function(op) { cfopMap[String(op.cfop)] = op; });
@@ -94,10 +98,15 @@
         var locCurrent = locacao.filter(function(r) { return (r.id_tempo || '').startsWith(String(year)); });
         var locPrev = locacao.filter(function(r) { return (r.id_tempo || '').startsWith(String(prevYear)); });
 
+        // Servico (vw_servico_norm: SE1 nat-servico regime caixa) — Q1 +1,8% vs controladoria
+        var servCurrent = servico.filter(function(r) { return (r.id_tempo || '').startsWith(String(year)); });
+        var servPrev = servico.filter(function(r) { return (r.id_tempo || '').startsWith(String(prevYear)); });
+
         return {
             mov: movCurrent, movAll: movMeta, movPrev: movPrev,
             plan: plan, carteira: carteira, profs: profs, profMap: profMap,
             locacao: locCurrent, locacaoPrev: locPrev, operacoes: operacoes, cfopMap: cfopMap,
+            servico: servCurrent, servicoPrev: servPrev,
             year: year, month: month, currentPeriod: currentPeriod
         };
     };

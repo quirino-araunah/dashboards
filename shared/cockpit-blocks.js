@@ -754,6 +754,22 @@ function renderFaturamentoDia(cfg) {
     });
   }
 
+  // Serviço (SE1 nat-servico regime caixa) — bate Q1 +1,8% vs controladoria
+  if (DATA.servico) {
+    DATA.servico.forEach(function(r) {
+      var dt = r.dt_faturamento || '';
+      if (dt.slice(0, 7) === mesAtual) {
+        mesMov.push({
+          data_faturamento: dt,
+          nome_cliente: r.cliente || r.nome_produto || 'SERVIÇO',
+          _valor: safeNum(r.vlr_liquido),
+          _frete: 0,
+          _isServico: true
+        });
+      }
+    });
+  }
+
   // Sort and apply user sort if any
   var sortCols = {
     data: function(m) { return m.data_faturamento || ''; },
@@ -815,8 +831,8 @@ function renderFaturamentoDia(cfg) {
     for (var i = 0; i < items.length; i++) {
       var m = items[i];
       var newCls = (isToday && i === 0 && isNew) ? ' new-entry' : '';
-      var tipo = m._isLocacao ? 'LOCAÇÃO' : (m.operacao_gerencial || 'VENDA');
-      var tipoColor = tipo === 'DEVOLUÇÃO' ? 'var(--red)' : tipo === 'LOCAÇÃO' ? 'var(--blue)' : 'var(--text-dim)';
+      var tipo = m._isLocacao ? 'LOCAÇÃO' : (m._isServico ? 'SERVIÇO' : (m.operacao_gerencial || 'VENDA'));
+      var tipoColor = tipo === 'DEVOLUÇÃO' ? 'var(--red)' : tipo === 'LOCAÇÃO' ? 'var(--blue)' : tipo === 'SERVIÇO' ? '#a855f7' : 'var(--text-dim)';
       html += '<div class="fat-dia-row' + newCls + '">';
       html += '<span style="color:' + (isToday ? 'var(--green)' : 'var(--text-dim)') + '">' + dtFmt + '</span>';
       html += '<span style="color:' + tipoColor + ';font-size:7px;font-weight:700;white-space:nowrap">' + escHtml(tipo.slice(0, 8)) + '</span>';
