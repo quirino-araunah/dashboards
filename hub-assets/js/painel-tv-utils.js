@@ -48,7 +48,23 @@
         var profMap = {};
         var profVerticalMap = {};
         profs.forEach(function(p) {
-            if (p.nome_agrupado) profMap[p.nome] = p.nome_agrupado;
+            if (p.nome_agrupado) {
+                // Indexa variantes pra casar com nomes crus do Protheus que vêm em
+                // UPPERCASE e as vezes com sobrenome extra ("LUCAS MENEZES SILVA").
+                // Lookup cascateia em renderCarteira: raw -> upper -> first2 -> first2 upper.
+                var canon = p.nome_agrupado;
+                var addKey = function(k) { if (k && !profMap[k]) profMap[k] = canon; };
+                addKey(p.nome);
+                addKey((p.nome || '').toUpperCase());
+                addKey(canon);
+                addKey(canon.toUpperCase());
+                var f2a = (p.nome || '').split(/\s+/).slice(0,2).join(' ');
+                addKey(f2a);
+                addKey(f2a.toUpperCase());
+                var f2b = canon.split(/\s+/).slice(0,2).join(' ');
+                addKey(f2b);
+                addKey(f2b.toUpperCase());
+            }
             if (p.vertical) {
                 profVerticalMap[p.nome] = p.vertical;
                 if (p.nome_agrupado) profVerticalMap[p.nome_agrupado] = p.vertical;
@@ -691,9 +707,15 @@
         var byC = {};
         data.carteira.forEach(function(c) {
             var raw = c.consultor_nome || c.representante || c.profissional || 'Sem Consultor';
-            // Unifica nomes fragmentados ("Adriano Camargo" vs "ADRIANO CAMARGO") via profMap
-            // do CRM (colaboradores.nome_agrupado). Alinha com lógica nameMatches do CRM.
-            var n = (data.profMap && data.profMap[raw]) || raw;
+            // Unifica nomes fragmentados ("Adriano Camargo" vs "ADRIANO CAMARGO" vs
+            // "LUCAS MENEZES SILVA" vs "Lucas Menezes") via cascading lookup no profMap
+            // (populado em fetchAllData com variantes upper/first-2-words).
+            var n = raw;
+            if (data.profMap) {
+                var pm = data.profMap;
+                var first2 = raw.split(/\s+/).slice(0,2).join(' ');
+                n = pm[raw] || pm[raw.toUpperCase()] || pm[first2] || pm[first2.toUpperCase()] || raw;
+            }
             if (!byC[n]) byC[n] = { name: n, pedidos: 0, valor: 0 };
             byC[n].pedidos++;
             byC[n].valor += parseFloat(c._saldo_aberto) || 0;
