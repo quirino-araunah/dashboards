@@ -591,13 +591,14 @@ function renderMemoriaCalculo(kpis, cfg) {
   var movAll = DATA.movimento || [];
   var mov = vertFilter ? movAll.filter(function(m) { return normalizeVertical(m.vertical || '') === vertFilter; }) : movAll;
   var loc = DATA.locacao || [];
+  var serv = DATA.servico || [];
   var incluiLoc = !vertFilter || vertFilter === 'AGUA';
 
   // Group by month
   var months = {};
   for (var i = 1; i <= 12; i++) {
     var key = YEAR + '-' + String(i).padStart(2, '0');
-    months[key] = { mov: 0, loc: 0, nfs: 0 };
+    months[key] = { mov: 0, loc: 0, serv: 0, nfs: 0 };
   }
 
   mov.forEach(function(m) {
@@ -612,9 +613,15 @@ function renderMemoriaCalculo(kpis, cfg) {
     });
   }
 
+  serv.forEach(function(r) {
+    var t = r.id_tempo || '';
+    if (months[t]) months[t].serv += safeNum(r.vlr_liquido);
+  });
+
+  var GRID = '32px 1fr 1fr 1fr 1fr';
   var mNames = ['JAN','FEV','MAR','ABR','MAI','JUN','JUL','AGO','SET','OUT','NOV','DEZ'];
   var html = '<div style="font-family:var(--mono);font-size:8px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.8px;padding-bottom:4px;border-bottom:1px solid var(--border);margin-bottom:4px;display:flex;align-items:center;gap:6px"><span class="dot" style="width:6px;height:6px;border-radius:50%;background:var(--accent)"></span> FATURAMENTO POR MÊS</div>';
-  html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 1fr;gap:2px 6px;font-family:var(--mono);font-size:8px;padding:2px 0">';
+  html += '<div style="display:grid;grid-template-columns:' + GRID + ';gap:2px 6px;font-family:var(--mono);font-size:8px;padding:2px 0">';
   html += '<span style="color:var(--text-dim);font-weight:700">MÊS</span>';
   html += '<span style="color:var(--text-dim);font-weight:700;text-align:right">NFs</span>';
   if (incluiLoc) {
@@ -622,6 +629,7 @@ function renderMemoriaCalculo(kpis, cfg) {
   } else {
     html += '<span style="color:var(--text-dim);font-weight:700;text-align:right">FRETE</span>';
   }
+  html += '<span style="color:#a855f7;font-weight:700;text-align:right">SERVIÇO</span>';
   html += '<span style="color:var(--text-dim);font-weight:700;text-align:right">TOTAL</span>';
   html += '</div>';
   html += '<div style="display:flex;flex-direction:column;gap:1px;overflow-y:auto;flex:1;min-height:0">';
@@ -631,22 +639,19 @@ function renderMemoriaCalculo(kpis, cfg) {
   for (var k = 0; k < keys.length; k++) {
     var key = keys[k];
     var d = months[key];
-    var total = d.mov + d.loc;
+    var col2 = incluiLoc ? d.loc : mov.filter(function(m) { return m.id_tempo === key; }).reduce(function(s, m) { return s + m._frete; }, 0);
+    var total = d.mov + (incluiLoc ? d.loc : 0) + d.serv;
     acum += total;
     var mIdx = parseInt(key.slice(5, 7)) - 1;
     var isCurrent = (mIdx + 1) === MONTH;
     var isFuture = (mIdx + 1) > MONTH;
     var rowColor = isCurrent ? 'color:var(--accent);font-weight:700' : isFuture ? 'color:var(--text-dim);opacity:.4' : 'color:var(--text-muted)';
 
-    html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 1fr;gap:2px 6px;font-family:var(--mono);font-size:9px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03);' + rowColor + '">';
+    html += '<div style="display:grid;grid-template-columns:' + GRID + ';gap:2px 6px;font-family:var(--mono);font-size:9px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03);' + rowColor + '">';
     html += '<span>' + mNames[mIdx] + '</span>';
     html += '<span style="text-align:right">' + (d.mov > 0 ? fmtBRL(d.mov) : '—') + '</span>';
-    if (incluiLoc) {
-      html += '<span style="text-align:right">' + (d.loc > 0 ? fmtBRL(d.loc) : '—') + '</span>';
-    } else {
-      var freteMes = mov.filter(function(m) { return m.id_tempo === key; }).reduce(function(s, m) { return s + m._frete; }, 0);
-      html += '<span style="text-align:right">' + (freteMes > 0 ? fmtBRL(freteMes) : '—') + '</span>';
-    }
+    html += '<span style="text-align:right">' + (col2 > 0 ? fmtBRL(col2) : '—') + '</span>';
+    html += '<span style="text-align:right;color:#a855f7">' + (d.serv > 0 ? fmtBRL(d.serv) : '—') + '</span>';
     html += '<span style="text-align:right;font-weight:700">' + (total > 0 ? fmtBRL(total) : '—') + '</span>';
     html += '</div>';
   }
@@ -655,11 +660,13 @@ function renderMemoriaCalculo(kpis, cfg) {
   // Totals
   var totalMov = mov.reduce(function(s, m) { return s + m._valor; }, 0);
   var totalLoc = incluiLoc ? loc.reduce(function(s, r) { return s + safeNum(r.vlr_liquido); }, 0) : 0;
-  html += '<div style="display:grid;grid-template-columns:32px 1fr 1fr 1fr;gap:2px 6px;font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 0;border-top:2px solid var(--accent);margin-top:4px">';
+  var totalServ = serv.reduce(function(s, r) { return s + safeNum(r.vlr_liquido); }, 0);
+  html += '<div style="display:grid;grid-template-columns:' + GRID + ';gap:2px 6px;font-family:var(--mono);font-size:9px;font-weight:700;padding:4px 0;border-top:2px solid var(--accent);margin-top:4px">';
   html += '<span style="color:var(--text-dim)">ANO</span>';
   html += '<span style="text-align:right;color:var(--text)">' + fmtBRL(totalMov) + '</span>';
   html += '<span style="text-align:right;color:var(--text)">' + fmtBRL(totalLoc) + '</span>';
-  html += '<span style="text-align:right;color:var(--accent)">' + fmtBRL(totalMov + totalLoc) + '</span>';
+  html += '<span style="text-align:right;color:#a855f7">' + fmtBRL(totalServ) + '</span>';
+  html += '<span style="text-align:right;color:var(--accent)">' + fmtBRL(totalMov + totalLoc + totalServ) + '</span>';
   html += '</div>';
 
   el.innerHTML = html;

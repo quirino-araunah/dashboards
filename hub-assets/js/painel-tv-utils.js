@@ -422,10 +422,17 @@
             if (lm) locByMonth[lm] = (locByMonth[lm] || 0) + (parseFloat(r.vlr_liquido) || 0);
         });
 
-        // Current year (mov + locacao)
+        // Build servico by month (SE1 nat-servico regime caixa)
+        var servByMonth = {};
+        (data.servico || []).forEach(function(r) {
+            var sm = parseInt((r.id_tempo || '').split('-')[1]);
+            if (sm) servByMonth[sm] = (servByMonth[sm] || 0) + (parseFloat(r.vlr_liquido) || 0);
+        });
+
+        // Current year (mov + locacao + servico)
         var tR = 0;
         html += '<tr><td>' + year + '</td>';
-        for (var m = 1; m <= 12; m++) { var v = sumVal(byMonth[m]) + (locByMonth[m] || 0); tR += v; html += '<td>' + (v > 0 ? fmtBRL(v) : '-') + '</td>'; }
+        for (var m = 1; m <= 12; m++) { var v = sumVal(byMonth[m]) + (locByMonth[m] || 0) + (servByMonth[m] || 0); tR += v; html += '<td>' + (v > 0 ? fmtBRL(v) : '-') + '</td>'; }
         html += '<td><strong>' + fmtBRL(tR) + '</strong></td></tr>';
 
         // Build prev year locacao by month
@@ -435,17 +442,24 @@
             if (lm) locPrevByMonth[lm] = (locPrevByMonth[lm] || 0) + (parseFloat(r.vlr_liquido) || 0);
         });
 
-        // Prev year (mov + locacao)
+        // Build prev year servico by month
+        var servPrevByMonth = {};
+        (data.servicoPrev || []).forEach(function(r) {
+            var sm = parseInt((r.id_tempo || '').split('-')[1]);
+            if (sm) servPrevByMonth[sm] = (servPrevByMonth[sm] || 0) + (parseFloat(r.vlr_liquido) || 0);
+        });
+
+        // Prev year (mov + locacao + servico)
         var tP = 0;
         html += '<tr><td>' + prevYear + '</td>';
-        for (var m = 1; m <= 12; m++) { var v = sumVal(byMonthPrev[m]) + (locPrevByMonth[m] || 0); tP += v; html += '<td>' + (v > 0 ? fmtBRL(v) : '-') + '</td>'; }
+        for (var m = 1; m <= 12; m++) { var v = sumVal(byMonthPrev[m]) + (locPrevByMonth[m] || 0) + (servPrevByMonth[m] || 0); tP += v; html += '<td>' + (v > 0 ? fmtBRL(v) : '-') + '</td>'; }
         html += '<td><strong>' + fmtBRL(tP) + '</strong></td></tr>';
 
         // Ating %
         html += '<tr><td>ATING %</td>';
         for (var m = 1; m <= 12; m++) {
             var meta = planByMonth[m] || 0;
-            var real = sumVal(byMonth[m]) + (locByMonth[m] || 0);
+            var real = sumVal(byMonth[m]) + (locByMonth[m] || 0) + (servByMonth[m] || 0);
             var pct = meta > 0 ? (real / meta * 100) : 0;
             html += '<td class="' + (real > 0 ? pctClass(pct) : '') + '">' + (real > 0 ? fmtPct(pct) : '-') + '</td>';
         }
@@ -524,19 +538,52 @@
     // --- Recent Transactions (ticker) ---
     PTV.renderRecentTransactions = function(data, limit) {
         limit = limit || 10;
+        var currentPeriod = data.year + '-' + data.month;
         var movMonth = data.mov.filter(function(m) { return isCurrentMonth(m.id_tempo, data.year, data.month); });
+
+        // Inclui locação do mês corrente como linhas
+        (data.locacao || []).forEach(function(r) {
+            if ((r.id_tempo || '') === currentPeriod) {
+                movMonth.push({
+                    data_faturamento: r.dt_faturamento || '',
+                    nome_cliente: r.cliente || r.nome_produto || 'LOCACAO',
+                    produto_nome: r.nome_produto || 'LOCACAO',
+                    representante: r.consultor_nome || '',
+                    _valor: parseFloat(r.vlr_liquido) || 0,
+                    _isLocacao: true
+                });
+            }
+        });
+
+        // Inclui serviço do mês corrente (SE1 nat-servico regime caixa)
+        (data.servico || []).forEach(function(r) {
+            if ((r.id_tempo || '') === currentPeriod) {
+                movMonth.push({
+                    data_faturamento: r.dt_faturamento || '',
+                    nome_cliente: r.cliente || 'SERVICO',
+                    produto_nome: r.nome_produto || 'Servico',
+                    representante: r.consultor_nome || '',
+                    _valor: parseFloat(r.vlr_liquido) || 0,
+                    _isServico: true
+                });
+            }
+        });
+
         movMonth.sort(function(a, b) { return (b.data_faturamento || '').localeCompare(a.data_faturamento || ''); });
 
         var shown = movMonth.slice(0, limit);
         var html = '<table class="ptv-table"><thead><tr>';
-        html += '<th>Data</th><th>Cliente</th><th>Produto</th><th>Consultor</th><th>Valor</th>';
+        html += '<th>Data</th><th>Tipo</th><th>Cliente</th><th>Produto</th><th>Consultor</th><th>Valor</th>';
         html += '</tr></thead><tbody>';
 
         shown.forEach(function(m) {
             var dt = (m.data_faturamento || '').split('-');
             var dtFmt = dt.length === 3 ? dt[2] + '/' + dt[1] : '-';
+            var tipo = m._isLocacao ? 'LOC' : (m._isServico ? 'SERV' : 'NF');
+            var tipoColor = m._isLocacao ? '#3498db' : (m._isServico ? '#a855f7' : 'var(--text-secondary)');
             html += '<tr>';
             html += '<td>' + dtFmt + '</td>';
+            html += '<td style="color:' + tipoColor + ';font-weight:700;font-size:8px">' + tipo + '</td>';
             html += '<td>' + escHtml((m.nome_cliente || '').substring(0, 30)) + '</td>';
             html += '<td>' + escHtml((m.produto_nome || '').substring(0, 22)) + '</td>';
             html += '<td>' + escHtml((m.representante || '').substring(0, 18)) + '</td>';
@@ -545,7 +592,7 @@
         });
 
         if (movMonth.length > limit) {
-            html += '<tr><td colspan="5" style="text-align:center;color:var(--text-tertiary);font-size:9px">+ ' + (movMonth.length - limit) + ' transacoes</td></tr>';
+            html += '<tr><td colspan="6" style="text-align:center;color:var(--text-tertiary);font-size:9px">+ ' + (movMonth.length - limit) + ' transacoes</td></tr>';
         }
 
         html += '</tbody></table>';
