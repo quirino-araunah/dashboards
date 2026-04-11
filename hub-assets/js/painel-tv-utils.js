@@ -690,7 +690,10 @@
 
         var byC = {};
         data.carteira.forEach(function(c) {
-            var n = c.consultor_nome || c.representante || c.profissional || 'Sem Consultor';
+            var raw = c.consultor_nome || c.representante || c.profissional || 'Sem Consultor';
+            // Unifica nomes fragmentados ("Adriano Camargo" vs "ADRIANO CAMARGO") via profMap
+            // do CRM (colaboradores.nome_agrupado). Alinha com lógica nameMatches do CRM.
+            var n = (data.profMap && data.profMap[raw]) || raw;
             if (!byC[n]) byC[n] = { name: n, pedidos: 0, valor: 0 };
             byC[n].pedidos++;
             byC[n].valor += parseFloat(c._saldo_aberto) || 0;
