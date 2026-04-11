@@ -28,7 +28,7 @@
 
         var locacaoIdx = -1;
         if (!verticalFilter || verticalFilter === 'AGUA') {
-            queries.push(fetchSupabase('vw_locacao_norm', 'select=*,consultor_nome,vertical_norm&limit=2000'));
+            queries.push(fetchSupabase('vw_locacao_norm', 'select=*,consultor_nome,vertical_norm&order=id_tempo.desc&limit=5000'));
             locacaoIdx = 6;
         }
 
