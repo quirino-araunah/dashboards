@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Araunah · Q1 2026 — o trimestre que virou o ano</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,600;9..144,800;9..144,900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bone:#F6F2EA;
+  --ink:#111111;
+  --ink-soft:#2a2a2a;
+  --muted:#8a8378;
+  --rule:#1a1a1a;
+  --green:#0f6b3a;          /* Araunah verde escuro editorial */
+  --lime:#a7ff37;            /* neon positivo */
+  --magenta:#ff2e6a;         /* neon negativo */
+  --paper-edge:rgba(0,0,0,.06);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{background:var(--bone);color:var(--ink);font-family:'Inter',system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+body{overflow-x:hidden}
+a{color:inherit}
+
+/* ------- scaffolding ------- */
+.act{
+  max-width:1400px;margin:0 auto;padding:10vh 6vw 14vh;
+  min-height:100vh;display:flex;flex-direction:column;justify-content:center;
+  position:relative;
+}
+.act + .act{border-top:1px solid var(--paper-edge)}
+.kicker{
+  font-family:'Inter',sans-serif;font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;
+  color:var(--muted);font-weight:600;margin-bottom:2rem;
+}
+.kicker .dot{display:inline-block;width:.5rem;height:.5rem;background:var(--green);border-radius:50%;vertical-align:middle;margin-right:.7rem}
+.serif{font-family:'Fraunces',serif;font-weight:400;font-variation-settings:"opsz" 144}
+.rule{height:1px;background:var(--rule);opacity:.15;margin:1.5rem 0}
+
+/* ------- ato 1 — capa ------- */
+.cover .topbar{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--muted);margin-bottom:8vh;
+}
+.cover .topbar b{color:var(--ink);font-weight:700;letter-spacing:.1em}
+.cover h1{
+  font-family:'Fraunces',serif;font-weight:300;font-variation-settings:"opsz" 144;
+  font-size:clamp(3.2rem,8vw,9rem);line-height:.92;letter-spacing:-.03em;
+  margin-bottom:3rem;
+}
+.cover h1 em{font-style:italic;font-weight:400;color:var(--green)}
+.cover .hero{
+  display:grid;grid-template-columns:1.4fr 1fr;gap:3rem;align-items:flex-end;
+  border-top:1px solid var(--rule);padding-top:2rem;
+}
+.cover .big{
+  font-family:'Fraunces',serif;font-weight:600;font-variation-settings:"opsz" 144;
+  font-size:clamp(4rem,12vw,13rem);line-height:.85;letter-spacing:-.04em;
+}
+.cover .big small{font-size:.35em;font-weight:400;color:var(--muted);letter-spacing:-.01em;display:block;margin-top:.5rem}
+.cover .delta{
+  display:flex;flex-direction:column;gap:.5rem;
+}
+.cover .delta .pct{
+  display:inline-block;background:var(--lime);color:var(--ink);
+  font-family:'Fraunces',serif;font-weight:700;
+  font-size:clamp(2rem,4.5vw,4.2rem);line-height:1;
+  padding:.2em .4em;align-self:flex-start;transform:rotate(-1deg);
+  box-shadow:4px 4px 0 var(--ink);
+}
+.cover .delta .line{
+  font-family:'Fraunces',serif;font-style:italic;font-size:clamp(1rem,1.4vw,1.35rem);
+  max-width:30ch;line-height:1.35;color:var(--ink-soft);
+}
+
+/* ------- ato 2 — paisagem verticais ------- */
+.landscape h2, .names h2, .insight h2, .outlook h2{
+  font-family:'Fraunces',serif;font-weight:400;font-variation-settings:"opsz" 144;
+  font-size:clamp(2.2rem,4.5vw,4.2rem);line-height:1;letter-spacing:-.02em;
+  margin-bottom:.6rem;max-width:16ch;
+}
+.landscape h2 em, .names h2 em, .insight h2 em, .outlook h2 em{font-style:italic;color:var(--green)}
+.lede{
+  font-family:'Fraunces',serif;font-size:clamp(1rem,1.3vw,1.25rem);line-height:1.45;
+  max-width:55ch;color:var(--ink-soft);margin-bottom:5vh;
+}
+.chart{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:2.5rem;align-items:end;
+  border-bottom:1px solid var(--rule);padding-bottom:1.5rem;margin-bottom:1.5rem;
+  min-height:58vh;
+}
+.col{position:relative;display:flex;flex-direction:column;justify-content:flex-end;height:100%}
+.col .bar{
+  position:relative;width:100%;background:var(--ink);
+  display:flex;align-items:flex-start;justify-content:center;
+}
+.col .bar::after{
+  content:'';position:absolute;left:-8px;right:-8px;border-top:1.5px dashed var(--muted);
+}
+.col .bar .label-2026{
+  color:var(--bone);font-family:'Fraunces',serif;font-weight:600;font-size:1.1rem;
+  padding:.6rem .5rem 0;text-align:center;letter-spacing:-.01em;
+}
+.col .ghost-label{
+  position:absolute;left:calc(100% + .5rem);font-size:.7rem;color:var(--muted);
+  white-space:nowrap;letter-spacing:.05em;text-transform:uppercase;
+}
+.col.cresceu .bar{background:var(--green)}
+.col.caiu .bar{background:#7a6f5f}
+.col .name{
+  font-family:'Fraunces',serif;font-weight:700;font-size:1.6rem;margin-top:1.2rem;
+  display:flex;justify-content:space-between;align-items:baseline;gap:1rem;
+}
+.col .name .pct{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;letter-spacing:-.01em;
+  padding:.2rem .55rem;border-radius:2px;
+}
+.col.cresceu .pct{background:var(--lime);color:var(--ink)}
+.col.caiu .pct{background:var(--magenta);color:var(--bone)}
+.col .vals{
+  display:flex;gap:.5rem;align-items:baseline;font-size:.82rem;color:var(--muted);
+  margin-top:.3rem;font-variant-numeric:tabular-nums;
+}
+.col .vals b{color:var(--ink);font-weight:700;font-size:.95rem}
+.col .story{
+  font-family:'Fraunces',serif;font-style:italic;font-size:.95rem;color:var(--ink-soft);
+  line-height:1.35;margin-top:.8rem;
+}
+.chart-legend{display:flex;gap:2rem;font-size:.7rem;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.chart-legend .swatch{display:inline-block;width:1rem;height:.6rem;vertical-align:middle;margin-right:.4rem}
+
+/* ------- ato 3 — os nomes ------- */
+.names .grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:4rem;margin-top:4vh;
+}
+.names .pod h3{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:.72rem;letter-spacing:.25em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:1.2rem;
+  border-bottom:1px solid var(--rule);padding-bottom:.8rem;
+}
+.names ol{list-style:none;counter-reset:n}
+.names ol li{
+  counter-increment:n;padding:1rem 0;border-bottom:1px solid var(--paper-edge);
+  display:grid;grid-template-columns:2rem 1fr auto;gap:.8rem;align-items:baseline;
+}
+.names ol li::before{
+  content:counter(n,decimal-leading-zero);
+  font-family:'Fraunces',serif;font-weight:400;font-size:1.1rem;color:var(--muted);
+  font-variant-numeric:tabular-nums;
+}
+.names .label{
+  font-family:'Fraunces',serif;font-weight:600;font-size:1.15rem;line-height:1.15;
+  letter-spacing:-.01em;
+}
+.names .label .sub{
+  display:block;font-family:'Inter',sans-serif;font-weight:400;
+  font-size:.75rem;color:var(--muted);margin-top:.2rem;font-variant-numeric:tabular-nums;
+}
+.names .delta{
+  font-family:'Inter',sans-serif;font-weight:700;font-size:.8rem;letter-spacing:-.01em;
+  padding:.2rem .5rem;border-radius:2px;font-variant-numeric:tabular-nums;white-space:nowrap;
+}
+.names .delta.up{background:var(--lime);color:var(--ink)}
+.names .delta.down{background:var(--magenta);color:var(--bone)}
+.names .delta.new{background:var(--ink);color:var(--lime);font-style:normal}
+.names .delta.hold{background:transparent;color:var(--ink);border:1px solid var(--ink);padding:.15rem .45rem}
+
+/* ------- ato 4 — insight ------- */
+.insight{background:var(--ink);color:var(--bone)}
+.insight .kicker{color:rgba(246,242,234,.55)}
+.insight .kicker .dot{background:var(--lime)}
+.insight .giant{
+  font-family:'Fraunces',serif;font-weight:300;font-variation-settings:"opsz" 144;
+  font-size:clamp(2.4rem,6vw,6rem);line-height:1;letter-spacing:-.025em;
+  max-width:22ch;margin-top:2vh;
+}
+.insight .giant em{font-style:italic;color:var(--lime)}
+.insight .giant u{text-decoration:underline;text-decoration-color:var(--lime);text-underline-offset:.12em;text-decoration-thickness:.08em}
+.insight .followup{
+  font-family:'Fraunces',serif;font-style:italic;
+  font-size:clamp(1rem,1.4vw,1.5rem);color:rgba(246,242,234,.7);
+  max-width:48ch;margin-top:3rem;line-height:1.4;
+}
+.insight .stack{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:3rem;margin-top:7vh;
+  border-top:1px solid rgba(246,242,234,.15);padding-top:3rem;
+}
+.insight .stack .n{
+  font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2rem,4vw,3.6rem);
+  line-height:1;color:var(--lime);
+}
+.insight .stack .lbl{
+  font-family:'Inter',sans-serif;font-size:.78rem;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(246,242,234,.6);margin-top:.8rem;line-height:1.4;
+}
+
+/* ------- ato 5 — o que vem ------- */
+.outlook .twocol{
+  display:grid;grid-template-columns:1.2fr 1fr;gap:5rem;margin-top:4vh;align-items:flex-start;
+}
+.outlook .letter{
+  font-family:'Fraunces',serif;font-size:clamp(1.1rem,1.4vw,1.4rem);
+  line-height:1.55;color:var(--ink-soft);max-width:50ch;
+}
+.outlook .letter p + p{margin-top:1.2rem}
+.outlook .letter em{color:var(--green);font-style:italic}
+.outlook .goalbox{
+  border:1px solid var(--ink);padding:2.2rem 2rem;position:relative;
+  background:transparent;
+}
+.outlook .goalbox::before{
+  content:'META Q2';position:absolute;top:-0.6rem;left:1.2rem;background:var(--bone);
+  padding:0 .6rem;font-size:.68rem;letter-spacing:.25em;color:var(--muted);font-weight:700;
+}
+.outlook .goalbox .num{
+  font-family:'Fraunces',serif;font-weight:600;font-size:clamp(3rem,5.5vw,5.5rem);line-height:.9;
+  letter-spacing:-.03em;
+}
+.outlook .goalbox .since{
+  font-family:'Fraunces',serif;font-style:italic;font-size:1rem;color:var(--muted);margin-top:.8rem;
+}
+.outlook .goalbox .mini{
+  margin-top:1.5rem;border-top:1px solid var(--paper-edge);padding-top:1rem;
+  display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem .5rem;font-size:.82rem;
+  font-variant-numeric:tabular-nums;
+}
+.outlook .goalbox .mini b{color:var(--green);font-weight:700}
+.outlook .sign{
+  font-family:'Fraunces',serif;font-style:italic;font-size:1.3rem;color:var(--muted);
+  margin-top:6vh;border-top:1px solid var(--rule);padding-top:2rem;
+  display:flex;justify-content:space-between;align-items:baseline;gap:2rem;flex-wrap:wrap;
+}
+.outlook .sign b{color:var(--ink);font-style:normal;font-weight:700;letter-spacing:-.01em}
+
+/* ------- print / A3 ------- */
+@media print{
+  @page{size:A3 portrait;margin:12mm}
+  html,body{background:#fff}
+  .act{min-height:auto;padding:2rem 0;page-break-inside:avoid}
+  .act + .act{page-break-before:always}
+  .cover .big, .landscape h2, .names h2, .insight h2, .outlook h2{font-size:3.2rem}
+  .cover h1{font-size:3.6rem}
+  .chart{min-height:35vh}
+  .insight{background:#fff;color:var(--ink)}
+  .insight .giant em{color:var(--green)}
+  .insight .giant u{text-decoration-color:var(--green)}
+  .insight .stack .n{color:var(--green)}
+  .insight .kicker{color:var(--muted)}
+  .insight .stack .lbl, .insight .followup{color:var(--ink-soft)}
+}
+
+/* ------- mobile ------- */
+@media (max-width:820px){
+  .cover .hero{grid-template-columns:1fr;gap:1.5rem}
+  .chart{grid-template-columns:repeat(2,1fr);gap:1.5rem;min-height:auto}
+  .names .grid{grid-template-columns:1fr;gap:2.5rem}
+  .outlook .twocol{grid-template-columns:1fr;gap:2rem}
+  .insight .stack{grid-template-columns:1fr;gap:1.5rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================ -->
+<!-- ATO 1 · CAPA                                  -->
+<!-- ============================================ -->
+<section class="act cover">
+  <div class="topbar">
+    <span>Araunah · relatório executivo</span>
+    <span>Q1 2026 · <b>trimestre fechado</b></span>
+    <span>uberaba, abril/2026</span>
+  </div>
+
+  <h1>O trimestre <em>que virou</em><br>o ano.</h1>
+
+  <div class="hero">
+    <div class="big">
+      R$&nbsp;4,51 <span style="color:var(--muted)">mi</span>
+      <small>receita líquida · Q1 2026 · fonte Protheus/Supabase</small>
+    </div>
+    <div class="delta">
+      <div class="pct">+32,7%</div>
+      <div class="line">R$ 1,1 milhão a mais que Q1 2025 — com <b>61% menos volume</b>. O que mudou foi o mix.</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- ATO 2 · PAISAGEM DAS VERTICAIS                -->
+<!-- ============================================ -->
+<section class="act landscape">
+  <div class="kicker"><span class="dot"></span>02 · a paisagem</div>
+  <h2>Quatro verticais. <em>Dois motores.</em></h2>
+  <p class="lede">Florestas e Agro carregaram o trimestre. Água ficou estável — o MRR segurou sem a venda one-shot
+  aparecer em NF. Corporativo perdeu volume, mas ganhou base de clientes (de 15 pra 35).</p>
+
+  <div class="chart" id="chart-verticais">
+    <!-- 4 colunas renderizadas via JS pra manter escala correta -->
+  </div>
+
+  <div class="chart-legend">
+    <span><span class="swatch" style="background:var(--green)"></span>Q1 2026</span>
+    <span><span class="swatch" style="background:transparent;border:1.5px dashed var(--muted);height:0"></span>Q1 2025 (linha fantasma)</span>
+    <span style="margin-left:auto;font-variant-numeric:tabular-nums">TOTAL Q1 2026 · R$ 4.512.849 &nbsp;·&nbsp; TOTAL Q1 2025 · R$ 3.399.831</span>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- ATO 3 · OS NOMES                              -->
+<!-- ============================================ -->
+<section class="act names">
+  <div class="kicker"><span class="dot"></span>03 · os nomes que moveram a agulha</div>
+  <h2>Quem, o quê, <em>por quem.</em></h2>
+  <p class="lede">Três pódios. Cada linha traz o valor em Q1 2026 e, no subtítulo, o contexto do 2025 (quando entrou, quanto fez o ano inteiro).
+  Os badges à direita traduzem o que importa: quem escalou, quem segurou, quem caiu.</p>
+
+  <div class="grid">
+    <div class="pod">
+      <h3>Produtos que carregaram</h3>
+      <ol id="pod-produtos"></ol>
+    </div>
+    <div class="pod">
+      <h3>Clientes que entraram</h3>
+      <ol id="pod-clientes"></ol>
+    </div>
+    <div class="pod">
+      <h3>Consultores no pódio</h3>
+      <ol id="pod-consultores"></ol>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- ATO 4 · INSIGHT                               -->
+<!-- ============================================ -->
+<section class="act insight">
+  <div class="kicker"><span class="dot"></span>04 · o que os números dizem</div>
+
+  <p class="giant">
+    A colheita de Q1 2026 foi <u>plantada</u>
+    em <em>setembro</em> do ano passado.
+  </p>
+
+  <p class="followup">Quatro dos cinco maiores clientes do trimestre entraram na carteira entre julho e novembro de 2025 — e voltaram escalando forte.
+  Bom Futuro fez em 1 trimestre <b>4,6×</b> o que tinha feito em dois meses. Floraplac, <b>4,8×</b>. Ativa Bio dobrou.
+  O contraponto é Infiniti: era <em>a</em> âncora de Q1/25 e caiu de R$&nbsp;983k pra R$&nbsp;195k — a saída de um cliente custou R$&nbsp;788k. O trimestre cresceu <b>+32,7%</b> mesmo assim.</p>
+
+  <div class="stack">
+    <div>
+      <div class="n">4 de 5</div>
+      <div class="lbl">Top clientes de Q1/26<br>plantados em jul-nov/25</div>
+    </div>
+    <div>
+      <div class="n">−R$ 788k</div>
+      <div class="lbl">Perdidos com a saída<br>da Infiniti (ex-âncora)</div>
+    </div>
+    <div>
+      <div class="n">+32,7%</div>
+      <div class="lbl">Crescimento mesmo<br>absorvendo essa perda</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================ -->
+<!-- ATO 5 · O QUE VEM                             -->
+<!-- ============================================ -->
+<section class="act outlook">
+  <div class="kicker"><span class="dot"></span>05 · o que vem</div>
+  <h2>Q2 precisa <em>repetir o truque.</em></h2>
+
+  <div class="twocol">
+    <div class="letter">
+      <p>Q1 provou duas coisas: o mix de ticket alto funcionou (Florestas e Agro carregaram com 61% menos volume),
+      e o trabalho comercial do <em>2º semestre de 2025</em> virou receita pesada agora. A colheita foi plantada lá atrás.</p>
+      <p>A pergunta do Q2 é se a safra continua — ou se Bom Futuro, Maggi e Floraplac foram o pico.
+      O alerta é Infiniti: perder uma âncora custou R$ 788k, e ninguém avisou. <em>Cliente grande parando de comprar é o risco silencioso.</em></p>
+      <p>Três coisas pra segurar até 30/jun: <b>(1)</b> plantar Q3/26 agora — abrir 8-10 clientes novos em Florestas/Agro este trimestre,
+      <b>(2)</b> reativar ou substituir Infiniti com pelo menos R$ 500k em pipeline qualificado,
+      <b>(3)</b> trazer o MRR Água (R$ 341k/mês confirmado) pra dentro da nota fiscal.</p>
+    </div>
+
+    <div class="goalbox">
+      <div class="num">R$ 5,2 mi</div>
+      <div class="since">alvo Q2 2026 · +15% sobre Q1 · run-rate R$ 20,8M/ano</div>
+      <div class="mini">
+        <span>Agro</span><span><b>R$ 1,75M</b></span>
+        <span>Florestas</span><span><b>R$ 2,50M</b></span>
+        <span>Água</span><span><b>R$ 0,55M</b></span>
+        <span>Corporativo</span><span><b>R$ 0,40M</b></span>
+      </div>
+    </div>
+  </div>
+
+  <div class="sign">
+    <div>
+      <b>Araunah</b> · Uberaba · abril de 2026 · <i>Q1 fechado 10/04</i>
+    </div>
+    <div>
+      — <b>Thiago &amp; João</b>
+    </div>
+  </div>
+</section>
+
+<script>
+// ============================================================
+// DADOS · Q1 2025 × Q1 2026
+// Fonte: vw_movimento_fiscal (Supabase cockpit-araunah-v2)
+// Backfill de vertical por cod_cliente (última classificação)
+// ============================================================
+
+const VERTICAIS = [
+  {nome:'Florestas',  r25:1713810.42, r26:2371763.85, pct:+38.4,
+   story:'+38% expandindo a base (15 → 18 clientes). Bom Futuro entrou como principal.'},
+  {nome:'Agro',       r25: 813681.67, r26:1501825.43, pct:+84.6,
+   story:'+85% com os mesmos 36 clientes. O ticket foi quem explodiu.'},
+  {nome:'Água',       r25: 358433.54, r26: 336961.35, pct: -6.0,
+   story:'Base subiu (47 → 49), faturamento quase lateral. MRR confirmado não entra aqui.'},
+  {nome:'Corporativo',r25: 374682.12, r26: 329133.95, pct:-12.1,
+   story:'De 15 pra 35 clientes, mas o ticket caiu. Mais alcance, menos peso.'}
+];
+
+// Badge pode ser:
+//   {cls:'up',   text:'↑ 4,6×'}  — lime
+//   {cls:'down', text:'↓ 80%'}   — magenta
+//   {cls:'new',  text:'NOVO'}    — preto com texto lime
+//   {cls:'hold', text:'mantendo'}— contorno
+
+const PRODUTOS = [
+  {nome:'POLYTER CAMPO 5 KG',              sub:'Agro · R$ 3,17 mi em 2025',    valor:1149082, badge:{cls:'up',text:'run 4,6 mi'}},
+  {nome:'PNG SOLOS DIOX 2 KG',             sub:'Agro · R$ 1,67 mi em 2025',    valor: 833417, badge:{cls:'up',text:'2× do ano 25'}},
+  {nome:'FERTILIZANTE BORO · ULEXITA',     sub:'Agro · 1ª venda 2026',         valor: 471640, badge:{cls:'new',text:'NOVO'}},
+  {nome:'FAST COMPOST 1L',                 sub:'Composta · R$ 1,65 mi em 2025',valor: 438097, badge:{cls:'hold',text:'mantendo'}},
+  {nome:'RENOVA 4.0 POWER · sulcador',     sub:'Florestas · R$ 653k em 2025',  valor: 381410, badge:{cls:'up',text:'2,3× do ano 25'}}
+];
+
+const CLIENTES = [
+  {nome:'BOM FUTURO AGRICOLA LTDA',   sub:'Florestas · MT · entrou nov/25',       valor:707580, badge:{cls:'up',  text:'↑ 4,6×'}},
+  {nome:'AGROPECUARIA MAGGI LTDA',    sub:'Florestas · MT · âncora do 2º sem/25', valor:462475, badge:{cls:'hold',text:'âncora 25'}},
+  {nome:'FLORAPLAC MDF LTDA',         sub:'Florestas · RO · entrou nov/25',       valor:348098, badge:{cls:'up',  text:'↑ 4,8×'}},
+  {nome:'ATIVA BIOTECNOLOGIA LTDA',   sub:'Agro · GO · entrou jul/25',            valor:311360, badge:{cls:'up',  text:'↑ 1,7×'}},
+  {nome:'AGROPECUARIA INFINITI LTDA', sub:'Florestas · ex-âncora Q1/25 · −R$ 788k',valor:195174, badge:{cls:'down',text:'↓ 80%'}}
+];
+
+const CONSULTORES = [
+  {nome:'Florestal (equipe)',      sub:'operação florestas',      valor:2371763, badge:{cls:'up',  text:'↑ 5,3×'}},
+  {nome:'Adriano Camargo',          sub:'Agro · comercial',        valor: 951302, badge:{cls:'up',  text:'↑ 3,1×'}},
+  {nome:'João Suss',                sub:'Corporativo · sócio',     valor: 310383, badge:{cls:'up',  text:'+21%'}},
+  {nome:'Lucas Menezes Silva',      sub:'Agro · campo',            valor: 160381, badge:{cls:'up',  text:'+22%'}},
+  {nome:'Henrique Guimarães Silva', sub:'Agro · entrou em 2025',   valor: 136569, badge:{cls:'hold',text:'estreia pódio'}}
+];
+
+// ------------------------------------------------------------
+// util
+// ------------------------------------------------------------
+const fmt = v => 'R$ ' + (v/1000).toLocaleString('pt-BR',{maximumFractionDigits:0}) + 'k';
+const fmtMi = v => 'R$ ' + (v/1000000).toFixed(2).replace('.',',') + ' mi';
+const deltaPct = (r25, r26) => r25 === 0 ? null : ((r26-r25)/r25)*100;
+const deltaLabel = (r25, r26) => {
+  if (r25 === 0 && r26 > 0) return {cls:'new', text:'NOVO'};
+  if (r25 === 0) return null;
+  const d = deltaPct(r25,r26);
+  return {
+    cls: d>=0 ? 'up' : 'down',
+    text: (d>=0 ? '↑ +' : '↓ ') + Math.abs(d).toFixed(0) + '%'
+  };
+};
+
+// ------------------------------------------------------------
+// ATO 2 — chart verticais (colunas + linha fantasma 2025)
+// ------------------------------------------------------------
+(function renderLandscape(){
+  const wrap = document.getElementById('chart-verticais');
+  const max = Math.max(...VERTICAIS.map(v => Math.max(v.r25, v.r26))) * 1.08;
+  wrap.innerHTML = VERTICAIS.map(v => {
+    const h26 = Math.max((v.r26/max)*100, 2);  // %
+    const h25 = Math.max((v.r25/max)*100, 0);
+    const cls = v.pct >= 0 ? 'cresceu' : 'caiu';
+    const sign = v.pct >= 0 ? '+' : '';
+    return `
+      <div class="col ${cls}">
+        <div class="bar" style="height:${h26}%">
+          <div class="label-2026">${fmtMi(v.r26)}</div>
+          <div class="ghost-label" style="bottom:${h25}%">${fmt(v.r25)} <span style="opacity:.5">(2025)</span></div>
+        </div>
+        <div class="name">${v.nome}<span class="pct">${sign}${v.pct.toFixed(0)}%</span></div>
+        <div class="vals"><b>${fmt(v.r26)}</b> · vs ${fmt(v.r25)} (Q1/25)</div>
+        <div class="story">${v.story}</div>
+      </div>`;
+  }).join('');
+
+  // posicionar as linhas fantasma como traços horizontais absolutos
+  document.querySelectorAll('#chart-verticais .col').forEach((col,i) => {
+    const v = VERTICAIS[i];
+    const bar = col.querySelector('.bar');
+    const ghost = col.querySelector('.ghost-label');
+    if (v.r25 === 0) return;
+    // reposicionar o ghost no traçado correto
+    const ratio = v.r25 / v.r26;
+    ghost.style.bottom = (ratio * 100) + '%';
+    // criar linha horizontal fantasma (pseudo via dashed border já existe, só label extra)
+  });
+})();
+
+// ------------------------------------------------------------
+// ATO 3 — pódios
+// ------------------------------------------------------------
+function renderPodium(selector, arr){
+  const html = arr.map(it => {
+    const badge = it.badge ? `<span class="delta ${it.badge.cls}">${it.badge.text}</span>` : '';
+    return `<li>
+      <span class="label">${it.nome}<span class="sub">${it.sub} · ${fmt(it.valor)}</span></span>
+      ${badge}
+    </li>`;
+  }).join('');
+  document.querySelector(selector).innerHTML = html;
+}
+renderPodium('#pod-produtos',    PRODUTOS);
+renderPodium('#pod-clientes',    CLIENTES);
+renderPodium('#pod-consultores', CONSULTORES);
+</script>
+</body>
+</html>
