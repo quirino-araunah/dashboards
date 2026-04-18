@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+<title>PAINEL MARKETING — INSTAGRAM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg-primary:#0d1117;--bg-secondary:#161b22;--bg-tertiary:#21262d;--border-color:#30363d;--text-primary:#e6edf3;--text-secondary:#8b949e;--green:#2ecc71;--red:#e74c3c;--amber:#f39c12;--agro:#2ecc71;--agua:#3498db;--florestas:#e67e22}
+html,body{min-height:100vh;width:100%;background:var(--bg-primary);color:var(--text-primary);font-family:'Inter',sans-serif;font-size:13px;line-height:1.4}
+.header{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border-bottom:2px solid var(--border-color);padding:16px 30px;display:flex;justify-content:space-between;align-items:center;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.header-left h1{font-size:24px;font-weight:800;letter-spacing:1px}
+.header-left p{font-size:11px;color:var(--text-secondary);margin-top:2px}
+.header-right{display:flex;gap:20px;align-items:center}
+.clock{font-size:24px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums}
+.clock-date{font-size:10px;color:var(--text-secondary)}
+.refresh-info{font-size:10px;color:var(--text-secondary);text-align:right}
+.refresh-info strong{color:var(--amber);font-size:14px}
+.container{padding:20px 24px;padding-bottom:60px}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.col{background:linear-gradient(135deg,var(--bg-secondary),var(--bg-tertiary));border:2px solid var(--border-color);border-radius:10px;padding:20px;box-shadow:0 6px 20px rgba(0,0,0,.4);position:relative}
+.col.agro{border-top:4px solid var(--agro)}
+.col.agua{border-top:4px solid var(--agua)}
+.col.florestas{border-top:4px solid var(--florestas)}
+.col-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid var(--border-color)}
+.col-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary)}
+.col-username{font-size:16px;font-weight:700;margin-top:2px}
+.col.agro .col-username{color:var(--agro)}
+.col.agua .col-username{color:var(--agua)}
+.col.florestas .col-username{color:var(--florestas)}
+.followers-block{text-align:right}
+.followers-total{font-size:28px;font-weight:800;line-height:1}
+.followers-delta{font-size:12px;margin-top:4px;font-weight:600}
+.followers-delta.up{color:var(--green)}.followers-delta.flat{color:var(--text-secondary)}.followers-delta.down{color:var(--red)}
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.kpi{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:6px;padding:10px 12px}
+.kpi-label{font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.kpi-value{font-size:18px;font-weight:700;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:10px;color:var(--text-secondary);margin-top:2px}
+.er-good{color:var(--green)}.er-mid{color:var(--amber)}.er-low{color:var(--red)}
+.spark-label{font-size:9px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.5px;margin:12px 0 6px}
+.spark{display:flex;align-items:flex-end;gap:3px;height:60px;padding:4px 0;border-bottom:1px solid var(--border-color)}
+.spark-bar{flex:1;border-radius:2px 2px 0 0;min-height:2px;transition:height .4s}
+.col.agro .spark-bar{background:var(--agro)}
+.col.agua .spark-bar{background:var(--agua)}
+.col.florestas .spark-bar{background:var(--florestas)}
+.spark-bar.dim{opacity:.4}
+.mini-table{width:100%;border-collapse:collapse;font-size:10px;margin-top:12px}
+.mini-table th{background:var(--bg-primary);color:var(--text-secondary);font-size:9px;font-weight:700;text-transform:uppercase;text-align:right;padding:6px 4px;border-bottom:1px solid var(--border-color)}
+.mini-table th:first-child{text-align:left}
+.mini-table td{padding:5px 4px;text-align:right;font-variant-numeric:tabular-nums}
+.mini-table td:first-child{text-align:left;color:var(--text-secondary)}
+.mini-table tr.today{background:rgba(46,204,113,.06);font-weight:600}
+.mini-table tr.today td:first-child{color:var(--green)}
+.extras{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:14px}
+.extra{background:var(--bg-primary);border:1px solid var(--border-color);border-radius:4px;padding:8px 6px;text-align:center}
+.extra-label{font-size:8px;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.3px}
+.extra-value{font-size:14px;font-weight:700;margin-top:2px}
+.footer{border-top:1px solid var(--border-color);padding:10px 24px;font-size:10px;color:var(--text-secondary);display:flex;justify-content:space-between;margin-top:20px}
+.loading{text-align:center;padding:60px;color:var(--text-secondary)}
+.error-box{background:rgba(231,76,60,.1);border:1px solid var(--red);border-radius:6px;padding:16px;margin:20px;color:var(--red)}
+@media(max-width:1024px){.grid-3{grid-template-columns:1fr}.header{flex-direction:column;gap:10px;padding:12px 16px;align-items:flex-start}}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-left">
+    <h1>PAINEL MARKETING — INSTAGRAM</h1>
+    <p>Snapshot diário · Graph API · 3 contas · atualiza 06:00 via cron</p>
+  </div>
+  <div class="header-right">
+    <div><div class="clock" id="clock">--:--:--</div><div class="clock-date" id="cdate"></div></div>
+    <div class="refresh-info">auto-refresh<br><strong id="rtimer">5:00</strong></div>
+  </div>
+</div>
+
+<div class="container">
+  <div id="content" class="loading">Carregando dados…</div>
+</div>
+
+<div class="footer">
+  <span id="data-source">Fonte: tabela <code>ig_daily_metrics</code> (Supabase) · populada por <code>collect_daily.py</code></span>
+  <span id="last-update">—</span>
+</div>
+
+<script>
+const SB_URL = 'https://qzxabnagqlatytlvwpyq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY';
+const VERTICALS = [
+  {key:'agro', label:'AGRO', color:'agro'},
+  {key:'agua', label:'ÁGUA', color:'agua'},
+  {key:'florestas', label:'FLORESTAS', color:'florestas'},
+];
+const REFRESH_MS = 5*60*1000;
+let refreshLeft = 300;
+
+function fmt(n){ if(n==null) return '—'; n=Number(n); if(n>=1000) return (n/1000).toFixed(n>=10000?0:1)+'k'; return n.toString(); }
+function fmtInt(n){ if(n==null) return '—'; return Number(n).toLocaleString('pt-BR'); }
+function pct(v){ return (v*100).toFixed(1)+'%'; }
+
+async function fetchData(){
+  const r = await fetch(`${SB_URL}/rest/v1/ig_daily_metrics?select=*&order=snapshot_date.desc&limit=500`, {
+    headers: {apikey: SB_KEY, Authorization: 'Bearer '+SB_KEY}
+  });
+  if(!r.ok) throw new Error('HTTP '+r.status);
+  return await r.json();
+}
+
+function byVertical(rows, v){
+  return rows.filter(r => r.vertical === v).sort((a,b)=>a.snapshot_date.localeCompare(b.snapshot_date));
+}
+
+function renderColumn(v, rows){
+  if(!rows.length) return `<div class="col ${v.color}"><div class="col-header"><div><div class="col-title">${v.label}</div><div class="col-username">@—</div></div></div><p style="color:var(--text-secondary);font-size:11px">Sem dado pra essa conta ainda.</p></div>`;
+
+  const today = rows[rows.length-1];
+  const last7 = rows.slice(-7);
+  const last14 = rows.slice(-14);
+  const sum = (key) => last7.reduce((s,r)=>s+(r[key]||0),0);
+  const reach7 = sum('reach'), inter7 = sum('total_interactions');
+  const er7 = reach7>0 ? inter7/reach7 : 0;
+  const delta7 = sum('follower_delta_day');
+  const deltaClass = delta7>0?'up':delta7<0?'down':'flat';
+  const deltaSign = delta7>0?'↑ +':delta7<0?'↓ ':'';
+
+  const erClass = er7>=0.03?'er-good':er7>=0.01?'er-mid':'er-low';
+
+  // Sparkline reach 14d
+  const maxReach = Math.max(...last14.map(r=>r.reach||0), 1);
+  const bars = last14.map(r => {
+    const h = Math.max(2, (r.reach||0)/maxReach*56);
+    const isToday = r.snapshot_date === today.snapshot_date;
+    return `<div class="spark-bar ${isToday?'':'dim'}" style="height:${h}px" title="${r.snapshot_date}: ${fmtInt(r.reach)}"></div>`;
+  }).join('');
+
+  // Tabela últimos 7d
+  const tbody = last7.slice().reverse().map(r => {
+    const er = r.reach>0 ? (r.total_interactions||0)/r.reach : 0;
+    const isToday = r.snapshot_date === today.snapshot_date;
+    return `<tr class="${isToday?'today':''}">
+      <td>${r.snapshot_date.slice(5)}</td>
+      <td>${fmt(r.reach)}</td>
+      <td>${fmt(r.total_interactions)}</td>
+      <td class="${er>=0.03?'er-good':er>=0.01?'er-mid':'er-low'}">${(er*100).toFixed(1)}%</td>
+      <td>${r.follower_delta_day>0?'+':''}${r.follower_delta_day||0}</td>
+    </tr>`;
+  }).join('');
+
+  return `<div class="col ${v.color}">
+    <div class="col-header">
+      <div>
+        <div class="col-title">${v.label}</div>
+        <div class="col-username">@${today.username||'—'}</div>
+      </div>
+      <div class="followers-block">
+        <div class="followers-total">${fmtInt(today.followers_total)}</div>
+        <div class="followers-delta ${deltaClass}">${deltaSign}${Math.abs(delta7)} em 7d</div>
+      </div>
+    </div>
+
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-label">Alcance 7d</div><div class="kpi-value">${fmt(reach7)}</div><div class="kpi-sub">${fmt(reach7/7)} / dia</div></div>
+      <div class="kpi"><div class="kpi-label">Interações 7d</div><div class="kpi-value">${fmt(inter7)}</div><div class="kpi-sub ${erClass}">ER ${pct(er7)}</div></div>
+    </div>
+
+    <div class="spark-label">Alcance diário — últimos 14 dias</div>
+    <div class="spark">${bars}</div>
+
+    <div class="extras">
+      <div class="extra"><div class="extra-label">Perfil</div><div class="extra-value">${fmt(sum('profile_views'))}</div></div>
+      <div class="extra"><div class="extra-label">Site</div><div class="extra-value">${fmt(sum('website_clicks'))}</div></div>
+      <div class="extra"><div class="extra-label">Saves</div><div class="extra-value">${fmt(sum('saves'))}</div></div>
+      <div class="extra"><div class="extra-label">Shares</div><div class="extra-value">${fmt(sum('shares'))}</div></div>
+    </div>
+
+    <table class="mini-table">
+      <thead><tr><th>Data</th><th>Alcance</th><th>Inter.</th><th>ER</th><th>Δ Segs</th></tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>
+  </div>`;
+}
+
+async function render(){
+  try{
+    const rows = await fetchData();
+    const html = '<div class="grid-3">'+VERTICALS.map(v=>renderColumn(v, byVertical(rows,v.key))).join('')+'</div>';
+    document.getElementById('content').innerHTML = html;
+    document.getElementById('last-update').textContent = 'Última atualização: ' + new Date().toLocaleString('pt-BR');
+  }catch(e){
+    document.getElementById('content').innerHTML = `<div class="error-box">Erro carregando dados: ${e.message}</div>`;
+  }
+}
+
+function tick(){
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('pt-BR');
+  document.getElementById('cdate').textContent = now.toLocaleDateString('pt-BR', {weekday:'short', day:'2-digit', month:'short'});
+  refreshLeft--;
+  if(refreshLeft<=0){ refreshLeft = 300; render(); }
+  const m = Math.floor(refreshLeft/60), s = refreshLeft%60;
+  document.getElementById('rtimer').textContent = m+':'+String(s).padStart(2,'0');
+}
+
+render();
+tick();
+setInterval(tick, 1000);
+</script>
+</body>
+</html>
