@@ -1,0 +1,814 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MOCKUP — Painel Marketing v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e14;--card:#111820;--border:#1e2632;
+  --text:#e6edf3;--muted:#5b6573;--sub:#8b949e;
+  --green:#2ecc71;--blue:#3498db;--orange:#e67e22;
+  --red:#e74c3c;--amber:#f39c12;--purple:#9b59b6;
+}
+html,body{height:100%;width:100%;background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;overflow:hidden}
+body{display:flex;flex-direction:column}
+
+/* ── HEADER ── */
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:10px 24px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,#13181f,#0a0e14);
+  flex-shrink:0;
+}
+.header-left{display:flex;align-items:center;gap:12px}
+.logo{width:28px;opacity:.9}
+.header-title{font-size:15px;font-weight:800;letter-spacing:.3px}
+.header-sub{font-size:9px;color:var(--muted);margin-top:1px;letter-spacing:.3px}
+.header-right{display:flex;align-items:center;gap:20px}
+.clock{font-size:18px;font-weight:700;color:var(--green);font-variant-numeric:tabular-nums}
+.refresh{font-size:9px;color:var(--muted);text-align:right}
+.refresh strong{color:var(--amber)}
+
+/* ── ALERT BAR ── */
+.alert-bar{
+  display:flex;align-items:center;gap:0;
+  flex-shrink:0;border-bottom:1px solid var(--border);
+  background:#0d1117;
+}
+.alert-item{
+  display:flex;align-items:center;gap:8px;
+  padding:8px 18px;border-right:1px solid var(--border);
+  flex:1;
+}
+.alert-item.red{border-top:2px solid var(--red)}
+.alert-item.amber{border-top:2px solid var(--amber)}
+.alert-item.green{border-top:2px solid var(--green)}
+.alert-icon{font-size:14px;flex-shrink:0}
+.alert-text{flex:1}
+.alert-title{font-size:10px;font-weight:700;color:var(--text);letter-spacing:.2px}
+.alert-desc{font-size:9px;color:var(--muted);margin-top:1px}
+.alert-cta{
+  font-size:9px;font-weight:700;padding:3px 8px;border-radius:4px;
+  border:1px solid;cursor:pointer;letter-spacing:.3px;white-space:nowrap;flex-shrink:0;
+}
+.alert-item.red .alert-cta{color:var(--red);border-color:rgba(231,76,60,.3);background:rgba(231,76,60,.08)}
+.alert-item.amber .alert-cta{color:var(--amber);border-color:rgba(243,156,18,.3);background:rgba(243,156,18,.08)}
+.alert-item.green .alert-cta{color:var(--green);border-color:rgba(46,204,113,.3);background:rgba(46,204,113,.08)}
+
+/* ── MAIN GRID ── */
+.main{display:grid;grid-template-columns:1fr 1fr 1fr 320px;gap:0;flex:1;overflow:hidden}
+
+/* ── COLUNA VERTICAL ── */
+.col{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
+.col-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
+.col-vertical{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--muted)}
+.col-handle{font-size:13px;font-weight:700}
+.col.agro .col-handle{color:var(--green)}
+.col.agua .col-handle{color:var(--blue)}
+.col.florestas .col-handle{color:var(--orange)}
+.followers{text-align:right}
+.fol-num{font-size:26px;font-weight:900;line-height:1;letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.fol-delta{font-size:10px;font-weight:600;margin-top:2px}
+.fol-delta.up{color:var(--green)}.fol-delta.down{color:var(--red)}.fol-delta.flat{color:var(--sub)}
+
+.col-body{flex:1;padding:12px 16px;display:flex;flex-direction:column;gap:10px;overflow:hidden}
+
+/* score */
+.score-row{display:flex;align-items:center;gap:10px}
+.score-num{font-size:32px;font-weight:900;line-height:1;letter-spacing:-1px}
+.col.agro .score-num{color:var(--amber)}
+.col.agua .score-num{color:var(--red)}
+.col.florestas .score-num{color:var(--green)}
+.score-label{font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.score-bars{display:flex;gap:4px;flex:1;justify-content:flex-end}
+.score-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:2px}
+.score-bar-label{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+.score-bar-track{width:24px;height:36px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden;display:flex;align-items:flex-end}
+.score-bar-fill{width:100%;border-radius:3px;transition:height .4s}
+.col.agro .score-bar-fill{background:var(--green)}
+.col.agua .score-bar-fill{background:var(--blue)}
+.col.florestas .score-bar-fill{background:var(--orange)}
+.score-bar-val{font-size:8px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--sub)}
+
+/* kpis */
+.kpis{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.kpi{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.kpi-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px;font-weight:600}
+.kpi-val{font-size:18px;font-weight:800;letter-spacing:-0.5px;font-variant-numeric:tabular-nums}
+.kpi-sub{font-size:9px;color:var(--sub);margin-top:1px;font-weight:500}
+.kpi-val.green{color:var(--green)}.kpi-val.red{color:var(--red)}.kpi-val.amber{color:var(--amber)}
+
+/* spark */
+.spark-wrap{flex-shrink:0}
+.spark-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px;font-weight:600}
+.spark{display:flex;align-items:flex-end;gap:2px;height:26px}
+.spark-bar{flex:1;border-radius:1px 1px 0 0;min-height:2px}
+.col.agro .spark-bar{background:var(--green)}
+.col.agua .spark-bar{background:var(--blue)}
+.col.florestas .spark-bar{background:var(--orange)}
+.spark-bar.dim{opacity:.25}
+
+/* meta ads mini */
+.ads-mini{background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:6px;padding:8px 10px}
+.ads-mini-title{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:6px}
+.ads-mini-row{display:flex;justify-content:space-between;align-items:baseline}
+.ads-mini-kpi{text-align:center}
+.ads-mini-val{font-size:14px;font-weight:800;font-variant-numeric:tabular-nums}
+.ads-mini-lab{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px;margin-top:1px}
+
+/* top posts */
+.top-posts{margin-top:auto;display:flex;flex-direction:column;gap:3px;flex-shrink:0}
+.top-posts-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;font-weight:600;margin-bottom:3px}
+.top-post{display:flex;gap:7px;background:rgba(255,255,255,.02);border:1px solid var(--border);border-radius:5px;padding:5px 8px;align-items:center;text-decoration:none;color:inherit}
+.top-post-rank{font-size:10px;font-weight:800;color:var(--muted);width:12px;flex-shrink:0;text-align:center}
+.top-post-thumb{width:30px;height:30px;border-radius:3px;background:var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+.top-post-info{flex:1;min-width:0}
+.top-post-badge{font-size:7px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;padding:1px 4px;border-radius:2px;display:inline-block;margin-bottom:2px}
+.top-post-badge.reel{background:rgba(155,89,182,.2);color:var(--purple)}
+.top-post-badge.feed{background:rgba(52,152,219,.15);color:var(--blue)}
+.top-post-badge.carousel{background:rgba(243,156,18,.15);color:var(--amber)}
+.top-post-caption{font-size:9px;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.top-post-stats{font-size:8px;font-weight:600;margin-top:1px;color:var(--muted)}
+.top-post-er{text-align:right;flex-shrink:0}
+.top-post-er-val{font-size:13px;font-weight:900;font-variant-numeric:tabular-nums}
+.top-post-er-label{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.3px}
+
+/* ── COLUNA INTELIGÊNCIA ── */
+.intel{display:flex;flex-direction:column;overflow:hidden;background:#0d1117}
+.intel-head{padding:12px 16px;border-bottom:1px solid var(--border);flex-shrink:0}
+.intel-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--purple)}
+.intel-sub{font-size:9px;color:var(--muted);margin-top:2px}
+.intel-body{flex:1;padding:12px 14px;display:flex;flex-direction:column;gap:12px;overflow:hidden}
+
+.intel-section-title{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--muted);margin-bottom:6px}
+
+/* tipo chart */
+.tipo-row{display:flex;align-items:center;gap:8px;margin-bottom:5px}
+.tipo-label{font-size:10px;font-weight:600;width:70px;flex-shrink:0}
+.tipo-bar-wrap{flex:1;height:14px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.tipo-bar{height:100%;border-radius:3px;transition:width .6s}
+.tipo-bar.reel{background:linear-gradient(90deg,var(--purple),rgba(155,89,182,.5))}
+.tipo-bar.feed{background:linear-gradient(90deg,var(--blue),rgba(52,152,219,.5))}
+.tipo-bar.carousel{background:linear-gradient(90deg,var(--amber),rgba(243,156,18,.5))}
+.tipo-val{font-size:10px;font-weight:700;width:36px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.tipo-posts{font-size:9px;color:var(--muted);width:28px;text-align:right;flex-shrink:0}
+
+/* tema chart */
+.tema-row{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.tema-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tema-label{font-size:9px;color:var(--sub);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tema-bar-wrap{width:60px;height:8px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden;flex-shrink:0}
+.tema-bar{height:100%;border-radius:2px;background:var(--purple);opacity:.7}
+.tema-val{font-size:9px;font-weight:700;width:30px;text-align:right;flex-shrink:0}
+
+/* insight card */
+.insight-card{background:rgba(155,89,182,.08);border:1px solid rgba(155,89,182,.2);border-radius:8px;padding:10px 12px;flex-shrink:0}
+.insight-icon{font-size:16px;margin-bottom:4px}
+.insight-text{font-size:11px;font-weight:600;line-height:1.4;color:var(--text)}
+.insight-action{font-size:9px;color:var(--purple);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.4px}
+
+/* meta bar (semanal) */
+.meta-prog{margin-bottom:4px}
+.meta-prog-row{display:flex;align-items:center;gap:6px;margin-bottom:3px}
+.meta-prog-label{font-size:9px;color:var(--muted);width:55px;flex-shrink:0}
+.meta-prog-track{flex:1;height:6px;background:rgba(255,255,255,.04);border-radius:3px;overflow:hidden}
+.meta-prog-fill{height:100%;border-radius:3px}
+.meta-prog-fill.low{background:var(--red);opacity:.7}
+.meta-prog-fill.mid{background:var(--amber);opacity:.8}
+.meta-prog-fill.ok{background:var(--green)}
+.meta-prog-val{font-size:9px;font-weight:700;width:32px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+
+/* footer */
+.footer{padding:5px 24px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0;background:#0d1117}
+.footer-left{font-size:8px;color:var(--muted)}
+.footer-right{font-size:8px;color:var(--muted)}
+
+/* divider */
+.divider{height:1px;background:var(--border);margin:0 -16px}
+
+/* label mockup */
+.mockup-badge{
+  position:fixed;top:8px;right:8px;
+  background:rgba(155,89,182,.15);border:1px solid rgba(155,89,182,.3);
+  color:var(--purple);font-size:9px;font-weight:700;
+  padding:3px 8px;border-radius:4px;letter-spacing:.5px;
+  text-transform:uppercase;z-index:100;
+}
+
+/* ── MOBILE ── */
+@media (max-width:768px){
+  html,body{overflow:auto;height:auto}
+  body{min-height:100vh}
+
+  .header{padding:10px 14px;flex-wrap:wrap;gap:8px}
+  .header-title{font-size:12px}
+  .header-sub{font-size:8px}
+  .clock{font-size:15px}
+  .refresh{display:none}
+
+  .alert-bar{flex-direction:column}
+  .alert-item{border-right:none;border-bottom:1px solid var(--border)}
+  .alert-item:last-child{border-bottom:none}
+
+  .main{grid-template-columns:1fr;overflow:auto;flex:unset}
+  .col{border-right:none;border-bottom:2px solid var(--border);overflow:visible}
+  .col-body{overflow:visible;padding:12px}
+  .intel{overflow:visible}
+  .intel-body{overflow:visible;padding:12px}
+
+  .fol-num{font-size:20px}
+  .score-num{font-size:26px}
+  .kpi-val{font-size:16px}
+  .ads-mini-val{font-size:12px}
+
+  .top-posts{margin-top:12px}
+  .score-bars{gap:6px}
+  .score-bar-track{width:28px;height:44px}
+
+  .footer{flex-direction:column;gap:4px;align-items:flex-start;padding:8px 14px}
+  .mockup-badge{top:4px;right:4px;font-size:8px;padding:2px 6px}
+}
+</style>
+</head>
+<body>
+
+<div class="mockup-badge">MOCKUP V2</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <svg class="logo" viewBox="0 0 40 40" fill="none"><rect width="40" height="40" rx="8" fill="#2ecc71" opacity=".15"/><path d="M8 30L20 10l12 20H8z" fill="#2ecc71" opacity=".8"/></svg>
+    <div>
+      <div class="header-title">PAINEL MARKETING — INSTAGRAM</div>
+      <div class="header-sub">Snapshot diário · Graph API · 3 contas · atualiza 06:00 via cron</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div>
+      <div class="clock">17:36:14</div>
+      <div style="font-size:9px;color:var(--muted);margin-top:1px;text-transform:capitalize">Sáb., 18 de abr.</div>
+    </div>
+    <div class="refresh">auto-refresh<br><strong>4:55</strong></div>
+  </div>
+</div>
+
+<!-- ALERT BAR -->
+<div class="alert-bar">
+  <div class="alert-item red">
+    <div class="alert-icon">🔴</div>
+    <div class="alert-text">
+      <div class="alert-title">384 leads sem resposta esta semana</div>
+      <div class="alert-desc">Agro: 276 · Água: 108 · Florestas: 0 — consultores não estão convertendo</div>
+    </div>
+    <div class="alert-cta">VER RANKING</div>
+  </div>
+  <div class="alert-item amber">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <div class="alert-title">Água: 8 dias sem postar</div>
+      <div class="alert-desc">Próximo slot ideal: Terça 18h · cadência mínima: 2 posts/sem</div>
+    </div>
+    <div class="alert-cta">PLANEJAR POST</div>
+  </div>
+  <div class="alert-item amber">
+    <div class="alert-icon">⚠️</div>
+    <div class="alert-text">
+      <div class="alert-title">Florestas: 4 dias sem postar</div>
+      <div class="alert-desc">ER 6% — melhor conta proporcional. Não deixar perder momentum</div>
+    </div>
+    <div class="alert-cta">PLANEJAR POST</div>
+  </div>
+  <div class="alert-item green">
+    <div class="alert-icon">✅</div>
+    <div class="alert-text">
+      <div class="alert-title">Token Graph API válido</div>
+      <div class="alert-desc">Expira em 55 dias · 18/04 → 12/06/2026</div>
+    </div>
+    <div class="alert-cta">OK</div>
+  </div>
+</div>
+
+<!-- MAIN GRID -->
+<div class="main">
+
+  <!-- AGRO -->
+  <div class="col agro">
+    <div class="col-head">
+      <div>
+        <div class="col-vertical">Agro · Composta</div>
+        <div class="col-handle">@araunah_oficial</div>
+      </div>
+      <div class="followers">
+        <div class="fol-num">20.152</div>
+        <div class="fol-delta up">↑ +95 em 7d</div>
+      </div>
+    </div>
+    <div class="col-body">
+      <div class="score-row">
+        <div>
+          <div class="score-num">51</div>
+          <div class="score-label">/ 100 saúde</div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:72%"></div></div>
+            <div class="score-bar-label">Cad</div>
+            <div class="score-bar-val">18</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:32%"></div></div>
+            <div class="score-bar-label">Eng</div>
+            <div class="score-bar-val">8</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:0%"></div></div>
+            <div class="score-bar-label">Resp</div>
+            <div class="score-bar-val">0</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:100%"></div></div>
+            <div class="score-bar-label">Cres</div>
+            <div class="score-bar-val">25</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-label">Alcance 7d</div>
+          <div class="kpi-val">86k</div>
+          <div class="kpi-sub">12k / dia</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">ER médio</div>
+          <div class="kpi-val amber">0.5%</div>
+          <div class="kpi-sub">↓ vs 0.8% mês</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Posts 7d</div>
+          <div class="kpi-val green">4</div>
+          <div class="kpi-sub">meta: 3/sem ✓</div>
+        </div>
+      </div>
+
+      <div class="spark-wrap">
+        <div class="spark-label">Alcance 14d</div>
+        <div class="spark" id="spark-agro"></div>
+      </div>
+
+      <div class="ads-mini">
+        <div class="ads-mini-title">Meta Ads — mês atual</div>
+        <div class="ads-mini-row">
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val" style="color:var(--amber)">R$10k</div>
+            <div class="ads-mini-lab">Gasto</div>
+          </div>
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val" style="color:var(--green)">986</div>
+            <div class="ads-mini-lab">Leads</div>
+          </div>
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val">R$10</div>
+            <div class="ads-mini-lab">CPL</div>
+          </div>
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val" style="color:var(--red)">93%</div>
+            <div class="ads-mini-lab">Sem resp</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-posts">
+        <div class="top-posts-label">Top 3 posts — ER</div>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#1</div>
+          <div class="top-post-thumb">🎬</div>
+          <div class="top-post-info">
+            <span class="top-post-badge reel">REEL</span>
+            <div class="top-post-caption">Controle total da produção de fertilizantes...</div>
+            <div class="top-post-stats">816 alcance · 18 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--green)">2.2%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#2</div>
+          <div class="top-post-thumb">🎬</div>
+          <div class="top-post-info">
+            <span class="top-post-badge reel">REEL</span>
+            <div class="top-post-caption">Boro no café: como aplicar na hora certa...</div>
+            <div class="top-post-stats">654 alcance · 12 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--green)">1.8%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#3</div>
+          <div class="top-post-thumb">🖼</div>
+          <div class="top-post-info">
+            <span class="top-post-badge carousel">CARROSSEL</span>
+            <div class="top-post-caption">Ulexita: micronutriente que transforma o solo...</div>
+            <div class="top-post-stats">522 alcance · 9 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--amber)">1.7%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- ÁGUA -->
+  <div class="col agua">
+    <div class="col-head">
+      <div>
+        <div class="col-vertical">Água · Equipamentos</div>
+        <div class="col-handle">@araunahtech</div>
+      </div>
+      <div class="followers">
+        <div class="fol-num">2.591</div>
+        <div class="fol-delta up">↑ +7 em 7d</div>
+      </div>
+    </div>
+    <div class="col-body">
+      <div class="score-row">
+        <div>
+          <div class="score-num" style="color:var(--red)">25</div>
+          <div class="score-label">/ 100 saúde</div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:0%"></div></div>
+            <div class="score-bar-label">Cad</div>
+            <div class="score-bar-val">0</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:32%"></div></div>
+            <div class="score-bar-label">Eng</div>
+            <div class="score-bar-val">8</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:0%"></div></div>
+            <div class="score-bar-label">Resp</div>
+            <div class="score-bar-val">0</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:68%"></div></div>
+            <div class="score-bar-label">Cres</div>
+            <div class="score-bar-val">17</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-label">Alcance 7d</div>
+          <div class="kpi-val">2.6k</div>
+          <div class="kpi-sub">378 / dia</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">ER médio</div>
+          <div class="kpi-val amber">0.9%</div>
+          <div class="kpi-sub">↑ vs 0.6% mês</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Posts 7d</div>
+          <div class="kpi-val red">0</div>
+          <div class="kpi-sub">meta: 2/sem ✗</div>
+        </div>
+      </div>
+
+      <div class="spark-wrap">
+        <div class="spark-label">Alcance 14d</div>
+        <div class="spark" id="spark-agua"></div>
+      </div>
+
+      <div class="ads-mini">
+        <div class="ads-mini-title">Meta Ads — mês atual</div>
+        <div class="ads-mini-row">
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val" style="color:var(--amber)">R$2.4k</div>
+            <div class="ads-mini-lab">Gasto</div>
+          </div>
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val" style="color:var(--green)">454</div>
+            <div class="ads-mini-lab">Leads</div>
+          </div>
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val">R$5</div>
+            <div class="ads-mini-lab">CPL</div>
+          </div>
+          <div class="ads-mini-kpi">
+            <div class="ads-mini-val" style="color:var(--red)">99%</div>
+            <div class="ads-mini-lab">Sem resp</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-posts">
+        <div class="top-posts-label">Top 3 posts — ER</div>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#1</div>
+          <div class="top-post-thumb">🎬</div>
+          <div class="top-post-info">
+            <span class="top-post-badge reel">REEL</span>
+            <div class="top-post-caption">Bomba Tefen MixRite — medicação nas aves certa...</div>
+            <div class="top-post-stats">110 alcance · 9 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--green)">8.2%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#2</div>
+          <div class="top-post-thumb">🖼</div>
+          <div class="top-post-info">
+            <span class="top-post-badge feed">FEED</span>
+            <div class="top-post-caption">Irrigação por gotejamento: reduza 40% no consumo...</div>
+            <div class="top-post-stats">94 alcance · 6 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--green)">6.4%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#3</div>
+          <div class="top-post-thumb">🎬</div>
+          <div class="top-post-info">
+            <span class="top-post-badge reel">REEL</span>
+            <div class="top-post-caption">Como instalar sistema de fertirrigação em 3 passos...</div>
+            <div class="top-post-stats">78 alcance · 4 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--amber)">5.1%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- FLORESTAS -->
+  <div class="col florestas">
+    <div class="col-head">
+      <div>
+        <div class="col-vertical">Florestas · Polyter</div>
+        <div class="col-handle">@araunahflorestas</div>
+      </div>
+      <div class="followers">
+        <div class="fol-num">161</div>
+        <div class="fol-delta up">↑ +4 em 7d</div>
+      </div>
+    </div>
+    <div class="col-body">
+      <div class="score-row">
+        <div>
+          <div class="score-num" style="color:var(--green)">72</div>
+          <div class="score-label">/ 100 saúde</div>
+        </div>
+        <div class="score-bars">
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:40%"></div></div>
+            <div class="score-bar-label">Cad</div>
+            <div class="score-bar-val">10</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:100%"></div></div>
+            <div class="score-bar-label">Eng</div>
+            <div class="score-bar-val">25</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:80%"></div></div>
+            <div class="score-bar-label">Resp</div>
+            <div class="score-bar-val">20</div>
+          </div>
+          <div class="score-bar-wrap">
+            <div class="score-bar-track"><div class="score-bar-fill" style="height:68%"></div></div>
+            <div class="score-bar-label">Cres</div>
+            <div class="score-bar-val">17</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi">
+          <div class="kpi-label">Alcance 7d</div>
+          <div class="kpi-val">67</div>
+          <div class="kpi-sub">9.6 / dia</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">ER médio</div>
+          <div class="kpi-val green">6.0%</div>
+          <div class="kpi-sub">↑ melhor conta</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label">Posts 7d</div>
+          <div class="kpi-val red">1</div>
+          <div class="kpi-sub">meta: 2/sem ✗</div>
+        </div>
+      </div>
+
+      <div class="spark-wrap">
+        <div class="spark-label">Alcance 14d</div>
+        <div class="spark" id="spark-florestas"></div>
+      </div>
+
+      <div class="ads-mini">
+        <div class="ads-mini-title">Meta Ads — mês atual</div>
+        <div class="ads-mini-row" style="justify-content:center">
+          <div class="ads-mini-kpi" style="text-align:center">
+            <div class="ads-mini-val" style="color:var(--muted);font-size:11px">Sem campanha ativa</div>
+            <div class="ads-mini-lab">0 leads via ads · orgânico apenas</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="top-posts">
+        <div class="top-posts-label">Top 3 posts — ER</div>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#1</div>
+          <div class="top-post-thumb">🌿</div>
+          <div class="top-post-info">
+            <span class="top-post-badge feed">FEED</span>
+            <div class="top-post-caption">Polyter no plantio florestal: arranque garantido...</div>
+            <div class="top-post-stats">25 alcance · 1 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--green)">4.0%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#2</div>
+          <div class="top-post-thumb">🎬</div>
+          <div class="top-post-info">
+            <span class="top-post-badge reel">REEL</span>
+            <div class="top-post-caption">Eucalipto em 60 meses: resultado com Polyter hidrogel</div>
+            <div class="top-post-stats">18 alcance · 2 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--green)">11.1%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+        <a class="top-post" href="#">
+          <div class="top-post-rank">#3</div>
+          <div class="top-post-thumb">🖼</div>
+          <div class="top-post-info">
+            <span class="top-post-badge carousel">CARROSSEL</span>
+            <div class="top-post-caption">3 espécies que mais se beneficiam do Polyter...</div>
+            <div class="top-post-stats">14 alcance · 1 inter.</div>
+          </div>
+          <div class="top-post-er">
+            <div class="top-post-er-val" style="color:var(--amber)">7.1%</div>
+            <div class="top-post-er-label">ER</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- INTELIGÊNCIA DE CONTEÚDO -->
+  <div class="intel">
+    <div class="intel-head">
+      <div class="intel-title">⚡ Inteligência de Conteúdo</div>
+      <div class="intel-sub">Tipo × Tema × Engajamento · últimos 100 posts</div>
+    </div>
+    <div class="intel-body">
+
+      <div>
+        <div class="intel-section-title">ER por tipo de post — AGRO</div>
+        <div class="tipo-row">
+          <div class="tipo-label" style="color:var(--purple)">REEL</div>
+          <div class="tipo-bar-wrap"><div class="tipo-bar reel" style="width:85%"></div></div>
+          <div class="tipo-val" style="color:var(--green)">2.8%</div>
+          <div class="tipo-posts">62p</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-label" style="color:var(--amber)">CARROSSEL</div>
+          <div class="tipo-bar-wrap"><div class="tipo-bar carousel" style="width:58%"></div></div>
+          <div class="tipo-val" style="color:var(--amber)">1.9%</div>
+          <div class="tipo-posts">18p</div>
+        </div>
+        <div class="tipo-row">
+          <div class="tipo-label" style="color:var(--blue)">FEED</div>
+          <div class="tipo-bar-wrap"><div class="tipo-bar feed" style="width:37%"></div></div>
+          <div class="tipo-val" style="color:var(--sub)">1.2%</div>
+          <div class="tipo-posts">20p</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="intel-section-title">ER por tema — AI classifica captions</div>
+        <div class="tema-row">
+          <div class="tema-dot" style="background:var(--green)"></div>
+          <div class="tema-label">Produto específico (Ulexita, Boro)</div>
+          <div class="tema-bar-wrap"><div class="tema-bar" style="width:100%"></div></div>
+          <div class="tema-val" style="color:var(--green)">4.2%</div>
+        </div>
+        <div class="tema-row">
+          <div class="tema-dot" style="background:var(--blue)"></div>
+          <div class="tema-label">Técnico educativo (como usar)</div>
+          <div class="tema-bar-wrap"><div class="tema-bar" style="width:74%"></div></div>
+          <div class="tema-val" style="color:var(--blue)">3.1%</div>
+        </div>
+        <div class="tema-row">
+          <div class="tema-dot" style="background:var(--orange)"></div>
+          <div class="tema-label">Case / cliente real</div>
+          <div class="tema-bar-wrap"><div class="tema-bar" style="width:62%"></div></div>
+          <div class="tema-val" style="color:var(--orange)">2.6%</div>
+        </div>
+        <div class="tema-row">
+          <div class="tema-dot" style="background:var(--amber)"></div>
+          <div class="tema-label">Institucional / marca</div>
+          <div class="tema-bar-wrap"><div class="tema-bar" style="width:43%"></div></div>
+          <div class="tema-val" style="color:var(--amber)">1.8%</div>
+        </div>
+        <div class="tema-row">
+          <div class="tema-dot" style="background:var(--muted)"></div>
+          <div class="tema-label">Genérico / catálogo</div>
+          <div class="tema-bar-wrap"><div class="tema-bar" style="width:19%;opacity:.5"></div></div>
+          <div class="tema-val" style="color:var(--muted)">0.8%</div>
+        </div>
+      </div>
+
+      <div class="insight-card">
+        <div class="insight-icon">🧠</div>
+        <div class="insight-text">Reels de produto específico (Ulexita, Boro) batem posts genéricos em <strong>5.3×</strong>. Próximo post: Reel de KCL Andino com resultado real de fazenda.</div>
+        <div class="insight-action">→ Ação recomendada pela IA</div>
+      </div>
+
+      <div>
+        <div class="intel-section-title">Meta semanal — semana 13-19/04</div>
+        <div class="meta-prog">
+          <div class="meta-prog-row">
+            <div class="meta-prog-label" style="color:var(--green)">Agro</div>
+            <div class="meta-prog-track"><div class="meta-prog-fill mid" style="width:31%"></div></div>
+            <div class="meta-prog-val" style="color:var(--amber)">31%</div>
+          </div>
+          <div class="meta-prog-row">
+            <div class="meta-prog-label" style="color:var(--blue)">Água</div>
+            <div class="meta-prog-track"><div class="meta-prog-fill mid" style="width:87%"></div></div>
+            <div class="meta-prog-val" style="color:var(--amber)">87%</div>
+          </div>
+          <div class="meta-prog-row">
+            <div class="meta-prog-label" style="color:var(--orange)">Florestas</div>
+            <div class="meta-prog-track"><div class="meta-prog-fill low" style="width:26%"></div></div>
+            <div class="meta-prog-val" style="color:var(--red)">26%</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="footer-left">Fonte: <code>ig_daily_metrics</code> · <code>ig_media_metrics</code> · Meta Ads API · Supabase · IA classifica captions via lithi-api</div>
+  <div class="footer-right">Última atualização: 18/04/2026, 17:36:07</div>
+</div>
+
+<script>
+// Clock
+function updateClock(){
+  const now=new Date();
+  document.querySelector('.clock').textContent=now.toLocaleTimeString('pt-BR');
+}
+setInterval(updateClock,1000);
+
+// Sparks
+function renderSpark(id, data, color){
+  const el=document.getElementById(id);
+  if(!el)return;
+  const max=Math.max(...data,1);
+  el.innerHTML=data.map((v,i)=>{
+    const h=Math.round((v/max)*100);
+    const dim=i<data.length-7;
+    return `<div class="spark-bar${dim?' dim':''}" style="height:${h}%;background:${color}"></div>`;
+  }).join('');
+}
+renderSpark('spark-agro',[18000,32000,12000,6600,11000,7800,16000,5000,8000,12000,7000,15000,6000,175],'#2ecc71');
+renderSpark('spark-agua',[800,600,400,200,6,7,694,795,687,457,0],'#3498db');
+renderSpark('spark-florestas',[12,8,20,45,3,2,35,6,15,6,0],'#e67e22');
+
+// Refresh counter
+let secs=295;
+setInterval(()=>{
+  secs--;if(secs<0)secs=300;
+  const m=Math.floor(secs/60),s=secs%60;
+  document.querySelector('.refresh strong').textContent=`${m}:${s.toString().padStart(2,'0')}`;
+},1000);
+</script>
+</body>
+</html>
