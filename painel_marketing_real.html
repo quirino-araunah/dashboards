@@ -599,6 +599,15 @@ body{display:flex;flex-direction:column}
         </div>
       </div>
 
+      <!-- PIPELINE DE CONTEÚDO -->
+      <div>
+        <div class="intel-section-title">📋 Pipeline de Conteúdo</div>
+        <div id="pipeline-bar" style="display:flex;gap:4px;margin-bottom:8px">
+          <div style="font-size:9px;color:var(--muted)">Carregando...</div>
+        </div>
+        <div id="pipeline-drafts" style="font-size:9px;color:var(--muted)">—</div>
+      </div>
+
       <div class="insight-card" id="intel-insight">
         <div class="insight-icon">⏳</div>
         <div class="insight-text">Carregando dados para gerar insight...</div>
@@ -694,6 +703,13 @@ function daysSince(isoDate) {
   if (!isoDate) return null;
   const d = new Date(isoDate);
   return Math.floor((Date.now() - d.getTime()) / 86400000);
+}
+
+function timeAgo(d) {
+  const s = Math.floor((Date.now() - d.getTime()) / 1000);
+  if (s < 3600) return `${Math.floor(s/60)}min`;
+  if (s < 86400) return `${Math.floor(s/3600)}h`;
+  return `${Math.floor(s/86400)}d`;
 }
 
 function isoDateNdaysAgo(n) {
@@ -1158,6 +1174,63 @@ async function loadData() {
       </div>`;
     }
     document.getElementById('meta-semanal-bars').innerHTML = metaHtml;
+
+    /* ── Pipeline de Conteúdo ── */
+    try {
+      const [pipeAll, pipeDrafts] = await Promise.all([
+        sbFetch('ig_content', 'select=status,vertical'),
+        sbFetch('ig_content', 'select=vertical,tipo,tema,created_by,created_at&status=eq.rascunho&order=created_at.desc&limit=8'),
+      ]);
+
+      const counts = { rascunho: 0, aprovado: 0, agendado: 0, publicado: 0 };
+      for (const r of pipeAll) counts[r.status] = (counts[r.status] || 0) + 1;
+
+      const vertCounts = {};
+      for (const r of pipeAll) {
+        if (r.status === 'rascunho') vertCounts[r.vertical] = (vertCounts[r.vertical] || 0) + 1;
+      }
+
+      const pipeColors = { rascunho: 'var(--amber)', aprovado: 'var(--blue)', agendado: 'var(--purple)', publicado: 'var(--green)' };
+      const pipeLabels = { rascunho: 'Rascunho', aprovado: 'Aprovado', agendado: 'Agendado', publicado: 'Publicado' };
+      let pipeHtml = '';
+      for (const [st, cnt] of Object.entries(counts)) {
+        if (cnt === 0 && st !== 'rascunho') continue;
+        pipeHtml += `<div style="flex:1;text-align:center;padding:4px 2px;border-radius:4px;background:rgba(255,255,255,.04);border:1px solid var(--border)">
+          <div style="font-size:16px;font-weight:800;color:${pipeColors[st]}">${cnt}</div>
+          <div style="font-size:7px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);margin-top:1px">${pipeLabels[st]}</div>
+        </div>`;
+      }
+      document.getElementById('pipeline-bar').innerHTML = pipeHtml;
+
+      const vertColors = { agro: 'var(--green)', agua: 'var(--blue)', florestas: 'var(--orange)' };
+      const vertLabels = { agro: 'Agro', agua: 'Água', florestas: 'Floresta' };
+      let draftsHtml = '<div style="margin-top:6px">';
+      draftsHtml += '<div style="display:flex;gap:6px;margin-bottom:6px">';
+      for (const [v, c] of Object.entries(vertCounts).sort()) {
+        draftsHtml += `<span style="font-size:8px;font-weight:700;color:${vertColors[v] || 'var(--muted)'};background:rgba(255,255,255,.04);padding:2px 6px;border-radius:3px">${vertLabels[v] || v} ${c}</span>`;
+      }
+      draftsHtml += '</div>';
+      for (const d of pipeDrafts.slice(0, 5)) {
+        const src = d.created_by === 'campo' ? '📸' : d.created_by === 'ia' ? '🤖' : '👤';
+        const vColor = vertColors[d.vertical] || 'var(--muted)';
+        const tema = (d.tema || d.tipo || '').substring(0, 35);
+        const ago = d.created_at ? timeAgo(new Date(d.created_at)) : '';
+        draftsHtml += `<div style="display:flex;align-items:center;gap:5px;padding:2px 0;border-bottom:1px solid rgba(255,255,255,.03)">
+          <span style="font-size:9px">${src}</span>
+          <span style="width:4px;height:4px;border-radius:50%;background:${vColor};flex-shrink:0"></span>
+          <span style="font-size:9px;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${tema}</span>
+          <span style="font-size:8px;color:var(--muted);flex-shrink:0">${ago}</span>
+        </div>`;
+      }
+      if (pipeDrafts.length > 5) {
+        draftsHtml += `<div style="font-size:8px;color:var(--muted);text-align:center;margin-top:4px">+${pipeDrafts.length - 5} mais</div>`;
+      }
+      draftsHtml += '</div>';
+      document.getElementById('pipeline-drafts').innerHTML = draftsHtml;
+    } catch(e) {
+      console.error('pipeline error:', e);
+      document.getElementById('pipeline-bar').innerHTML = '<div style="font-size:9px;color:var(--red)">Erro pipeline</div>';
+    }
 
     /* ── Footer ── */
     document.getElementById('footer-update').textContent =
