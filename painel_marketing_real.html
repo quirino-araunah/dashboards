@@ -73,6 +73,30 @@ body{display:flex;flex-direction:column}
 /* ── MAIN GRID ── */
 .main{display:grid;grid-template-columns:1fr 1fr 1fr 320px;gap:0;flex:1;overflow:hidden}
 
+/* ── PROSPECÇÃO FLORESTAS CARD ── */
+.prospec-card{
+  flex-shrink:0;border-top:1px solid var(--border);
+  background:#0d1117;padding:8px 24px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+}
+.prospec-header{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.prospec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--orange)}
+.prospec-link{font-size:9px;color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--muted);margin-left:4px}
+.prospec-link:hover{color:var(--orange)}
+.prospec-kpis{display:flex;gap:12px;align-items:center}
+.prospec-kpi{text-align:center;min-width:48px}
+.prospec-kpi-val{font-size:18px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.prospec-kpi-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;margin-top:2px}
+.prospec-sep{width:1px;height:32px;background:var(--border);flex-shrink:0}
+.prospec-funil{display:flex;align-items:center;gap:6px;flex:1;min-width:200px}
+.prospec-funil-label{font-size:8px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;white-space:nowrap;flex-shrink:0}
+.prospec-funil-bars{display:flex;gap:3px;flex:1;align-items:flex-end;height:22px}
+.prospec-funil-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:1px;flex:1}
+.prospec-funil-bar-track{width:100%;height:14px;background:rgba(255,255,255,.04);border-radius:2px;overflow:hidden;display:flex;align-items:flex-end}
+.prospec-funil-bar-fill{width:100%;border-radius:2px;background:var(--orange);opacity:.8;transition:height .4s}
+.prospec-funil-bar-name{font-size:7px;color:var(--muted);text-transform:uppercase;letter-spacing:.2px;white-space:nowrap}
+.prospec-funil-bar-val{font-size:8px;font-weight:700;color:var(--sub);font-variant-numeric:tabular-nums}
+
 /* ── COLUNA VERTICAL ── */
 .col{border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden}
 .col-head{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-shrink:0}
@@ -621,6 +645,40 @@ body{display:flex;flex-direction:column}
         </div>
       </div>
 
+    </div>
+  </div>
+</div>
+
+<!-- PROSPECÇÃO FLORESTAS -->
+<div class="prospec-card" id="prospec-florestas-card">
+  <div class="prospec-header">
+    <span class="prospec-title">🌲 Prospecção Florestas — Simpósio</span>
+    <a class="prospec-link" href="/prospec_florestas.html" target="_blank">→ painel</a>
+  </div>
+  <div class="prospec-sep"></div>
+  <div class="prospec-kpis">
+    <div class="prospec-kpi">
+      <div class="prospec-kpi-val" id="pf-empresas" style="color:var(--orange)">—</div>
+      <div class="prospec-kpi-label">Empresas</div>
+    </div>
+    <div class="prospec-kpi">
+      <div class="prospec-kpi-val" id="pf-prio-a" style="color:var(--green)">—</div>
+      <div class="prospec-kpi-label">Prio A</div>
+    </div>
+    <div class="prospec-kpi">
+      <div class="prospec-kpi-val" id="pf-em-conversa" style="color:var(--blue)">—</div>
+      <div class="prospec-kpi-label">Em conversa</div>
+    </div>
+    <div class="prospec-kpi">
+      <div class="prospec-kpi-val" id="pf-fechados" style="color:var(--green)">—</div>
+      <div class="prospec-kpi-label">Fechados</div>
+    </div>
+  </div>
+  <div class="prospec-sep"></div>
+  <div class="prospec-funil">
+    <div class="prospec-funil-label">Funil</div>
+    <div class="prospec-funil-bars" id="pf-funil-bars">
+      <div style="font-size:9px;color:var(--muted)">Carregando...</div>
     </div>
   </div>
 </div>
@@ -1242,8 +1300,58 @@ async function loadData() {
   }
 }
 
+/* ══════════════════════════════════════════════
+   PROSPECÇÃO FLORESTAS — KPIs
+══════════════════════════════════════════════ */
+async function loadProspecFlorestas() {
+  try {
+    const r = await sbFetch('vw_florestas_prospects_stats', 'select=*');
+    const s = r[0];
+    if (!s) return;
+
+    // Mini-KPIs
+    const set = (id, val, color) => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = val != null ? val : '—';
+      if (color) el.style.color = color;
+    };
+    set('pf-empresas',   s.total_empresas,  'var(--orange)');
+    set('pf-prio-a',     s.prio_a,          s.prio_a > 0 ? 'var(--green)' : 'var(--muted)');
+    const emConversa = (s.s_contatado || 0) + (s.s_agendado || 0) + (s.s_proposta || 0);
+    set('pf-em-conversa', emConversa,        emConversa > 0 ? 'var(--blue)' : 'var(--muted)');
+    set('pf-fechados',   s.s_fechado,        s.s_fechado > 0 ? 'var(--green)' : 'var(--muted)');
+
+    // Funil mini — barras proporcionais horizontais
+    const funilSteps = [
+      { label: 'A Contat.',  val: s.s_a_contatar  || 0, color: 'var(--muted)' },
+      { label: 'Contatado',  val: s.s_contatado   || 0, color: 'var(--blue)'  },
+      { label: 'Agendado',   val: s.s_agendado    || 0, color: 'var(--amber)' },
+      { label: 'Proposta',   val: s.s_proposta    || 0, color: 'var(--purple)'},
+      { label: 'Fechado',    val: s.s_fechado     || 0, color: 'var(--green)' },
+    ];
+    const maxVal = Math.max(...funilSteps.map(f => f.val), 1);
+    const funilEl = document.getElementById('pf-funil-bars');
+    if (funilEl) {
+      funilEl.innerHTML = funilSteps.map(f => {
+        const pct = Math.max(Math.round((f.val / maxVal) * 100), f.val > 0 ? 4 : 0);
+        return `<div class="prospec-funil-bar-wrap">
+          <div class="prospec-funil-bar-val">${f.val}</div>
+          <div class="prospec-funil-bar-track">
+            <div class="prospec-funil-bar-fill" style="height:${pct}%;background:${f.color}"></div>
+          </div>
+          <div class="prospec-funil-bar-name">${f.label}</div>
+        </div>`;
+      }).join('');
+    }
+  } catch(e) {
+    console.warn('prospec florestas load error:', e);
+  }
+}
+
 // Inicializar
 loadData();
+loadProspecFlorestas();
 </script>
 </body>
 </html>

@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prospecção Florestas — Araunah</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#0a0e14;--card:#111820;--border:#1e2632;
+  --text:#e6edf3;--muted:#5b6573;--sub:#8b949e;
+  --green:#2ecc71;--blue:#3498db;--orange:#e67e22;
+  --red:#e74c3c;--amber:#f39c12;
+  --brand-blue:#2c6e7c;--brand-green:#4fa84f;
+}
+html,body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh}
+body{padding:0;margin:0}
+
+.header{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 24px;border-bottom:1px solid var(--border);
+  background:linear-gradient(180deg,#13181f,#0a0e14);
+}
+.header h1{font-size:18px;font-weight:800;letter-spacing:.3px}
+.header h1 span{color:var(--brand-green)}
+.header-sub{font-size:11px;color:var(--muted);margin-top:2px}
+.user-info{display:flex;gap:14px;align-items:center;font-size:12px;color:var(--sub)}
+.user-info button{background:transparent;border:1px solid var(--border);color:var(--sub);padding:6px 12px;border-radius:4px;cursor:pointer;font-size:11px}
+.user-info button:hover{color:var(--text);border-color:var(--brand-green)}
+
+/* Login screen */
+.login-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:80vh;padding:24px}
+.login-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:32px;width:100%;max-width:380px}
+.login-card h2{font-size:16px;font-weight:700;margin-bottom:6px}
+.login-card p{font-size:12px;color:var(--muted);margin-bottom:20px}
+.login-card input{width:100%;padding:10px 12px;background:#0a0e14;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:13px;margin-bottom:10px}
+.login-card input:focus{outline:none;border-color:var(--brand-green)}
+.login-card button{width:100%;padding:10px;background:var(--brand-green);border:none;border-radius:4px;color:#fff;font-weight:700;cursor:pointer;font-size:13px}
+.login-card button:hover{filter:brightness(1.1)}
+.login-error{color:var(--red);font-size:11px;margin-top:8px}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;padding:16px 24px;background:#0d131a;border-bottom:1px solid var(--border)}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:14px}
+.kpi-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+.kpi-value{font-size:24px;font-weight:800;margin-top:4px}
+.kpi-sub{font-size:10px;color:var(--sub);margin-top:2px}
+.kpi.a .kpi-value{color:var(--brand-green)}
+.kpi.b .kpi-value{color:var(--amber)}
+.kpi.c .kpi-value{color:var(--blue)}
+
+/* Filtros */
+.filters{display:flex;gap:10px;padding:12px 24px;background:#0d131a;border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.filters select,.filters input{padding:6px 10px;background:#0a0e14;border:1px solid var(--border);border-radius:4px;color:var(--text);font-size:12px}
+.filters label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+.filters .filter-group{display:flex;gap:6px;align-items:center}
+
+/* Tabela */
+.table-wrap{padding:0 24px 24px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;font-size:12px}
+th{background:#0d131a;padding:10px 12px;text-align:left;font-weight:700;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)}
+td{padding:10px 12px;border-bottom:1px solid #1a212a;vertical-align:middle}
+tr:hover{background:#0e151c}
+.prio-pill{display:inline-block;padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700}
+.prio-A{background:rgba(79,168,79,.2);color:var(--brand-green)}
+.prio-B{background:rgba(243,156,18,.2);color:var(--amber)}
+.prio-C{background:rgba(52,152,219,.2);color:var(--blue)}
+.status-select,.consultor-select{padding:4px 6px;background:#0a0e14;border:1px solid var(--border);border-radius:3px;color:var(--text);font-size:11px;cursor:pointer;max-width:140px}
+.status-select:focus,.consultor-select:focus{outline:none;border-color:var(--brand-green)}
+.contatos-toggle{cursor:pointer;color:var(--sub);font-size:11px}
+.contatos-toggle:hover{color:var(--text)}
+.contatos-row{background:#0a0e14;display:none}
+.contatos-row.expanded{display:table-row}
+.contatos-list{padding:8px 16px;font-size:11px;color:var(--sub)}
+.contato-item{padding:4px 0;border-bottom:1px dashed #1a212a}
+.contato-item:last-child{border-bottom:none}
+.contato-item strong{color:var(--text)}
+.contato-item .tel{color:var(--brand-green);margin-left:8px}
+.contato-item .email{color:var(--blue);margin-left:8px;font-family:monospace;font-size:10px}
+
+.toast{position:fixed;bottom:20px;right:20px;background:var(--brand-green);color:#fff;padding:10px 16px;border-radius:4px;font-size:12px;font-weight:600;display:none;z-index:999}
+.toast.show{display:block;animation:slidein .3s ease}
+.toast.error{background:var(--red)}
+@keyframes slidein{from{transform:translateY(20px);opacity:0}to{transform:translateY(0);opacity:1}}
+
+.empty-state{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+.loading{padding:40px;text-align:center;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+
+<div id="login" class="login-screen">
+  <div class="login-card">
+    <h2>🌲 Prospecção Florestas</h2>
+    <p>Acesso restrito — Thiago / João Suss / consultores designados.</p>
+    <input type="email" id="email" placeholder="email@araunah.com" autocomplete="email">
+    <input type="password" id="password" placeholder="senha" autocomplete="current-password">
+    <button id="btn-login">Entrar</button>
+    <div class="login-error" id="login-error"></div>
+  </div>
+</div>
+
+<div id="app" style="display:none">
+  <div class="header">
+    <div>
+      <h1>🌲 PROSPECÇÃO <span>FLORESTAS</span></h1>
+      <div class="header-sub">Simpósio Florestal 2025+2026 · acompanhamento da carteira outbound</div>
+    </div>
+    <div class="user-info">
+      <span id="user-email">—</span>
+      <button id="btn-logout">Sair</button>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis"><div class="loading">carregando...</div></div>
+
+  <div class="filters">
+    <div class="filter-group"><label>Prioridade</label>
+      <select id="filter-prio">
+        <option value="">Todas</option>
+        <option value="A">A · alta densidade</option>
+        <option value="B">B · 3-4 leads</option>
+        <option value="C">C · 1-2 leads</option>
+      </select>
+    </div>
+    <div class="filter-group"><label>Status</label>
+      <select id="filter-status">
+        <option value="">Todos</option>
+        <option value="a_contatar">A contatar</option>
+        <option value="contatado">Contatado</option>
+        <option value="agendado">Agendado</option>
+        <option value="proposta">Proposta</option>
+        <option value="fechado">Fechado</option>
+        <option value="nao_evoluiu">Não evoluiu</option>
+        <option value="descartado">Descartado</option>
+      </select>
+    </div>
+    <div class="filter-group"><label>UF</label>
+      <select id="filter-uf"><option value="">Todas</option></select>
+    </div>
+    <div class="filter-group"><label>Buscar</label>
+      <input type="text" id="filter-q" placeholder="razão social...">
+    </div>
+  </div>
+
+  <div class="table-wrap">
+    <table id="table">
+      <thead>
+        <tr>
+          <th style="width:30px"></th>
+          <th>Empresa</th>
+          <th>Cidade/UF</th>
+          <th>Contatos</th>
+          <th>Prio</th>
+          <th>Status</th>
+          <th>Consultor</th>
+          <th>Última ação</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"><tr><td colspan="8" class="loading">carregando...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+/* ══════════════════════════════════════════════
+   CONFIG SUPABASE
+══════════════════════════════════════════════ */
+const SB_URL = 'https://qzxabnagqlatytlvwpyq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY';
+const sb = supabase.createClient(SB_URL, SB_KEY, { auth: { persistSession: true, autoRefreshToken: true } });
+
+let empresas = [];
+let contatosByEmpresa = {};
+let consultores = [];
+
+const STATUS_OPTIONS = [
+  ['a_contatar','A contatar'],
+  ['contatado','Contatado'],
+  ['agendado','Agendado'],
+  ['proposta','Proposta'],
+  ['fechado','Fechado'],
+  ['nao_evoluiu','Não evoluiu'],
+  ['descartado','Descartado'],
+];
+
+function toast(msg, isErr=false) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (isErr ? ' error' : '');
+  setTimeout(() => { t.className = 'toast'; }, 2500);
+}
+
+/* ── Login flow ── */
+async function checkSession() {
+  const { data } = await sb.auth.getSession();
+  if (data.session) showApp(data.session.user);
+}
+checkSession();
+
+document.getElementById('btn-login').onclick = async () => {
+  const email = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Email + senha obrigatórios'; return; }
+  const { data, error } = await sb.auth.signInWithPassword({ email, password });
+  if (error) { errEl.textContent = error.message; return; }
+  showApp(data.user);
+};
+
+document.getElementById('btn-logout').onclick = async () => {
+  await sb.auth.signOut();
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login').style.display = 'flex';
+};
+
+async function showApp(user) {
+  document.getElementById('login').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  document.getElementById('user-email').textContent = user.email;
+  await loadAll();
+}
+
+/* ── Carrega dados ── */
+async function loadAll() {
+  // KPIs (via view agregada)
+  try {
+    const { data: stats } = await sb.from('vw_florestas_prospects_stats').select('*').single();
+    renderKpis(stats);
+  } catch (e) { console.error('KPIs:', e); }
+
+  // Empresas (com RLS — só vê se for thiago/joao admin ou consultor designado)
+  const { data: emp, error } = await sb.from('florestas_prospects_empresas')
+    .select('*')
+    .order('qtd_contatos_simposio', { ascending: false });
+  if (error) {
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="8" class="empty-state">Sem permissão pra ver os dados ou erro: ${error.message}</td></tr>`;
+    return;
+  }
+  empresas = emp || [];
+
+  // Contatos
+  const { data: cont } = await sb.from('florestas_prospects_contatos')
+    .select('*')
+    .order('created_at');
+  contatosByEmpresa = {};
+  for (const c of (cont || [])) {
+    (contatosByEmpresa[c.empresa_id] = contatosByEmpresa[c.empresa_id] || []).push(c);
+  }
+
+  // UFs únicas pra filtro
+  const ufs = [...new Set(empresas.map(e => e.uf).filter(Boolean))].sort();
+  const ufSel = document.getElementById('filter-uf');
+  ufSel.innerHTML = '<option value="">Todas</option>' + ufs.map(u => `<option value="${u}">${u}</option>`).join('');
+
+  renderTable();
+}
+
+function renderKpis(s) {
+  if (!s) return;
+  const total = s.total_empresas;
+  const ativo = total - s.s_descartado - s.s_nao_evoluiu;
+  document.getElementById('kpis').innerHTML = `
+    <div class="kpi"><div class="kpi-label">Empresas</div><div class="kpi-value">${total}</div><div class="kpi-sub">${s.total_contatos} contatos</div></div>
+    <div class="kpi a"><div class="kpi-label">Prioridade A</div><div class="kpi-value">${s.prio_a}</div><div class="kpi-sub">≥5 leads · siderurgia/grandes fazendas</div></div>
+    <div class="kpi b"><div class="kpi-label">Prioridade B</div><div class="kpi-value">${s.prio_b}</div><div class="kpi-sub">3-4 leads</div></div>
+    <div class="kpi c"><div class="kpi-label">Prioridade C</div><div class="kpi-value">${s.prio_c}</div><div class="kpi-sub">1-2 leads</div></div>
+    <div class="kpi"><div class="kpi-label">A contatar</div><div class="kpi-value">${s.s_a_contatar}</div><div class="kpi-sub">${((s.s_a_contatar/total)*100).toFixed(0)}% pendente</div></div>
+    <div class="kpi"><div class="kpi-label">Em conversa</div><div class="kpi-value">${s.s_contatado + s.s_agendado + s.s_proposta}</div><div class="kpi-sub">${s.s_contatado}c · ${s.s_agendado}ag · ${s.s_proposta}prop</div></div>
+    <div class="kpi"><div class="kpi-label">Fechados</div><div class="kpi-value" style="color:var(--green)">${s.s_fechado}</div><div class="kpi-sub">${s.s_nao_evoluiu} não evoluiu · ${s.s_descartado} descartados</div></div>
+  `;
+}
+
+/* ── Tabela ── */
+function renderTable() {
+  const fp = document.getElementById('filter-prio').value;
+  const fs = document.getElementById('filter-status').value;
+  const fu = document.getElementById('filter-uf').value;
+  const fq = (document.getElementById('filter-q').value || '').toLowerCase().trim();
+
+  const rows = empresas.filter(e => {
+    if (fp && e.prioridade !== fp) return false;
+    if (fs && e.status !== fs) return false;
+    if (fu && e.uf !== fu) return false;
+    if (fq && !(e.razao_social || '').toLowerCase().includes(fq)) return false;
+    return true;
+  });
+
+  if (!rows.length) {
+    document.getElementById('tbody').innerHTML = `<tr><td colspan="8" class="empty-state">Nenhuma empresa com esses filtros.</td></tr>`;
+    return;
+  }
+
+  const html = rows.map(e => {
+    const contatos = contatosByEmpresa[e.id] || [];
+    const statusOpts = STATUS_OPTIONS.map(([v,l]) => `<option value="${v}" ${v===e.status?'selected':''}>${l}</option>`).join('');
+    const lastAction = e.last_action_at ? new Date(e.last_action_at).toLocaleDateString('pt-BR') : '—';
+    return `
+      <tr data-id="${e.id}">
+        <td><span class="contatos-toggle" onclick="toggleContatos('${e.id}')">▸ ${contatos.length}</span></td>
+        <td><strong>${escapeHtml(e.razao_social)}</strong></td>
+        <td>${escapeHtml(e.cidade || '—')}/${escapeHtml(e.uf || '?')}</td>
+        <td>${e.qtd_contatos_simposio}</td>
+        <td><span class="prio-pill prio-${e.prioridade}">${e.prioridade}</span></td>
+        <td><select class="status-select" onchange="updateStatus('${e.id}', this.value)">${statusOpts}</select></td>
+        <td>${e.consultor_id ? '<span style="color:var(--brand-green)">designado</span>' : '<span style="color:var(--muted)">—</span>'}</td>
+        <td>${escapeHtml(e.last_action || '')} <span style="color:var(--muted);font-size:10px">${lastAction}</span></td>
+      </tr>
+      <tr class="contatos-row" id="contatos-${e.id}"><td colspan="8"><div class="contatos-list">
+        ${contatos.length === 0 ? '<em>Sem contatos.</em>' : contatos.map(c => `
+          <div class="contato-item">
+            <strong>${escapeHtml(c.nome || '(sem nome)')}</strong> — ${escapeHtml(c.cargo || '?')}
+            ${c.telefone ? `<span class="tel">📱 ${escapeHtml(c.telefone)}</span>` : ''}
+            ${c.email ? `<span class="email">✉ ${escapeHtml(c.email)}</span>` : ''}
+            <span style="color:var(--muted);margin-left:8px;font-size:10px">${c.fonte_evento || ''}</span>
+          </div>
+        `).join('')}
+      </div></td></tr>
+    `;
+  }).join('');
+
+  document.getElementById('tbody').innerHTML = html;
+}
+
+function escapeHtml(s) {
+  return (s == null ? '' : String(s)).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+window.toggleContatos = function(id) {
+  const r = document.getElementById('contatos-' + id);
+  r.classList.toggle('expanded');
+};
+
+window.updateStatus = async function(id, newStatus) {
+  const { error } = await sb.from('florestas_prospects_empresas')
+    .update({ status: newStatus, last_action: 'status: ' + newStatus, last_action_at: new Date().toISOString() })
+    .eq('id', id);
+  if (error) {
+    toast('Erro: ' + error.message, true);
+  } else {
+    toast('Status atualizado.');
+    const e = empresas.find(x => x.id === id);
+    if (e) { e.status = newStatus; e.last_action = 'status: ' + newStatus; e.last_action_at = new Date().toISOString(); }
+    loadAll();  // refresh KPIs
+  }
+};
+
+/* Filtros */
+['filter-prio','filter-status','filter-uf','filter-q'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderTable);
+  document.getElementById(id).addEventListener('change', renderTable);
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ecossistema Araunah — Dashboard Executivo</title>
+<style>
+  :root {
+    --bg: #0d1117; --card: #161b22; --br: #2a313c;
+    --tx: #e6edf3; --mu: #8b949e; --bra: #E76F51; --ok: #00D4AA; --warn: #f59e0b; --err: #f87171;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; font: 14px/1.5 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+         background: var(--bg); color: var(--tx); }
+  header { padding: 16px 24px; border-bottom: 1px solid var(--br);
+           display: flex; align-items: baseline; justify-content: space-between; }
+  header h1 { margin: 0; font-size: 18px; font-weight: 600; }
+  header h1 span { color: var(--bra); }
+  header .meta { color: var(--mu); font-size: 12px; }
+  main { padding: 24px; max-width: 1600px; margin: 0 auto; }
+  .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); }
+  .card { background: var(--card); border: 1px solid var(--br); border-radius: 8px; padding: 16px; }
+  .card h2 { margin: 0 0 12px; font-size: 11px; font-weight: 500; letter-spacing: 0.08em;
+             text-transform: uppercase; color: var(--mu); }
+  .big { font-size: 28px; font-weight: 600; line-height: 1.1; }
+  .big .unit { font-size: 14px; color: var(--mu); font-weight: 400; margin-left: 4px; }
+  .row { display: flex; justify-content: space-between; padding: 6px 0;
+         border-bottom: 1px dashed var(--br); font-size: 13px; }
+  .row:last-child { border: 0; }
+  .row .v { color: var(--mu); }
+  .ok { color: var(--ok); }
+  .warn { color: var(--warn); }
+  .err { color: var(--err); }
+  .bar { height: 6px; background: var(--br); border-radius: 3px; margin: 6px 0 0; overflow: hidden; }
+  .bar > i { display: block; height: 100%; background: var(--ok); transition: width .4s; }
+  .bar > i.warn { background: var(--warn); }
+  .bar > i.err { background: var(--err); }
+  table { width: 100%; border-collapse: collapse; font-size: 12px; }
+  th, td { padding: 6px 8px; text-align: left; border-bottom: 1px solid var(--br); }
+  th { color: var(--mu); font-weight: 500; text-transform: uppercase; font-size: 10px; letter-spacing: 0.06em; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  .span2 { grid-column: span 2; }
+  .span3 { grid-column: span 3; }
+  footer { color: var(--mu); padding: 16px 24px; font-size: 11px; text-align: center; }
+  a { color: var(--ok); text-decoration: none; }
+  .stale { color: var(--err); }
+</style>
+</head>
+<body>
+  <header>
+    <h1><span>Araunah</span> Ecossistema — Dashboard Executivo</h1>
+    <div class="meta" id="meta">carregando…</div>
+  </header>
+  <main>
+    <div class="grid">
+      <section class="card">
+        <h2>RAM</h2>
+        <div class="big" id="ram-pct">— <span class="unit">%</span></div>
+        <div class="bar"><i id="ram-bar"></i></div>
+        <div class="row"><span>Usada</span><span class="v" id="ram-used">—</span></div>
+        <div class="row"><span>Livre</span><span class="v" id="ram-free">—</span></div>
+      </section>
+      <section class="card">
+        <h2>Swap</h2>
+        <div class="big" id="swap-pct">— <span class="unit">%</span></div>
+        <div class="bar"><i id="swap-bar"></i></div>
+        <div class="row"><span>Usado</span><span class="v" id="swap-used">—</span></div>
+      </section>
+      <section class="card">
+        <h2>Disco /</h2>
+        <div class="big" id="disk-pct">— <span class="unit">%</span></div>
+        <div class="bar"><i id="disk-bar"></i></div>
+        <div class="row"><span>Usado</span><span class="v" id="disk-used">—</span></div>
+        <div class="row"><span>Total</span><span class="v" id="disk-total">—</span></div>
+      </section>
+      <section class="card">
+        <h2>Carga / Uptime</h2>
+        <div class="big" id="load1">—</div>
+        <div class="row"><span>5m</span><span class="v" id="load5">—</span></div>
+        <div class="row"><span>15m</span><span class="v" id="load15">—</span></div>
+        <div class="row"><span>Uptime</span><span class="v" id="uptime">—</span></div>
+      </section>
+
+      <section class="card">
+        <h2>Services systemd</h2>
+        <div class="big"><span id="svc-ok">—</span> <span class="unit">running</span></div>
+        <div class="row"><span>Failed</span><span id="svc-failed" class="v ok">—</span></div>
+        <div id="svc-list" style="margin-top:8px; font-size:12px; color:var(--err)"></div>
+      </section>
+
+      <section class="card span2">
+        <h2>Logs (1h) por job — Loki</h2>
+        <table>
+          <thead><tr><th>Job</th><th class="num">Linhas</th><th class="num">Erros</th></tr></thead>
+          <tbody id="loki-jobs"></tbody>
+        </table>
+      </section>
+
+      <section class="card span3">
+        <h2>Closed loop — Agentes (30d)</h2>
+        <table>
+          <thead><tr>
+            <th>Agente</th><th class="num">Sugestões</th><th class="num">Fechadas</th>
+            <th class="num">Conversão</th><th class="num">Valor R$</th>
+            <th class="num">Avg dias</th><th>Última</th>
+          </tr></thead>
+          <tbody id="agents-table"></tbody>
+        </table>
+      </section>
+
+      <section class="card">
+        <h2>Voice-to-CRM hoje</h2>
+        <div class="big" id="voice-today">— <span class="unit">atividades</span></div>
+      </section>
+      <section class="card">
+        <h2>Leads novos 7d</h2>
+        <div class="big" id="leads-7d">—</div>
+      </section>
+    </div>
+  </main>
+  <footer id="footer">—</footer>
+
+<script>
+const fmt = (n, d=1) => Number(n).toLocaleString('pt-BR', { maximumFractionDigits: d, minimumFractionDigits: d });
+const fmtInt = n => Number(n||0).toLocaleString('pt-BR');
+const fmtBRL = n => Number(n||0).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL', maximumFractionDigits: 0 });
+
+function barClass(pct) {
+  if (pct >= 90) return 'err';
+  if (pct >= 70) return 'warn';
+  return '';
+}
+
+async function load() {
+  let d;
+  try {
+    const r = await fetch('/data/ecosystem-stats.json?_=' + Date.now(), { cache: 'no-store' });
+    d = await r.json();
+  } catch (e) {
+    document.getElementById('meta').innerHTML = '<span class="stale">⚠ falha ao carregar</span>';
+    return;
+  }
+
+  const gen = new Date(d.generated_at);
+  const ageMin = (Date.now() - gen.getTime()) / 60000;
+  const stale = ageMin > 10;
+  document.getElementById('meta').innerHTML =
+    `Atualizado ${gen.toLocaleTimeString('pt-BR')} ` +
+    `<span class="${stale?'stale':''}">(${ageMin.toFixed(0)}min atrás${stale?' — STALE':''})</span>`;
+
+  // VPS
+  const v = d.vps;
+  document.getElementById('ram-pct').innerHTML = `${fmt(v.ram.used_pct)} <span class="unit">%</span>`;
+  document.getElementById('ram-bar').style.width = v.ram.used_pct + '%';
+  document.getElementById('ram-bar').className = barClass(v.ram.used_pct);
+  document.getElementById('ram-used').textContent = `${fmt(v.ram.used_gb)} GB`;
+  document.getElementById('ram-free').textContent = `${fmt(v.ram.free_gb)} GB`;
+
+  document.getElementById('swap-pct').innerHTML = `${fmt(v.swap.used_pct)} <span class="unit">%</span>`;
+  document.getElementById('swap-bar').style.width = v.swap.used_pct + '%';
+  document.getElementById('swap-bar').className = barClass(v.swap.used_pct);
+  document.getElementById('swap-used').textContent = `${fmt(v.swap.used_gb)} / ${fmt(v.swap.total_gb)} GB`;
+
+  document.getElementById('disk-pct').innerHTML = `${fmt(v.disk.used_pct)} <span class="unit">%</span>`;
+  document.getElementById('disk-bar').style.width = v.disk.used_pct + '%';
+  document.getElementById('disk-bar').className = barClass(v.disk.used_pct);
+  document.getElementById('disk-used').textContent = `${fmt(v.disk.used_gb)} GB`;
+  document.getElementById('disk-total').textContent = `${fmt(v.disk.total_gb)} GB`;
+
+  document.getElementById('load1').textContent = fmt(v.load['1m'], 2);
+  document.getElementById('load5').textContent = fmt(v.load['5m'], 2);
+  document.getElementById('load15').textContent = fmt(v.load['15m'], 2);
+  document.getElementById('uptime').textContent = `${fmt(v.uptime_days)} dias`;
+
+  // Services
+  document.getElementById('svc-ok').textContent = fmtInt(d.services.running_count);
+  const f = d.services.failed_count;
+  const sf = document.getElementById('svc-failed');
+  sf.textContent = f;
+  sf.className = 'v ' + (f === 0 ? 'ok' : f < 3 ? 'warn' : 'err');
+  document.getElementById('svc-list').innerHTML =
+    (d.services.failed_units || []).map(u => '⚠ ' + u).join('<br>');
+
+  // Loki por job
+  const lines = d.crons.log_lines_1h || {};
+  const errs = d.crons.errors_1h || {};
+  const jobs = Object.keys(lines).sort();
+  document.getElementById('loki-jobs').innerHTML = jobs.length === 0
+    ? '<tr><td colspan="3" style="color:var(--mu)">sem dados (Loki recém subiu)</td></tr>'
+    : jobs.map(j => {
+        const er = errs[j] || 0;
+        const cls = er > 50 ? 'err' : er > 0 ? 'warn' : 'ok';
+        return `<tr><td>${j}</td><td class="num">${fmtInt(lines[j])}</td><td class="num ${cls}">${fmtInt(er)}</td></tr>`;
+      }).join('');
+
+  // Agentes
+  const ag = d.agents.by_agent || [];
+  document.getElementById('agents-table').innerHTML = ag.length === 0
+    ? '<tr><td colspan="7" style="color:var(--mu)">sem sugestões nos últimos 30d (instrumentação acabou de subir)</td></tr>'
+    : ag.map(a => `
+        <tr>
+          <td>${a.agent_name}</td>
+          <td class="num">${fmtInt(a.suggestions_30d)}</td>
+          <td class="num">${fmtInt(a.closed_30d)}</td>
+          <td class="num">${a.conversion_pct == null ? '—' : a.conversion_pct + '%'}</td>
+          <td class="num">${fmtBRL(a.outcome_value_30d)}</td>
+          <td class="num">${a.avg_days_to_outcome ?? '—'}</td>
+          <td>${a.last_suggestion_at ? new Date(a.last_suggestion_at).toLocaleString('pt-BR') : '—'}</td>
+        </tr>`).join('');
+
+  // Adoção
+  document.getElementById('voice-today').innerHTML =
+    `${fmtInt(d.adoption.voice_to_crm_today)} <span class="unit">atividades</span>`;
+  document.getElementById('leads-7d').textContent = fmtInt(d.adoption.leads_7d);
+
+  document.getElementById('footer').textContent =
+    `coletor: ${d.collector_ms}ms · refresh manual a cada 30s · cron a cada 5min`;
+}
+
+load();
+setInterval(load, 30_000);
+</script>
+</body>
+</html>
