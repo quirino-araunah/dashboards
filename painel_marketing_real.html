@@ -293,7 +293,7 @@ body{display:flex;flex-direction:column}
     <div class="alert-icon">⚠️</div>
     <div class="alert-text">
       <div class="alert-title" id="alert-agua-title">Água: verificando último post...</div>
-      <div class="alert-desc">Cadência mínima: 2 posts/sem</div>
+      <div class="alert-desc">Cadência mínima: 3 posts/sem</div>
     </div>
     <div class="alert-cta">PLANEJAR POST</div>
   </div>
@@ -470,7 +470,7 @@ body{display:flex;flex-direction:column}
         <div class="kpi">
           <div class="kpi-label">Posts 7d</div>
           <div class="kpi-val" id="agua-posts7">—</div>
-          <div class="kpi-sub" id="agua-posts7-sub">meta: 2/sem</div>
+          <div class="kpi-sub" id="agua-posts7-sub">meta: 3/sem</div>
         </div>
       </div>
 
@@ -566,7 +566,7 @@ body{display:flex;flex-direction:column}
         <div class="kpi">
           <div class="kpi-label">Posts 7d</div>
           <div class="kpi-val" id="florestas-posts7">—</div>
-          <div class="kpi-sub" id="florestas-posts7-sub">meta: 2/sem</div>
+          <div class="kpi-sub" id="florestas-posts7-sub">meta: 3/sem</div>
         </div>
       </div>
 
@@ -942,7 +942,7 @@ function populateVertical(v, snap, posts7d, posts30d, spark14, leadsTotal) {
 
   // KPI: Posts 7d
   const posts7Count = posts7d.length;
-  const metaPostsSem = v === 'agro' ? 3 : 2;
+  const metaPostsSem = 3;
   const posts7El = document.getElementById(`${prefix}-posts7`);
   const posts7SubEl = document.getElementById(`${prefix}-posts7-sub`);
   posts7El.textContent = posts7Count;
