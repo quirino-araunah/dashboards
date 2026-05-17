@@ -999,17 +999,17 @@ async function loadData() {
       // 3. Media posts (com tema)
       sbFetch('ig_media_metrics', 'select=vertical,media_id,media_type,media_product_type,caption,reach,total_interactions,likes,timestamp,permalink,tema&reach=gt.0&total_interactions=gt.0&order=snapshot_date.desc&limit=200'),
       // 4. Leads sem resposta (count total)
-      fetch(`${SB_URL}/rest/v1/leads?status=eq.N%C3%A3o%20Contatado&select=id`, {
+      fetch(`${SB_URL}/rest/v1/vw_leads_publico?status=eq.N%C3%A3o%20Contatado&select=id`, {
         headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, Prefer: 'count=exact', Range: '0-0' }
       }),
       // 5. Meta Ads spend mês atual
       sbFetch('meta_ads_spend', `select=vertical,spend,leads_count&snapshot_date=gte.${monthStart}`),
       // 6. Leads sem resposta — Agro
-      fetch(`${SB_URL}/rest/v1/leads?status=eq.N%C3%A3o%20Contatado&or=(produto.ilike.*COMPOSTAGEM*,produto.ilike.*ULEXITA*,produto.ilike.*POLYTER*)&select=id`, {
+      fetch(`${SB_URL}/rest/v1/vw_leads_publico?status=eq.N%C3%A3o%20Contatado&or=(produto.ilike.*COMPOSTAGEM*,produto.ilike.*ULEXITA*,produto.ilike.*POLYTER*)&select=id`, {
         headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, Prefer: 'count=exact', Range: '0-0' }
       }),
       // 7. Leads sem resposta — Água
-      fetch(`${SB_URL}/rest/v1/leads?status=eq.N%C3%A3o%20Contatado&or=(produto.ilike.*AGUA*,produto.ilike.*TEFEN*)&select=id`, {
+      fetch(`${SB_URL}/rest/v1/vw_leads_publico?status=eq.N%C3%A3o%20Contatado&or=(produto.ilike.*AGUA*,produto.ilike.*TEFEN*)&select=id`, {
         headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, Prefer: 'count=exact', Range: '0-0' }
       })
     ]);
