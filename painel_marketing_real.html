@@ -82,6 +82,8 @@ html,body{height:100%;width:100%;background:#000;color:var(--text);
   font-variant-numeric:tabular-nums;text-shadow:0 0 .14em currentColor}
 .reach-sub{font-size:18px;color:var(--muted);font-weight:700;text-transform:uppercase;
   letter-spacing:1.5px;margin-top:10px}
+.reach-paid{font-size:21px;color:var(--blue);font-weight:800;margin-top:8px;letter-spacing:.3px}
+.header-warn{font-size:17px;color:var(--amber);font-weight:700;margin-top:5px}
 .lb{display:flex;align-items:center;gap:18px;padding:11px 8px;border-radius:8px}
 .lb-pos{font-size:24px;font-weight:900;color:var(--muted);width:2.4ch;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
 .lb-h{font-size:23px;font-weight:800;color:var(--sub);width:15ch;flex-shrink:0;
@@ -206,6 +208,7 @@ html,body{height:100%;width:100%;background:#000;color:var(--text);
 <div class="header">
   <div>
     <div class="header-title">PAINEL MARKETING — WAR ROOM</div>
+    <div class="header-warn" id="ads-unclassified"></div>
   </div>
   <div class="header-right">
     <div>
@@ -231,6 +234,10 @@ html,body{height:100%;width:100%;background:#000;color:var(--text);
   <div class="alert-cell amber" id="al-gap-cell">
     <div class="alert-big amber" id="al-gap">—</div>
     <div class="alert-txt"><strong>contas sem postar</strong><br><span id="al-gap-detail">verificando…</span></div>
+  </div>
+  <div class="alert-cell green" id="al-reach-cell">
+    <div class="alert-big green" id="al-reach">—</div>
+    <div class="alert-txt"><strong>alcance orgânico · mês</strong><br><span id="al-reach-detail">—</span></div>
   </div>
 </div>
 
@@ -362,9 +369,10 @@ html,body{height:100%;width:100%;background:#000;color:var(--text);
           <div id="p2-ert"></div>
         </div>
         <div>
-          <div class="p2-lbl">Alcance · últimos 30 dias</div>
+          <div class="p2-lbl">Alcance · este mês</div>
           <div class="reach-big" id="p2-reach">—</div>
-          <div class="reach-sub">soma das 3 contas</div>
+          <div class="reach-sub">conteúdo (posts)</div>
+          <div class="reach-paid" id="p2-reach-paid"></div>
         </div>
       </div>
       <div class="p2-dcol">
@@ -439,7 +447,78 @@ function tick(){
   }
 }
 setInterval(tick,1000); tick();
-setTimeout(()=>location.reload(),5*60*1000);
+/* refresh SUAVE a cada 5min: re-roda loadData (repinta tudo + chama refreshLeads)
+   sem recarregar a pagina, preservando o audio do sino destravado.
+   hard reload so as 4h (madrugada) p/ higiene de memoria. */
+setInterval(()=>{ loadData(); }, 5*60*1000);
+setInterval(()=>{ if(new Date().getHours()===4) location.reload(); }, 60*60*1000);
+
+/* ════════ SINO 🔔 — toca quando entra LEAD novo ou sobe SEGUIDOR (war-room TV)
+   Web Audio sintetizado (sem arquivo). Autoplay do browser exige 1 toque/clique
+   na tela p/ liberar — aí mostra o aviso "toque para ativar o som". ════════ */
+let _ac=null;
+function _bellUnlock(){
+  try{ if(!_ac) _ac=new (window.AudioContext||window.webkitAudioContext)(); if(_ac.state==="suspended") _ac.resume(); }catch(e){}
+  const b=document.getElementById("bell-lock"); if(b && _ac && _ac.state==="running") b.style.display="none";
+}
+["click","keydown","touchstart","pointerdown"].forEach(ev=>window.addEventListener(ev,_bellUnlock));
+function ringBell(times){
+  times=Math.min(times||1,3); _bellUnlock();
+  if(!_ac || _ac.state!=="running"){ const b=document.getElementById("bell-lock"); if(b) b.style.display="block"; return; }
+  const ctx=_ac;
+  for(let k=0;k<times;k++){
+    const t0=ctx.currentTime+k*0.24;
+    [[784,1],[1568,0.5],[3136,0.22]].forEach(([f,a])=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t0);
+      g.gain.exponentialRampToValueAtTime(0.3*a,t0+0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+1.4);
+      o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+1.5);
+    });
+  }
+}
+function bellToast(msg){
+  const t=document.getElementById("bell-toast"); if(!t) return;
+  t.textContent="🔔 "+msg; t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),5000);
+}
+function notifyGain(kind,n){
+  ringBell(kind==="lead"?2:1);
+  if(kind==="lead") bellToast(n>1?(n+" leads novos!"):"Lead novo!");
+  else bellToast(n>1?("+"+n+" seguidores!"):"+1 seguidor!");
+}
+(function(){
+  const st=document.createElement("style");
+  st.textContent="#bell-toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-24px);z-index:99999;background:linear-gradient(135deg,#16331f,#1c4a2b);color:#7CFFA0;padding:12px 28px;border-radius:14px;font:800 22px/1 system-ui,sans-serif;border:1px solid #2f7d4a;box-shadow:0 8px 30px rgba(0,0,0,.55);opacity:0;transition:opacity .35s,transform .35s;pointer-events:none}#bell-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}#bell-lock{display:none;position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:99999;background:#1c2333;color:#cfe;padding:8px 16px;border-radius:20px;font:600 14px/1 system-ui,sans-serif;border:1px solid #2a3550;cursor:pointer}";
+  document.head.appendChild(st);
+  function mount(){ if(document.getElementById("bell-toast")) return;
+    const toast=document.createElement("div"); toast.id="bell-toast"; document.body.appendChild(toast);
+    const lock=document.createElement("div"); lock.id="bell-lock"; lock.textContent="🔔 toque na tela para ativar o som"; lock.onclick=_bellUnlock; document.body.appendChild(lock);
+  }
+  if(document.body) mount(); else document.addEventListener("DOMContentLoaded",mount);
+})();
+
+/* ════════ GATILHO REMOTO 🔔 — toca sob comando (escrever bell-trigger.json)
+   Permite "mandar um som" pra TV de fora, sem depender de lead/seguidor real. ════════ */
+let _lastBellTs=0, _bellTrigInit=false;
+async function checkBellTrigger(){
+  try{
+    const r=await fetch("bell-trigger.json?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok) return;
+    const d=await r.json();
+    const ts=parseInt(d.ts||0);
+    if(!_bellTrigInit){ _lastBellTs=ts; _bellTrigInit=true; return; }  /* baseline: nao toca na 1a leitura */
+    if(ts>_lastBellTs){
+      _lastBellTs=ts;
+      if(Date.now()-ts < 120000){                                     /* so toca se for fresco (<2min) */
+        ringBell(d.kind==="lead"?2:1);
+        bellToast(d.msg || "🔔");
+      }
+    }
+  }catch(e){}
+}
+setInterval(checkBellTrigger, 8000); checkBellTrigger();
 
 /* ════════ RENDER META ════════ */
 function renderMeta(v, postsWeek, meta){
@@ -475,7 +554,7 @@ function renderAds(v, ads, er){
   const eC=er==null?'var(--muted)':er>=2?'var(--green)':er>=1?'var(--amber)':'var(--red)';
   el.innerHTML=`
     <div class="ads-kpi"><div class="ads-val" style="color:var(--amber)">${fmtBRL(ads.spend)}</div><div class="ads-lbl">Gasto</div></div>
-    <div class="ads-kpi"><div class="ads-val" style="color:var(--green)">${fmtNum(ads.leads)}</div><div class="ads-lbl">Leads</div></div>
+    <div class="ads-kpi"><div class="ads-val" style="color:var(--green)">${fmtNum(ads.leads)}</div><div class="ads-lbl">Leads CRM</div></div>
     <div class="ads-kpi"><div class="ads-val" style="color:${cC}">${cpl!=null?'R$'+cpl.toFixed(0):'—'}</div><div class="ads-lbl">CPL</div></div>
     <div class="ads-kpi"><div class="ads-val" style="color:${eC}">${fmtPct(er)}</div><div class="ads-lbl">ER</div></div>`;
 }
@@ -517,6 +596,10 @@ async function refreshLeads(){
     animateCount(document.getElementById('fn-sem'),  sem);
     animateCount(document.getElementById('fn-mes'),  mes);
     animateCount(document.getElementById('fn-ano'),  ano);
+    /* SINO leads: total de leads; toca se entrou lead novo */
+    if(ano!=null){ const pl=parseInt(localStorage.getItem("bell_leads")||"0");
+      if(pl>0 && ano>pl) notifyGain("lead", ano-pl);
+      localStorage.setItem("bell_leads", String(ano)); }
     /* topo = tendência de captação: últimos 7d vs 7d anteriores (não duplica a faixa) */
     const big=document.getElementById('al-leads');
     const ag=document.getElementById('al-leads-aged');
@@ -550,7 +633,7 @@ function tipoOf(t){ t=(t||'').toUpperCase();
 function ddmm(iso){ if(!iso) return ''; const d=new Date(iso);
   return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`; }
 
-function renderPanel2(allPosts, concAgro, ourFol, now){
+function renderPanel2(allPosts, concAgro, ourFol, now, paid){
   document.getElementById('p2-date').textContent =
     now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
   const d30=Date.now()-30*864e5;
@@ -591,9 +674,36 @@ function renderPanel2(allPosts, concAgro, ourFol, now){
     <div class="ert-v">${fmtPct(r.er)} <span>· ${r.n}p</span></div></div>`).join('')
     : '<div class="tp-meta">sem dados</div>';
 
-  /* 3 — Alcance 30d */
-  const reach30=recent.reduce((s,p)=>s+(p.reach||0),0);
+  /* 3 — Alcance do MES atual (por post, dedupado; ja inclui impulsionamento).
+     Δ vs MESMO periodo do mes anterior (mes-ate-hoje vs mes passado-ate-mesmo-dia) = comparacao justa. */
+  const _y=now.getFullYear(), _m=now.getMonth(), _dom=now.getDate();
+  const curStart=new Date(_y,_m,1).getTime();
+  const prevStart=new Date(_y,_m-1,1).getTime();
+  const prevEnd=new Date(_y,_m-1,_dom,23,59,59,999).getTime();
+  const monthPosts=allPosts.filter(p=>{ if(!p.timestamp||!(p.reach>0))return false; const t=new Date(p.timestamp).getTime(); return t>=curStart; });
+  const prevMonthPosts=allPosts.filter(p=>{ if(!p.timestamp||!(p.reach>0))return false; const t=new Date(p.timestamp).getTime(); return t>=prevStart && t<=prevEnd; });
+  const reach30=monthPosts.reduce((s,p)=>s+(p.reach||0),0);
+  const reachPrev=prevMonthPosts.reduce((s,p)=>s+(p.reach||0),0);
   document.getElementById('p2-reach').textContent=fmtNum(reach30);
+  const rs=document.querySelector('.reach-sub');
+  if(rs){
+    if(reachPrev>0){
+      const dd=reach30-reachPrev, pct=Math.round(dd/reachPrev*100), up=dd>=0;
+      rs.textContent=`🟢 conteúdo · ${up?'▲':'▼'} ${up?'+':''}${pct}% vs mês ant. · ${monthPosts.length} posts`;
+      rs.style.color=up?'var(--green)':'var(--red)';
+    } else { rs.textContent=`🟢 conteúdo · ${monthPosts.length} posts`; rs.style.color=''; }
+  }
+  const rp=document.getElementById('p2-reach-paid');
+  if(rp) rp.textContent = (paid && paid.reach>0) ? `🔵 campanhas (pago): ${fmtFol(paid.reach)} · ${fmtBRL(paid.spend)}` : '';
+  /* espelha no war-room (painel 1, faixa de alertas) */
+  const alR=document.getElementById('al-reach'), alRc=document.getElementById('al-reach-cell'), alRd=document.getElementById('al-reach-detail');
+  if(alR){
+    alR.textContent=fmtFol(reach30);
+    const upR = reachPrev>0 ? (reach30-reachPrev)>=0 : true, toneR = upR?'green':'amber';
+    if(alRc) alRc.className=`alert-cell ${toneR}`;
+    alR.className=`alert-big ${toneR}`;
+    if(alRd) alRd.innerHTML = (paid&&paid.reach>0) ? `🟢 conteúdo · 🔵 ${fmtFol(paid.reach)} pago` : `🟢 conteúdo orgânico`;
+  }
 
   /* 4 — Leaderboard Composta (limpa: dedupe, só agro, sem nossas contas,
      sem perfis PESSOAIS, fol>0). EXCL: augustosilvat = perfil pessoal do dono
@@ -631,12 +741,15 @@ async function loadData(){
   try{
     const now=new Date();
     const monthStart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-    const [daily, mediaRaw, adsRaw, conc, concAgro] = await Promise.all([
+    const d30iso=new Date(Date.now()-30*864e5).toISOString().slice(0,10);
+    const [daily, mediaRaw, adsRaw, conc, concAgro, adsReach, leadsMes] = await Promise.all([
       sbFetch('ig_daily_metrics','select=vertical,snapshot_date,followers_total&order=snapshot_date.desc&limit=90'),
-      sbFetch('ig_media_metrics','select=vertical,media_id,reach,total_interactions,timestamp,media_product_type,thumbnail_url&reach=gt.0&order=snapshot_date.desc&limit=400'),
+      sbFetch('ig_media_metrics','select=vertical,media_id,reach,total_interactions,timestamp,media_product_type,thumbnail_url&reach=gt.0&order=snapshot_date.desc&limit=1000'),
       sbFetch('meta_ads_spend',`select=vertical,spend,leads_count&snapshot_date=gte.${monthStart}`),
       sbFetch('vw_concorrentes_atual','select=username,followers&username=in.(agrolibertas,kobraindtec)').catch(()=>[]),
       sbFetch('vw_concorrentes_atual','select=username,followers,followers_delta,raw,latest_posted_at&vertical=eq.agro').catch(()=>[]),
+      sbFetch('meta_ads_spend',`select=spend,reach&snapshot_date=gte.${monthStart}`).catch(()=>[]),
+      sbFetch('vw_leads_publico',`select=campanha&created_at=gte.${monthStart}`).catch(()=>[]),
     ]);
 
     /* 1 concorrente por vertical (dedupe: maior contagem vence o lixo da view) */
@@ -653,6 +766,16 @@ async function loadData(){
     const allPosts=Object.values(mediaMap);
     allPosts.forEach(p=>{ p.er=p.reach>0?(p.total_interactions/p.reach*100):0; });
     const adsByV={}; for(const r of adsRaw){ const a=(adsByV[r.vertical]||={spend:0,leads:0}); a.spend+=parseFloat(r.spend)||0; a.leads+=parseInt(r.leads_count)||0; }
+    /* leads REAIS do CRM por vertical (classifica pela campanha) — substitui o leads_count inflado da Meta.
+       AGUA = campanha c/ "AGUA"; AGRO = COMPOSTAGEM/COMPOSTA/ULEXITA; WhatsApp/null ficam fora (nao-atribuiveis). */
+    const realLeadsByV={agro:0,agua:0,florestas:0}; let unclAds=0;
+    for(const l of (leadsMes||[])){ const c=(l.campanha||'').toUpperCase();
+      if(c.includes('AGUA')||c.includes('ÁGUA')) realLeadsByV.agua++;
+      else if(c.includes('COMPOSTAGEM')||c.includes('COMPOSTA')||c.includes('ULEXITA')) realLeadsByV.agro++;
+      else if(/\[(FORM|LEADS|CAMPANHA)\]/.test(c)) unclAds++; }
+    /* guard: lead de form pago que nao casou vertical = campanha nova; avisa pra ajustar a regra (senao CPL daquela vertical superestima) */
+    const _uw=document.getElementById('ads-unclassified');
+    if(_uw) _uw.textContent = unclAds>0 ? `⚠ ${unclAds} lead(s) de campanha nova sem classificar — ajustar painel` : '';
 
     const monday=mondayOfWeek(now);
     let gaps=[];
@@ -682,9 +805,15 @@ async function loadData(){
 
       const com=posts.filter(p=>p.reach>0).sort((a,b)=>new Date(b.timestamp||0)-new Date(a.timestamp||0)).slice(0,30);
       const er=com.length?com.reduce((s,p)=>s+p.er,0)/com.length:null;
-      renderAds(v, adsByV[v]||{spend:0,leads:0}, er);
+      const _adv=adsByV[v]||{spend:0,leads:0};
+      renderAds(v, {spend:_adv.spend, leads:realLeadsByV[v]||0}, er);
     }
 
+    /* SINO seguidores: soma followers Araunah; toca se subiu vs ultima visita */
+    let _folTot=0; for(const v of VERTS){ const h=byVert[v]; if(h&&h.length) _folTot+=(h[0].followers_total||0); }
+    if(_folTot>0){ const pf=parseInt(localStorage.getItem("bell_fol")||"0");
+      if(pf>0 && _folTot>pf) notifyGain("fol", _folTot-pf);
+      localStorage.setItem("bell_fol", String(_folTot)); }
     /* alert strip — al-leads + funil são atualizados por refreshLeads() (~1min) */
     const gc=document.getElementById('al-gap-cell');
     if(gaps.length){
@@ -698,7 +827,8 @@ async function loadData(){
     }
 
     /* painel 2 — Conteúdo & Mercado (snapshot diário) */
-    renderPanel2(allPosts, concAgro, (byVert['agro']||[])[0]?.followers_total, now);
+    const paid30=(adsReach||[]).reduce((a,r)=>({reach:a.reach+(r.reach||0),spend:a.spend+(parseFloat(r.spend)||0)}),{reach:0,spend:0});
+    renderPanel2(allPosts, concAgro, (byVert['agro']||[])[0]?.followers_total, now, paid30);
 
     /* funil + leads a atender — quase tempo real via refreshLeads() */
     refreshLeads();
@@ -712,7 +842,7 @@ loadData();
 
 /* ════════ ROTAÇÃO DE PAINÉIS — corte seco, ZERO animação (acessibilidade) ════════ */
 (function(){
-  const seq=[['panel1',45000],['panel2',25000]];
+  const seq=[['panel1',40000],['panel2',35000]];
   let i=0;
   (function show(){
     document.getElementById('panel1').classList.toggle('hidden', i!==0);
