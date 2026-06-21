@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Leads de hoje · Araunah</title>
+<style>
+  :root{
+    --bg:#0a0e14; --card:#121823; --card2:#0f1520; --line:#1d2735;
+    --text:#e6edf6; --muted:#8a98ab; --muted2:#5b6779;
+    --quente:#ef4444; --morno:#f59e0b; --frio:#38bdf8;
+    --compost:#22c55e; --ulexita:#f59e0b; --agua:#38bdf8;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:'Inter',system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .wrap{height:100vh;display:flex;flex-direction:column;padding:20px 26px;gap:14px}
+  header{display:flex;align-items:flex-start;justify-content:space-between;flex:0 0 auto}
+  h1{font-size:30px;margin:0;font-weight:800;letter-spacing:-.5px}
+  h1 .d{font-size:18px;color:var(--muted);font-weight:600;margin-left:8px}
+  .brk{display:flex;gap:16px;margin-top:9px;font-size:15px;color:var(--muted);flex-wrap:wrap}
+  .brk b{color:var(--text);font-variant-numeric:tabular-nums}
+  .kpis{display:flex;gap:26px;align-items:baseline}
+  .kpi{display:flex;flex-direction:column;align-items:flex-end}
+  .kpi b{font-size:40px;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+  .kpi span{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+  .live{display:flex;align-items:center;gap:7px;color:var(--muted2);font-size:13px;margin-top:6px}
+  .live .dot{width:9px;height:9px;border-radius:50%;background:var(--compost);animation:pulse 2s infinite}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(34,197,94,.5)}70%{box-shadow:0 0 0 10px rgba(34,197,94,0)}100%{box-shadow:0 0 0 0 rgba(34,197,94,0)}}
+  .grid{flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));grid-auto-rows:min-content;gap:13px;overflow:hidden;align-content:start}
+  .card{background:linear-gradient(180deg,var(--card),var(--card2));border:1px solid var(--line);border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+  .card.new{animation:flashin 1s ease}
+  @keyframes flashin{0%{background:#15311f;transform:translateY(-6px)}100%{transform:translateY(0)}}
+  .crow{display:flex;align-items:center;gap:9px}
+  .num{font-size:13px;color:var(--muted2);font-variant-numeric:tabular-nums;min-width:22px}
+  .tdot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+  .nome{font-size:19px;font-weight:800;letter-spacing:-.3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+  .hora{font-size:13px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+  .loc{font-size:15px;display:flex;align-items:center;gap:6px}
+  .loc .pin{color:var(--muted2)}
+  .badges{display:flex;flex-wrap:wrap;gap:6px}
+  .b{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line);color:var(--muted);background:#0c121b;white-space:nowrap}
+  .b.int{font-weight:700;border:none;color:#0a0e14}
+  .camp{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .empty{grid-column:1/-1;text-align:center;color:var(--muted);padding:60px;font-size:18px}
+  footer{flex:0 0 auto;color:var(--muted2);font-size:12px;text-align:right}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>🚜 Leads de hoje <span class="d" id="hdate"></span></h1>
+      <div class="brk" id="brk">carregando…</div>
+      <div class="live"><span class="dot"></span> ao vivo · atualiza a cada 45s</div>
+    </div>
+    <div class="kpis">
+      <div class="kpi"><b id="k-hoje">—</b><span>hoje</span></div>
+      <div class="kpi"><b id="k-7d">—</b><span>7 dias</span></div>
+    </div>
+  </header>
+  <div class="grid" id="grid"><div class="empty">carregando…</div></div>
+  <footer id="ft"></footer>
+</div>
+<script>
+const SUPA="https://qzxabnagqlatytlvwpyq.supabase.co";
+const ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY";
+const HDR={apikey:ANON,Authorization:"Bearer "+ANON};
+function brParts(n){const b=new Date(Date.now()-(n||0)*864e5-3*3600e3);return b;}
+function brToday(){const b=brParts(0);return b.getUTCFullYear()+"-"+String(b.getUTCMonth()+1).padStart(2,"0")+"-"+String(b.getUTCDate()).padStart(2,"0")+"T03:00:00";}
+function brDate(n){const b=brParts(n);return b.getUTCFullYear()+"-"+String(b.getUTCMonth()+1).padStart(2,"0")+"-"+String(b.getUTCDate()).padStart(2,"0");}
+async function sbGet(q){const r=await fetch(SUPA+"/rest/v1/vw_leads_publico?"+q,{headers:HDR});return r.ok?r.json():[];}
+async function sbCount(filter){const r=await fetch(SUPA+"/rest/v1/vw_leads_publico?select=id&"+filter,{headers:{...HDR,Prefer:"count=exact",Range:"0-0"}});const cr=r.headers.get("content-range")||"";return parseInt((cr.split("/")[1]||"0"),10)||0;}
+function interesse(l){const s=((l.campanha||"")+" "+(l.produto||"")+" "+(l.cultura||"")).toUpperCase();if(s.includes("COMPOST"))return["Compostagem","var(--compost)"];if(s.includes("ULEXITA")||s.includes("BORO"))return["Ulexita","var(--ulexita)"];if(s.includes("AGUA")||s.includes("ÁGUA")||s.includes("ETA")||s.includes("EFLUENTE"))return["Água","var(--agua)"];return["",""];}
+function temp(l){const t=(l.ai_temperatura||"").toLowerCase();if(t)return t;const s=l.ai_score||0;if(l.prioridade==="alta"||s>=70)return"quente";if(s>=40)return"morno";return"frio";}
+function tcolor(t){return t==="quente"?"var(--quente)":t==="morno"?"var(--morno)":"var(--frio)";}
+function origemKind(o){o=(o||"").toLowerCase();if(o.includes("insta"))return"Instagram";if(o.includes("whats"))return"WhatsApp";if(o.includes("face"))return"Facebook";if(o==="manual")return"Manual";return o||"Outro";}
+function origemTag(o){const k=origemKind(o);return({Instagram:"📷 Instagram",WhatsApp:"💬 WhatsApp",Facebook:"👍 Facebook",Manual:"✍️ Manual"})[k]||k;}
+function cleanCamp(c){if(!c)return"";return c.replace(/\[FORM\]/ig,"").replace(/\[[^\]]*\d{2}\/\d{2}[^\]]*\]/g,"").replace(/\[NOVO CA\]/ig,"").replace(/Contato via WhatsApp/i,"").replace(/\s+/g," ").trim();}
+function quando(iso){const d=new Date(iso),mins=Math.floor((Date.now()-d.getTime())/60000);if(mins<1)return"agora";if(mins<60)return"há "+mins+" min";const b=new Date(d.getTime()-3*3600e3);return String(b.getUTCHours()).padStart(2,"0")+":"+String(b.getUTCMinutes()).padStart(2,"0");}
+const seen=new Set();let first=true;
+function render(rows){
+  // quebra por origem
+  const by={};rows.forEach(l=>{const k=origemKind(l.origem);by[k]=(by[k]||0)+1;});
+  const order=["Instagram","WhatsApp","Facebook","Manual","Outro"];
+  const brk=order.filter(k=>by[k]).map(k=>`${origemTag(k)} <b>${by[k]}</b>`).join("  ·  ");
+  document.getElementById("brk").innerHTML=rows.length?brk:"sem leads ainda hoje";
+  const g=document.getElementById("grid");
+  if(!rows.length){g.innerHTML='<div class="empty">Nenhum lead ainda hoje 🌱</div>';return;}
+  g.innerHTML=rows.map((l,i)=>{
+    const t=temp(l),[it,ic]=interesse(l),isNew=!first&&!seen.has(l.id);
+    const camp=cleanCamp(l.campanha);
+    const chips=[];
+    if(it)chips.push(`<span class="b int" style="background:${ic}">${it}</span>`);
+    chips.push(`<span class="b">${origemTag(l.origem)}</span>`);
+    if(l.perfil)chips.push(`<span class="b">${l.perfil}</span>`);
+    if(l.cultura)chips.push(`<span class="b">${l.cultura}</span>`);
+    if(l.volume)chips.push(`<span class="b">${l.volume}</span>`);
+    return `<div class="card${isNew?' new':''}">
+      <div class="crow"><span class="num">${i+1}</span><span class="tdot" style="background:${tcolor(t)}"></span><span class="nome">${(l.nome||"—")}</span><span class="hora">${quando(l.created_at)}</span></div>
+      <div class="loc"><span class="pin">📍</span>${(l.cidade||"—")}${l.uf?"/"+l.uf:""}</div>
+      <div class="badges">${chips.join("")}</div>
+      ${camp?`<div class="camp">📡 ${camp}</div>`:""}
+    </div>`;
+  }).join("");
+  rows.forEach(l=>seen.add(l.id));first=false;
+}
+async function load(){
+  try{
+    const [rows,hoje,d7]=await Promise.all([
+      sbGet("select=id,nome,cidade,uf,origem,campanha,produto,perfil,cultura,volume,prioridade,ai_temperatura,ai_score,created_at&created_at=gte."+brToday()+"&order=created_at.desc&limit=60"),
+      sbCount("created_at=gte."+brToday()),
+      sbCount("created_at=gte."+brDate(7)),
+    ]);
+    document.getElementById("k-hoje").textContent=hoje;
+    document.getElementById("k-7d").textContent=d7;
+    const b=brParts(0);document.getElementById("hdate").textContent="· "+String(b.getUTCDate()).padStart(2,"0")+"/"+String(b.getUTCMonth()+1).padStart(2,"0");
+    render(rows);
+    const now=brParts(0);
+    document.getElementById("ft").textContent="atualizado "+String(now.getUTCHours()).padStart(2,"0")+":"+String(now.getUTCMinutes()).padStart(2,"0");
+  }catch(e){document.getElementById("ft").textContent="erro ao atualizar: "+e.message;}
+}
+load();setInterval(load,45000);
+</script>
+</body>
+</html>

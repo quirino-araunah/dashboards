@@ -582,7 +582,7 @@ async function refreshLeads(){
     const now=new Date();
     const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
     const monthStart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
-    const hojeISO=(()=>{const b=new Date(Date.now()-3*3600e3);return b.getUTCFullYear()+'-'+String(b.getUTCMonth()+1).padStart(2,'0')+'-'+String(b.getUTCDate()).padStart(2,'0')+'T03:00:00';})();
+    const hojeISO=ymd(now);
     const d7ISO=ymd(new Date(Date.now()-7*864e5));
     const d14ISO=ymd(new Date(Date.now()-14*864e5));
     const [hoje, sem, mes, ano, prev] = await Promise.all([
@@ -853,68 +853,5 @@ loadData();
   })();
 })();
 </script>
-
-<!-- LEADS TICKER (Bloomberg-style, injetado 17/jun) -->
-<style>
-#lead-ticker{position:fixed;left:0;right:0;bottom:0;height:44px;background:linear-gradient(90deg,#0b1018,#0d1320);border-top:2px solid rgba(31,111,235,.45);display:flex;align-items:center;z-index:99999;overflow:hidden;font-family:'Inter',system-ui,sans-serif}
-#lead-ticker .lt-label{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:9px;padding:0 22px 0 18px;background:#1f6feb;color:#fff;font-weight:800;font-size:15px;letter-spacing:1px;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
-#lead-ticker .lt-vp{flex:1;overflow:hidden;height:100%;position:relative}
-#lead-ticker .lt-track{position:absolute;display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:lt-scroll linear infinite}
-@keyframes lt-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
-#lead-ticker .lt-item{display:inline-flex;align-items:center;gap:9px;padding:0 26px;font-size:16px;color:#e6edf6;border-right:1px solid rgba(255,255,255,.08)}
-#lead-ticker .lt-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-#lead-ticker .lt-nome{font-weight:800}
-#lead-ticker .lt-meta{color:#8a98ab;font-size:14px}
-#lead-ticker .lt-int{font-weight:800;padding:1px 9px;border-radius:999px;font-size:12px;color:#0a0e14}
-</style>
-<div id="lead-ticker"><div class="lt-label">🚜 LEADS HOJE</div><div class="lt-vp"><div class="lt-track" id="lt-track"></div></div></div>
-<script>
-(function(){
-  try{
-    var SUPA="https://qzxabnagqlatytlvwpyq.supabase.co";
-    var ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY";
-    function brToday(){var b=new Date(Date.now()-3*3600e3);return b.getUTCFullYear()+"-"+String(b.getUTCMonth()+1).padStart(2,"0")+"-"+String(b.getUTCDate()).padStart(2,"0")+"T03:00:00";}
-    function interesse(l){var s=((l.campanha||"")+" "+(l.produto||"")+" "+(l.cultura||"")).toUpperCase();if(s.indexOf("COMPOST")>=0)return["Compostagem","#22c55e"];if(s.indexOf("ULEXITA")>=0||s.indexOf("BORO")>=0)return["Ulexita","#f59e0b"];if(s.indexOf("AGUA")>=0||s.indexOf("ÁGUA")>=0||s.indexOf("ETA")>=0||s.indexOf("EFLUENTE")>=0)return["Água","#38bdf8"];return["",""];}
-    function tcolor(l){var t=(l.ai_temperatura||"").toLowerCase(),s=l.ai_score||0;if(t==="quente"||l.prioridade==="alta"||s>=70)return"#ef4444";if(t==="morno"||s>=40)return"#f59e0b";return"#38bdf8";}
-    function orig(o){o=(o||"").toLowerCase();if(o.indexOf("insta")>=0)return"📷";if(o.indexOf("whats")>=0)return"💬";if(o.indexOf("face")>=0)return"👍";if(o==="manual")return"✍️";return"•";}
-    function quando(iso){var d=new Date(iso),m=Math.floor((Date.now()-d.getTime())/60000);if(m<1)return"agora";if(m<60)return"há "+m+" min";var b=new Date(d.getTime()-3*3600e3);return String(b.getUTCHours()).padStart(2,"0")+":"+String(b.getUTCMinutes()).padStart(2,"0");}
-    function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
-    function itemHTML(l){var ic=interesse(l),it=ic[0],col=ic[1];var loc=esc(l.cidade||"—")+(l.uf?"/"+esc(l.uf):"");var parts=[];parts.push('<span class="lt-dot" style="background:'+tcolor(l)+'"></span>');parts.push('<span class="lt-nome">'+esc(l.nome||"—")+'</span>');parts.push('<span class="lt-meta">'+orig(l.origem)+' '+loc+'</span>');if(it)parts.push('<span class="lt-int" style="background:'+col+'">'+it+'</span>');parts.push('<span class="lt-meta">'+quando(l.created_at)+'</span>');return '<span class="lt-item">'+parts.join("")+'</span>';}
-    function loadTicker(){
-      fetch(SUPA+"/rest/v1/vw_leads_publico?select=nome,cidade,uf,origem,campanha,produto,cultura,prioridade,ai_temperatura,ai_score,created_at&created_at=gte."+brToday()+"&order=created_at.desc&limit=40",{headers:{apikey:ANON,Authorization:"Bearer "+ANON}})
-        .then(function(r){return r.json();})
-        .then(function(rows){
-          var tr=document.getElementById("lt-track");if(!tr)return;
-          if(!rows||!rows.length){tr.innerHTML='<span class="lt-item"><span class="lt-meta">Nenhum lead ainda hoje 🌱</span></span>';tr.style.animation="none";return;}
-          var html=rows.map(itemHTML).join("");
-          tr.innerHTML=html+html; // duplica p/ loop perfeito (-50%)
-          var dur=Math.max(24,rows.length*4.2);
-          tr.style.animation="lt-scroll "+dur+"s linear infinite";
-        }).catch(function(){});
-    }
-    loadTicker();setInterval(loadTicker,60000);
-  }catch(e){}
-})();
-</script>
-
-
-<!-- AUTO-RELOAD on-change (injetado 17/jun): TV se atualiza sozinha ~5min apos um deploy -->
-<script>
-(function(){
-  try{
-    var seen=null;
-    function chk(){
-      fetch(location.pathname+'?_ar='+Date.now(),{method:'HEAD',cache:'no-store'}).then(function(r){
-        var lm=r.headers.get('last-modified')||r.headers.get('etag');
-        if(!lm)return;
-        if(seen===null){seen=lm;return;}
-        if(lm!==seen){ location.reload(); }
-      }).catch(function(){});
-    }
-    setInterval(chk,5*60*1000);
-  }catch(e){}
-})();
-</script>
-
 </body>
 </html>
