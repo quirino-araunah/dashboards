@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Araunah · Reunião Time Água — jun/2026</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  :root{
+    --agua:#2a9db5; --agua-d:#13403e; --teal:#0e6b6b; --ink:#0f1e1d;
+    --bg:#f4f8f9; --card:#ffffff; --line:#e2ecee; --mut:#6b8487;
+    --red:#d9534f; --redbg:#fce4e3; --green:#2e9e6b; --greenbg:#e3f4ec; --amber:#d9a441; --amberbg:#fbf2dd;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
+  .deck{max-width:1180px;margin:0 auto}
+  section.slide{background:var(--card);margin:26px 18px;border-radius:18px;padding:46px 54px;box-shadow:0 6px 30px rgba(14,64,62,.07);border:1px solid var(--line);position:relative;overflow:hidden}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:var(--agua)}
+  h1{font-size:40px;line-height:1.1;color:var(--agua-d);margin:.35em 0}
+  h2{font-size:26px;color:var(--agua-d);margin-bottom:6px}
+  .sub{color:var(--mut);font-size:14px;margin-bottom:24px}
+  /* capa */
+  .slide.cover{background:#0e3a3a;background-image:linear-gradient(135deg,#0e3a3a 0%,#15585a 45%,#2a9db5 100%);color:#fff;border:none;min-height:430px;display:flex;flex-direction:column;justify-content:center}
+  .cover h1{color:#fff;font-size:52px}
+  .cover .eyebrow{color:#bfe8f0}
+  .cover .meta{color:#d6eef2;font-size:15px;margin-top:18px}
+  .wave{position:absolute;right:-40px;bottom:-60px;font-size:300px;opacity:.08;line-height:1}
+  /* kpi */
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:8px}
+  .kpi{background:var(--bg);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .kpi .lbl{font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);font-weight:600}
+  .kpi .val{font-size:30px;font-weight:800;color:var(--agua-d);margin-top:6px}
+  .kpi .note{font-size:12px;color:var(--mut);margin-top:4px}
+  .kpi.good .val{color:var(--green)} .kpi.bad .val{color:var(--red)}
+  /* table */
+  table{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+  th{background:var(--agua-d);color:#fff;text-align:right;padding:11px 14px;font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.04em}
+  th:first-child{text-align:left;border-radius:8px 0 0 0} th:last-child{border-radius:0 8px 0 0}
+  td{padding:11px 14px;text-align:right;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+  td:first-child{text-align:left;font-weight:600}
+  tr:hover td{background:#f8fbfc}
+  tfoot td{font-weight:800;border-top:2px solid var(--agua-d);background:#eef6f7}
+  .pill{display:inline-block;padding:3px 9px;border-radius:20px;font-weight:700;font-size:12px}
+  .p-green{background:var(--greenbg);color:var(--green)} .p-red{background:var(--redbg);color:var(--red)} .p-amber{background:var(--amberbg);color:var(--amber)}
+  .neg{color:var(--red);font-weight:700} .pos{color:var(--green);font-weight:700}
+  .chartwrap{position:relative;height:440px;margin-top:14px}
+  .modes{display:flex;gap:8px;margin:14px 0 0}
+  .modes button{border:1px solid var(--line);background:#fff;color:var(--agua-d);padding:7px 16px;border-radius:9px;font-weight:600;cursor:pointer;font-size:13px}
+  .modes button.on{background:var(--agua);color:#fff;border-color:var(--agua)}
+  .foot{font-size:11px;color:var(--mut);margin-top:22px;border-top:1px solid var(--line);padding-top:10px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:30px;align-items:start}
+  ul.clean{list-style:none} ul.clean li{padding:9px 0 9px 26px;position:relative;border-bottom:1px solid var(--line);font-size:14.5px}
+  ul.clean li:before{content:"";position:absolute;left:0;top:15px;width:9px;height:9px;border-radius:50%;background:var(--agua)}
+  .tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;background:var(--agua);color:#fff}
+  .callout{background:var(--redbg);border-left:4px solid var(--red);padding:14px 18px;border-radius:8px;margin-top:14px;font-size:14px}
+  .callout.ok{background:var(--greenbg);border-color:var(--green)}
+  .num{font-variant-numeric:tabular-nums}
+  .badge-src{position:absolute;top:20px;right:24px;font-size:10px;color:var(--mut);background:var(--bg);padding:4px 10px;border-radius:20px;border:1px solid var(--line)}
+  /* ===== modo apresentação ===== */
+  body.present{overflow:hidden}
+  body.present .deck{height:100vh;overflow-y:scroll;scroll-snap-type:y mandatory;scroll-behavior:smooth}
+  body.present section.slide{scroll-snap-align:center;min-height:calc(100vh - 52px);justify-content:center}
+  .navbar{position:fixed;bottom:14px;right:16px;z-index:60;display:flex;gap:8px;align-items:center;font-size:12px}
+  .navbar .hint{color:#fff;background:rgba(14,64,62,.85);padding:7px 13px;border-radius:20px}
+  .navbar .hint b{color:#7fd0de}
+  .navbar button{border:none;background:var(--agua);color:#fff;width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .counter{color:#fff;background:rgba(14,64,62,.85);padding:7px 11px;border-radius:20px;font-variant-numeric:tabular-nums}
+</style>
+</head>
+<body>
+<div class="navbar" id="navbar" style="display:none">
+  <span class="hint"><b>← →</b> navegar · <b>F</b> tela cheia · <b>Esc</b> sair</span>
+  <span class="counter" id="counter">1 / 12</span>
+  <button id="prev" title="anterior">‹</button>
+  <button id="next" title="próximo">›</button>
+</div>
+<div class="deck">
+
+  <!-- CAPA -->
+  <section class="slide cover">
+    <div class="eyebrow">Araunah · Diretoria Comercial</div>
+    <h1>Reunião do Time Água</h1>
+    <div class="meta">Resultados 2026 · acumulado jan–jun · base reconciliada com a controladoria · junho parcial (até 22/jun)</div>
+    <div class="meta" style="margin-top:6px;opacity:.8">Atualizado em 22/jun/2026</div>
+    <div class="wave">💧</div>
+  </section>
+
+  <!-- RESUMO -->
+  <section class="slide">
+    <div class="badge-src">Fonte: vw_perf_consultor_mensal</div>
+    <div class="eyebrow">Resumo executivo</div>
+    <h2>O time da água — YTD jan–jun</h2>
+    <div class="sub">5 consultores com meta · realizado = produto + locação (competência) · junho parcial até 22/jun</div>
+    <div class="kpis">
+      <div class="kpi"><div class="lbl">Meta YTD</div><div class="val">R$ 2,89M</div><div class="note">jan a jun/2026</div></div>
+      <div class="kpi bad"><div class="lbl">Realizado YTD</div><div class="val">R$ 2,24M</div><div class="note">78% da meta</div></div>
+      <div class="kpi bad"><div class="lbl">Gap acumulado</div><div class="val">−R$ 646k</div><div class="note">triplicou em junho</div></div>
+      <div class="kpi"><div class="lbl">Locação no mix</div><div class="val">71%</div><div class="note">R$ 1,59M de R$ 2,24M</div></div>
+    </div>
+    <div class="callout">
+      <b>A história em uma frase:</b> a água caiu de 92% (jan–mai) para <b>78% da meta</b> — <b>junho veio fraquíssimo</b> (realizado parcial R$ 102k contra R$ 553k de meta, só 18% do mês) e o gap acumulado <b>triplicou para −R$ 646k</b>. Sustentam o time <b>José Ronei e Mateus</b>; <b>Maicon e Muller juntos somam −R$ 620k</b>. E <b>7 de cada 10 reais</b> vêm de <b>locação</b>, não de venda.
+    </div>
+  </section>
+
+  <!-- PERFORMANCE -->
+  <section class="slide">
+    <div class="badge-src">Fonte: vw_perf_consultor_mensal</div>
+    <div class="eyebrow">Performance por consultor</div>
+    <h2>Meta × Realizado — YTD jan–jun/2026</h2>
+    <div class="sub">Realizado inclui produto + locação, em competência · junho parcial até 22/jun</div>
+    <table>
+      <thead><tr><th>Consultor</th><th>Meta YTD</th><th>Realizado</th><th>%</th><th>Gap</th><th>Meta Ano</th></tr></thead>
+      <tbody>
+        <tr><td>José Ronei <span style="font-weight:400;color:var(--mut);font-size:12px">· supervisor</span></td><td>1.105.491</td><td>1.040.576</td><td><span class="pill p-amber">94%</span></td><td class="neg">−64.915</td><td>3.292.450</td></tr>
+        <tr><td>Mateus Rafael</td><td>479.026</td><td>582.041</td><td><span class="pill p-green">122%</span></td><td class="pos">+103.015</td><td>1.324.102</td></tr>
+        <tr><td>Paulo Henrique</td><td>267.435</td><td>202.930</td><td><span class="pill p-amber">76%</span></td><td class="neg">−64.505</td><td>653.459</td></tr>
+        <tr><td>Maicon</td><td>601.829</td><td>270.626</td><td><span class="pill p-red">45%</span></td><td class="neg">−331.203</td><td>1.396.367</td></tr>
+        <tr><td>Muller</td><td>436.312</td><td>147.620</td><td><span class="pill p-red">34%</span></td><td class="neg">−288.692</td><td>751.662</td></tr>
+      </tbody>
+      <tfoot><tr><td>Time (5)</td><td>2.890.093</td><td>2.243.793</td><td>78%</td><td class="neg">−646.300</td><td>7.418.040</td></tr></tfoot>
+    </table>
+    <div class="foot">Não incluídos no ranking do time: locação de água creditada a consultores de outras verticais — Brey R$ 97k, João Suss R$ 45k, Corporativo R$ 14k. Brenner (novo em água/avicultura) ainda sem meta. Junho é parcial (até 22/jun): no mês o time fez só R$ 102k de R$ 553k de meta.</div>
+  </section>
+
+  <!-- BOLHA -->
+  <section class="slide">
+    <div class="badge-src">Fonte: vw_perf_consultor_mensal</div>
+    <div class="eyebrow">Bolha de performance</div>
+    <h2>Meta × Realizado · tamanho = realizado</h2>
+    <div class="sub">Acima da linha tracejada = batendo a meta. Abaixo = atrás da meta.</div>
+    <div class="modes">
+      <button data-mode="mes">Mês (junho · parcial)</button>
+      <button data-mode="ytd" class="on">YTD (jan–jun)</button>
+      <button data-mode="ano">Ano cheio</button>
+    </div>
+    <div class="chartwrap"><canvas id="bolha"></canvas></div>
+  </section>
+
+  <!-- COMPOSICAO -->
+  <section class="slide">
+    <div class="badge-src">Fontes: plan_vs_real (produto) + vw_locacao_competencia</div>
+    <div class="eyebrow">Composição do realizado</div>
+    <h2>De onde vem o faturamento de cada um</h2>
+    <div class="sub">Produto (venda de NF) × Locação (aluguel de equipamento) — YTD jan–mai</div>
+    <div class="chartwrap" style="height:380px"><canvas id="comp"></canvas></div>
+    <div class="callout ok"><b>Leitura:</b> José Ronei e Paulo são quase 100% locação (base recorrente forte). Mateus e Maicon têm a maior fatia de venda de produto. O time depende de locação — proteger a base recorrente é prioridade.</div>
+  </section>
+
+  <!-- GAPS -->
+  <section class="slide">
+    <div class="badge-src">Fonte: vw_perf_consultor_mensal</div>
+    <div class="eyebrow">Onde estão os gaps</div>
+    <h2>O buraco está concentrado</h2>
+    <div class="grid2">
+      <div>
+        <div class="chartwrap" style="height:320px"><canvas id="gap"></canvas></div>
+      </div>
+      <div>
+        <ul class="clean">
+          <li><span class="tag" style="background:var(--red)">−331k</span> &nbsp;<b>Maicon</b> — 45% da meta. Maior gap do time.</li>
+          <li><span class="tag" style="background:var(--red)">−289k</span> &nbsp;<b>Muller</b> — 34% da meta. Segundo maior.</li>
+          <li><span class="tag" style="background:var(--amber)">−65k</span> &nbsp;<b>José Ronei</b> — 94%, perto da meta (volume maior).</li>
+          <li><span class="tag" style="background:var(--amber)">−65k</span> &nbsp;<b>Paulo</b> — 76% da meta.</li>
+          <li><span class="tag" style="background:var(--green)">+103k</span> &nbsp;<b>Mateus</b> — único acima (122%).</li>
+        </ul>
+        <div class="callout"><b>Maicon + Muller = −R$ 620k</b> dos −R$ 646k do time. Se os dois chegarem a 80% da meta, o time praticamente zera o gap. <b>É aí que está a alavanca</b> — e os dois trabalham (fazem check-in), o problema é conversão.</div>
+      </div>
+    </div>
+    <div class="foot">Nota de método: gap medido sobre o realizado total (produto + locação). YoY 2025 de locação não exibido — a base de competência de 2025 não está disponível, qualquer comparação seria distorcida.</div>
+  </section>
+
+  <!-- POR QUE NAO VENDE -->
+  <section class="slide">
+    <div class="badge-src">Fonte: atividades + vw_perf_consultor_mensal</div>
+    <div class="eyebrow">A pergunta da reunião</div>
+    <h2>Por que não está saindo venda?</h2>
+    <div class="sub">O esforço de campo existe. O que falta é converter visita em negociação e fechamento.</div>
+    <div class="kpis" style="grid-template-columns:repeat(4,1fr)">
+      <div class="kpi"><div class="lbl">Visitas em 2026</div><div class="val">228</div><div class="note">esforço de campo alto</div></div>
+      <div class="kpi"><div class="lbl">Check-ins confirmados</div><div class="val">213</div><div class="note">visita acontece</div></div>
+      <div class="kpi bad"><div class="lbl">Reuniões formais</div><div class="val">10</div><div class="note">só 4% das visitas</div></div>
+      <div class="kpi bad"><div class="lbl">Junho · realizado</div><div class="val">18%</div><div class="note">R$ 102k de R$ 553k</div></div>
+    </div>
+    <div class="grid2" style="margin-top:22px">
+      <div>
+        <h3 style="font-size:15px;color:var(--agua-d);margin-bottom:10px">O funil vaza no meio</h3>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <div style="background:#13403e;color:#fff;border-radius:8px;padding:11px 16px;width:100%;font-weight:700">228 &nbsp;<span style="font-weight:400">visitas / campo</span></div>
+          <div style="background:#2a9db5;color:#fff;border-radius:8px;padding:11px 16px;width:80%;font-weight:700">213 &nbsp;<span style="font-weight:400">check-ins</span></div>
+          <div style="background:#7fc8d8;color:#13403e;border-radius:8px;padding:11px 16px;width:42%;font-weight:700">57 &nbsp;<span style="font-weight:400">ligações</span></div>
+          <div style="background:var(--red);color:#fff;border-radius:8px;padding:11px 16px;width:18%;font-weight:700">10 &nbsp;<span style="font-weight:400">reuniões</span></div>
+        </div>
+      </div>
+      <div>
+        <ul class="clean">
+          <li><b>Sobra atividade, falta negociação.</b> 228 visitas viraram só 10 reuniões formais no ano — a visita não está evoluindo para proposta.</li>
+          <li><b>Não é falta de esforço.</b> Maicon e Muller fazem check-in (até subiram em junho) e mesmo assim estão a 45% e 34% da meta.</li>
+          <li><b>A venda de produto é pulso, não máquina.</b> Carrega meses grandes isolados; nos clientes de locação o cross-sell é quase zero.</li>
+        </ul>
+        <div class="callout"><b>A causa, em uma frase:</b> o time está <b>servindo a base</b> (visita, locação, check-in) e <b>negociando pouco negócio novo</b> — por isso junho desabou e o gap acumulado triplicou. A alavanca é <b>conversão</b>, não mais atividade.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TOP CLIENTES -->
+  <section class="slide">
+    <div class="badge-src">Fonte: vw_locacao_competencia</div>
+    <div class="eyebrow">Carteira</div>
+    <h2>Top 10 clientes da água — YTD 2026</h2>
+    <div class="sub">Locação (competência) · acumulado jan–jun · base recorrente da água</div>
+    <table>
+      <thead><tr><th>Cliente</th><th>Consultor</th><th>Locação YTD</th></tr></thead>
+      <tbody>
+        <tr><td>Tijuca Alimentos</td><td style="text-align:left;font-weight:400">Paulo Henrique</td><td><b>217.527</b></td></tr>
+        <tr><td>CIALNE <span class="tag" style="background:var(--green);font-size:9px">novo</span></td><td style="text-align:left;font-weight:400">Paulo Henrique</td><td><b>184.322</b></td></tr>
+        <tr><td>Pole Alimentos</td><td style="text-align:left;font-weight:400">José Ronei</td><td><b>136.823</b></td></tr>
+        <tr><td>Atlântica Agroindustrial</td><td style="text-align:left;font-weight:400">Paulo Henrique</td><td><b>112.959</b></td></tr>
+        <tr><td>J Reis Avícola</td><td style="text-align:left;font-weight:400">José Ronei</td><td><b>49.874</b></td></tr>
+        <tr><td>Planalto Ovos</td><td style="text-align:left;font-weight:400">Brey</td><td><b>48.312</b></td></tr>
+        <tr><td>Uby Agroquímica <span class="tag" style="background:var(--green);font-size:9px">novo</span></td><td style="text-align:left;font-weight:400">Mateus</td><td><b>46.550</b></td></tr>
+        <tr><td>Agriive Agricultura <span class="tag" style="background:var(--green);font-size:9px">novo</span></td><td style="text-align:left;font-weight:400">João Suss</td><td><b>45.000</b></td></tr>
+        <tr><td>Riberball</td><td style="text-align:left;font-weight:400">Mateus</td><td><b>39.268</b></td></tr>
+        <tr><td>Layer Genetics</td><td style="text-align:left;font-weight:400">Mateus</td><td><b>34.745</b></td></tr>
+      </tbody>
+    </table>
+    <div class="foot">Base ancorada em locação recorrente — Paulo Henrique concentra os industriais grandes (Tijuca, CIALNE, Atlântica). <b>CIALNE</b> (rede, 5 unidades) entrou em 2026 e já é o nº 2. Venda de produto é pequena nesses clientes — oportunidade de cross-sell.</div>
+  </section>
+
+  <!-- NOVOS vs ATUAIS -->
+  <section class="slide">
+    <div class="badge-src">Base 2025: NF água + títulos de locação (SE1)</div>
+    <div class="eyebrow">Aquisição</div>
+    <h2>Clientes novos × atuais — 2026</h2>
+    <div class="sub">Novo = primeira compra/locação de água em 2026</div>
+    <div class="grid2">
+      <div>
+        <div class="chartwrap" style="height:240px"><canvas id="novoatual"></canvas></div>
+        <table style="margin-top:14px">
+          <thead><tr><th>Origem</th><th>Clientes</th><th>Venda</th><th>Locação</th><th>Total</th></tr></thead>
+          <tbody>
+            <tr><td>Atual</td><td>92</td><td>355k</td><td>1.142k</td><td><b>1.497k</b></td></tr>
+            <tr><td>Novo</td><td>91</td><td>197k</td><td>609k</td><td><b>806k</b></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div>
+        <h3 style="font-size:15px;color:var(--agua-d);margin-bottom:6px">Novos clientes conquistados</h3>
+        <ul class="clean">
+          <li><span class="tag" style="background:var(--green)">~139k</span> &nbsp;<b>CIALNE</b> — Cia. Alimentos do Nordeste (rede, 5 unidades)</li>
+          <li><span class="tag" style="background:var(--green)">49k</span> &nbsp;Uby Agroquímica</li>
+          <li><span class="tag" style="background:var(--green)">45k</span> &nbsp;Agriive Agricultura</li>
+          <li><span class="tag" style="background:var(--green)">38k</span> &nbsp;GT Soluções Logísticas</li>
+          <li><span class="tag" style="background:var(--green)">33k</span> &nbsp;Santelisa Embalagens</li>
+        </ul>
+        <div class="callout ok"><b>35% do faturamento veio de cliente novo</b> — 91 logos conquistados em 2026. A água está expandindo a base, não só mantendo. Destaque: <b>CIALNE</b>, uma rede inteira.</div>
+      </div>
+    </div>
+    <div class="foot">Locações novas: R$ 609k · Vendas novas: R$ 197k. "Novo" definido contra a base real de 2025 (NF de água + títulos de locação SE1), já que a competência de locação 2025 não está na view.</div>
+  </section>
+
+  <!-- EXECUCAO: CHECK-INS -->
+  <section class="slide">
+    <div class="badge-src">Fonte: atividades (check-in no app)</div>
+    <div class="eyebrow">Execução · Check-ins</div>
+    <h2>Quem está em campo</h2>
+    <div class="sub">Check-in = visita confirmada no app. Maio = mês cheio · Junho até 22/jun</div>
+    <table>
+      <thead><tr><th>Consultor</th><th>Check-ins mai</th><th>Check-ins jun</th><th>Leitura</th></tr></thead>
+      <tbody>
+        <tr><td>Mateus</td><td><b>31</b></td><td><b>30</b></td><td style="text-align:left"><span class="pill p-green">mais ativo</span> → único acima da meta</td></tr>
+        <tr><td>Maicon</td><td>10</td><td><b>19</b></td><td style="text-align:left"><span class="pill p-amber">esforço subiu, resultado não</span> (45% meta)</td></tr>
+        <tr><td>Paulo Henrique</td><td>18</td><td>16</td><td style="text-align:left"><span class="pill p-green">ativo</span> · 76% da meta</td></tr>
+        <tr><td>Muller</td><td>10</td><td>12</td><td style="text-align:left"><span class="pill p-red">trabalha, não converte</span> (34% meta)</td></tr>
+        <tr><td>Brenner</td><td>4</td><td>11</td><td style="text-align:left"><span class="pill p-amber">novo, esquentando</span></td></tr>
+        <tr><td>José Ronei <span style="font-weight:400;color:var(--mut);font-size:12px">· supervisor</span></td><td>0</td><td>3</td><td style="text-align:left">⚪ quase não registra visita</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>Esforço não está faltando — conversão sim:</b> Maicon quase dobrou o check-in em junho (10→19) e mesmo assim está em 45% da meta. Muller idem (34%). <b>Visita está acontecendo, negociação e fechamento não.</b> Só o Mateus transforma atividade em resultado.</div>
+  </section>
+
+  <!-- EXECUCAO: LEADS -->
+  <section class="slide">
+    <div class="badge-src">Fonte: leads</div>
+    <div class="eyebrow">Execução · Leads</div>
+    <h2>Carteira de leads por consultor</h2>
+    <div class="sub">Pipeline em mãos · follow vencido = próximo contato atrasado</div>
+    <table>
+      <thead><tr><th>Consultor</th><th>Leads</th><th>Quentes</th><th>Follow vencido</th><th>Novos 30d</th></tr></thead>
+      <tbody>
+        <tr><td>José Ronei</td><td><b>128</b></td><td>27</td><td><span class="neg">7</span></td><td>25</td></tr>
+        <tr><td>Mateus</td><td>85</td><td>8</td><td><span class="neg">39</span></td><td>12</td></tr>
+        <tr><td>Maicon</td><td>77</td><td>3</td><td>0</td><td>3</td></tr>
+        <tr><td>Brenner</td><td>9</td><td>2</td><td>2</td><td>9</td></tr>
+        <tr><td>Muller</td><td>7</td><td>1</td><td>0</td><td>2</td></tr>
+        <tr><td>Paulo Henrique</td><td>2</td><td>1</td><td>1</td><td>0</td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>Onde travou:</b> José Ronei tem <b>128 leads (27 quentes)</b> mas quase não faz check-in — quentes parados sem visita. Mateus acumulou <b>39 follow-ups vencidos</b> (vítima do próprio volume). Maicon tem 77 leads e só 3 quentes — precisa qualificar. Muller só tem 7 leads em mãos — falta matéria-prima de pipeline.</div>
+    <div class="foot">O campo "etapa" está majoritariamente em branco no CRM, por isso não exibimos aberto×fechado — os números acima (total, quentes, follow vencido, novos) são os confiáveis.</div>
+  </section>
+
+  <!-- EXECUCAO: AGENDA -->
+  <section class="slide">
+    <div class="badge-src">Fonte: atividades (agenda)</div>
+    <div class="eyebrow">Execução · Agenda</div>
+    <h2>Agenda preenchida ao longo da semana</h2>
+    <div class="sub">Semana atual, a partir de seg 08/jun · 🟩 cheio &nbsp; 🟨 1–2 &nbsp; 🟥 vazio</div>
+    <table style="text-align:center">
+      <thead><tr><th>Consultor</th><th style="text-align:center">Seg</th><th style="text-align:center">Ter</th><th style="text-align:center">Qua</th><th style="text-align:center">Qui</th><th style="text-align:center">Sex</th><th style="text-align:center">Semana</th></tr></thead>
+      <tbody>
+        <tr><td>Mateus</td><td style="background:#e3f4ec">4</td><td style="background:#fbf2dd">1</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td><b>5</b></td></tr>
+        <tr><td>Muller</td><td style="background:#fbf2dd">2</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td><b>2</b></td></tr>
+        <tr><td>Paulo Henrique</td><td style="background:#fbf2dd">2</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td><b>2</b></td></tr>
+        <tr><td>Brenner</td><td style="background:#fbf2dd">1</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td><b>1</b></td></tr>
+        <tr><td>Maicon</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td class="neg"><b>0</b></td></tr>
+        <tr><td>José Ronei</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td style="background:#fce4e3">0</td><td class="neg"><b>0</b></td></tr>
+      </tbody>
+    </table>
+    <div class="callout"><b>O alerta:</b> de <b>terça a sexta a agenda está vazia</b> — quase tudo concentrado na segunda. <b>Maicon e José Ronei não têm nada marcado a semana inteira.</b> Sem agenda planejada, não há como cobrir o gap.</div>
+    <div class="foot">Leitura na manhã de segunda (08/jun). Se a equipe agenda dia-a-dia em vez de planejar a semana, vale combinar o hábito de fechar a semana na sexta anterior.</div>
+  </section>
+
+  <!-- PROXIMOS PASSOS -->
+  <section class="slide">
+    <div class="eyebrow">Próximos passos</div>
+    <h2>Plano de recuperação — 2º semestre</h2>
+    <div class="grid2">
+      <ul class="clean">
+        <li><b>Conversão, não mais visita:</b> Maicon e Muller já fazem check-in — instaurar rito de proposta após cada visita (visita sem proposta não conta). Meta de reuniões/propostas por semana.</li>
+        <li><b>Maicon &amp; Muller (−R$ 620k):</b> plano individual de fechamento — acompanhar negociação a negociação, não só agenda.</li>
+        <li><b>José Ronei:</b> 128 leads (27 quentes) parados sem visita — trabalhar ou redistribuir os quentes.</li>
+        <li><b>Mateus:</b> zerar os 39 follow-ups vencidos (está vítima do próprio volume).</li>
+      </ul>
+      <ul class="clean">
+        <li><b>Defender o mês:</b> junho a 18% da meta — puxar fechamento da última semana e não deixar julho começar atrás.</li>
+        <li><b>Proteger a locação:</b> 71% do faturamento. Revisar contratos vencidos (renovação não registrada) e evitar churn.</li>
+        <li><b>Cross-sell de produto:</b> nos top clientes de locação a venda é quase zero — Tefen/insumo e equipamento com o preço novo.</li>
+        <li><b>Muller:</b> só 7 leads em mãos — abastecer pipeline. Brenner: definir meta para entrar no ranking.</li>
+      </ul>
+    </div>
+    <div class="foot">Dados reconciliados com a controladoria (faturamento consolidado corrigido em 08/jun). Realizado em competência. Gerado para a reunião do time água · jun/2026.</div>
+  </section>
+
+</div>
+
+<script>
+const BRL = v => 'R$ ' + (v>=1e6 ? (v/1e6).toFixed(2)+'M' : Math.round(v/1000)+'k');
+const COR='#2a9db5', CORd='#13403e';
+const dados=[
+  {n:'José Ronei', mes:[233388,68210], ytd:[1105491,1040576], ano:[3292450,1040576]},
+  {n:'Mateus',     mes:[105034,5215],  ytd:[479026,582041],   ano:[1324102,582041]},
+  {n:'Paulo',      mes:[54564,0],      ytd:[267435,202930],   ano:[653459,202930]},
+  {n:'Maicon',     mes:[87557,26030],  ytd:[601829,270626],   ano:[1396367,270626]},
+  {n:'Muller',     mes:[72755,2857],   ytd:[436312,147620],   ano:[751662,147620]},
+];
+let bolhaChart;
+function drawBolha(mode){
+  const pts=dados.map(d=>({x:d[mode][0],y:d[mode][1],label:d.n,r:Math.max(8,Math.sqrt(d[mode][1])/22)}));
+  const mx=Math.max(...pts.flatMap(p=>[p.x,p.y]))*1.12;
+  const data={datasets:[
+    {type:'line',data:[{x:0,y:0},{x:mx,y:mx}],borderColor:'#ccc',borderDash:[6,6],borderWidth:1,pointRadius:0,fill:false},
+    {type:'bubble',data:pts,backgroundColor:'rgba(42,157,181,.55)',borderColor:'#fff',borderWidth:2}
+  ]};
+  const opts={responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+    tooltip:{callbacks:{label:c=>c.raw.label?`${c.raw.label}: meta ${BRL(c.raw.x)} · real ${BRL(c.raw.y)}`:''}},
+    datalabels:false},
+    scales:{x:{min:0,max:mx,title:{display:true,text:'Meta'},ticks:{callback:BRL}},
+            y:{min:0,max:mx,title:{display:true,text:'Realizado (produto + locação)'},ticks:{callback:BRL}}}};
+  if(bolhaChart)bolhaChart.destroy();
+  bolhaChart=new Chart(document.getElementById('bolha'),{data,options:opts});
+  // rótulos
+  bolhaChart.options.animation={onComplete:()=>{}};
+}
+document.querySelectorAll('.modes button').forEach(b=>b.onclick=()=>{
+  document.querySelectorAll('.modes button').forEach(x=>x.classList.remove('on'));
+  b.classList.add('on'); drawBolha(b.dataset.mode);
+});
+drawBolha('ytd');
+
+// rótulos nomes nas bolhas (plugin simples)
+const labelPlugin={id:'lbl',afterDatasetsDraw(c){const m=c.getDatasetMeta(1);if(!m)return;
+  c.ctx.save();c.ctx.font='bold 12px sans-serif';c.ctx.fillStyle='#13403e';
+  m.data.forEach((p,i)=>{const d=c.data.datasets[1].data[i];c.ctx.fillText(d.label,p.x+p.options.radius+4,p.y+4)});c.ctx.restore();}};
+Chart.register(labelPlugin);
+drawBolha('ytd');
+
+// composição produto x locação
+new Chart(document.getElementById('comp'),{type:'bar',
+ data:{labels:['José Ronei','Mateus','Paulo','Maicon','Muller'],
+  datasets:[
+   {label:'Produto (venda NF)',data:[187869,179878,2390,193785,85143],backgroundColor:'#7fc8d8'},
+   {label:'Locação',data:[852707,402163,200540,76841,62477],backgroundColor:'#13403e'}
+  ]},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},
+   tooltip:{callbacks:{label:c=>c.dataset.label+': '+BRL(c.raw)}}},
+   scales:{x:{stacked:true},y:{stacked:true,ticks:{callback:BRL}}}}});
+
+// gap bar
+new Chart(document.getElementById('gap'),{type:'bar',
+ data:{labels:['Maicon','Muller','José Ronei','Paulo','Mateus'],
+  datasets:[{data:[-331203,-288692,-64915,-64505,103015],
+   backgroundColor:['#d9534f','#d9534f','#d9a441','#d9a441','#2e9e6b']}]},
+ options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},
+   tooltip:{callbacks:{label:c=>'Gap: '+BRL(c.raw)}}},
+   scales:{x:{ticks:{callback:BRL}}}}});
+
+// novo x atual doughnut
+new Chart(document.getElementById('novoatual'),{type:'doughnut',
+ data:{labels:['Atual (65%)','Novo (35%)'],datasets:[{data:[1496685,805643],backgroundColor:['#13403e','#2a9db5'],borderColor:'#fff',borderWidth:2}]},
+ options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'},
+   tooltip:{callbacks:{label:c=>c.label+': '+BRL(c.raw)}}}}});
+
+// ===== modo apresentação =====
+document.body.classList.add('present');
+const slides=[...document.querySelectorAll('.slide')];
+const deck=document.querySelector('.deck');
+const counter=document.getElementById('counter');
+document.getElementById('navbar').style.display='flex';
+let idx=0;
+function go(n){idx=Math.max(0,Math.min(slides.length-1,n));slides[idx].scrollIntoView({behavior:'smooth',block:'center'});counter.textContent=(idx+1)+' / '+slides.length;}
+document.getElementById('next').onclick=()=>go(idx+1);
+document.getElementById('prev').onclick=()=>go(idx-1);
+document.addEventListener('keydown',e=>{
+  if(['ArrowDown','ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();go(idx+1);}
+  else if(['ArrowUp','ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();go(idx-1);}
+  else if(e.key==='f'||e.key==='F'){if(!document.fullscreenElement){document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen();}else{document.exitFullscreen&&document.exitFullscreen();}}
+});
+// mantém contador sincronizado ao rolar manualmente
+const io=new IntersectionObserver(es=>{es.forEach(en=>{if(en.isIntersecting){idx=slides.indexOf(en.target);counter.textContent=(idx+1)+' / '+slides.length;}})},{root:deck,threshold:.55});
+slides.forEach(s=>io.observe(s));
+counter.textContent='1 / '+slides.length;
+</script>
+</body>
+</html>
