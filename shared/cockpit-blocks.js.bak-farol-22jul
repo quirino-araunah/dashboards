@@ -512,7 +512,6 @@ function renderAll(cfg) {
     function() { renderClientes8020(cfg); },
     function() { renderAgendaCheckin(cfg); },
     function() { renderFreteMonitor(cfg); },
-    function() { renderFarolCompost(cfg); },
     function() { renderMapaPontos(cfg); },
     function() { renderProdutosTop(cfg); },
     function() { renderComparativoAnual(cfg); },
@@ -1626,35 +1625,6 @@ function renderAllExec(cfg) {
 /* ═══════════════════════════════════════════════════════════
    BLOCOS EXECUTIVOS COMPLEMENTARES
    ═══════════════════════════════════════════════════════════ */
-
-
-/* ═══ FAROL COMPOSTAGEM ═══ */
-function renderFarolCompost(cfg) {
-  var el = document.getElementById('farol-compost');
-  if (!el) return;
-  sbFetch('vw_composta_farol', 'select=fazenda,consultor,status,cor,motivo,dias_sem_leitura,pico&order=status.asc,fazenda.asc').then(function(rows) {
-    rows = rows || [];
-    var ordem = { vermelho: 0, amarelo: 1, verde: 2, cinza: 3 };
-    rows.sort(function(a, b) { return (ordem[a.cor] - ordem[b.cor]) || String(a.fazenda).localeCompare(b.fazenda); });
-    var cores = { verde: '#2f9e8f', amarelo: '#e8a13b', vermelho: '#e05252', cinza: '#666' };
-    var n = { verde: 0, amarelo: 0, vermelho: 0 };
-    rows.forEach(function(r) { if (n[r.cor] !== undefined) n[r.cor]++; });
-    var html = '<div style="display:flex;gap:14px;margin-bottom:8px;font-size:12px;font-weight:700">' +
-      '<span style="color:#2f9e8f">● ' + n.verde + ' em dia</span>' +
-      '<span style="color:#e8a13b">● ' + n.amarelo + ' atenção</span>' +
-      '<span style="color:#e05252">● ' + n.vermelho + ' crítico</span></div>';
-    html += '<table class="data-table" style="width:100%"><thead><tr><th></th><th>FAZENDA</th><th>CONSULTOR</th><th>FASE</th><th>SITUAÇÃO</th></tr></thead><tbody>';
-    rows.forEach(function(r) {
-      var faz = String(r.fazenda || '').replace(/compostagem/ig, '').trim().slice(0, 26) || r.fazenda;
-      html += '<tr><td><span style="color:' + (cores[r.cor] || '#666') + '">●</span></td>' +
-        '<td>' + faz + '</td><td>' + (r.consultor || '·') + '</td>' +
-        '<td style="text-transform:capitalize">' + (r.status || '') + '</td>' +
-        '<td style="color:' + (cores[r.cor] || '#666') + '">' + (r.motivo || '') + '</td></tr>';
-    });
-    html += '</tbody></table>';
-    el.innerHTML = html;
-  }).catch(function(e) { el.innerHTML = '<div style="color:#666;padding:12px">farol indisponível</div>'; });
-}
 
 /* ═══ PRODUTOS TOP 10 ═══ */
 function renderProdutosTop(cfg) {

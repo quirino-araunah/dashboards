@@ -57,7 +57,6 @@
     <div class="card"><div class="card-header">CLIENTES 80/20 — TOP 25</div><div class="card-body" id="clientes-8020"></div></div>
     <div class="card"><div class="card-header">AGENDA + CHECK-IN + ALERTAS</div><div class="card-body" id="agenda-checkin"></div></div>
     <div class="card"><div class="card-header">FRETES — MONITORAMENTO JV</div><div class="card-body" id="frete-monitor"></div></div>
-    <div class="card"><div class="card-header">FAROL COMPOSTAGEM</div><div class="card-body" id="farol-compost"></div></div>
   </div>
 </div>
 <div class="feed-bar"><div class="feed-label"><span class="dot"></span> LIVE</div><div class="feed-scroll"><div class="feed-track" id="feed-track"></div></div></div>
