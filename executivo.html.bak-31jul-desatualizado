@@ -7,9 +7,7 @@
 <link rel="icon" href="favicon.ico">
 <title>COCKPIT EXECUTIVO — Araunah</title>
 <link rel="stylesheet" href="shared/tv-base.css">
-<link rel="stylesheet" href="shared/leaflet.css">
-<link rel="stylesheet" href="shared/cockpit-blocks.css?v=31jul">
-<script src="shared/leaflet.js"></script>
+<link rel="stylesheet" href="shared/cockpit-blocks.css">
 </head>
 <body class="has-feed">
 <div id="loading"><div class="spinner"></div><p>Carregando cockpit...</p></div>
@@ -59,20 +57,13 @@
     <div class="card"><div class="card-header">CLIENTES 80/20 — TOP 25</div><div class="card-body" id="clientes-8020"></div></div>
     <div class="card"><div class="card-header">AGENDA + CHECK-IN + ALERTAS</div><div class="card-body" id="agenda-checkin"></div></div>
     <div class="card"><div class="card-header">FRETES — MONITORAMENTO JV</div><div class="card-body" id="frete-monitor"></div></div>
-    <div class="card"><div class="card-header">NF DE ENTRADA — COMPRAS</div><div class="card-body" id="nf-entrada"></div></div>
     <div class="card"><div class="card-header">FAROL COMPOSTAGEM</div><div class="card-body" id="farol-compost"></div></div>
-  </div>
-  <div class="section-label">EQUIPE EM CAMPO — AO VIVO</div>
-  <div class="mosaic">
-    <div class="card"><div class="card-header">MAPA AO VIVO — FROTA · CELULAR</div><div class="card-body" id="campo-mapa"></div></div>
-    <div class="card"><div class="card-header">QUEM ESTÁ EM CAMPO AGORA — POSIÇÃO · CHECK-IN · AGENDA</div><div class="card-body" id="campo-lista"></div></div>
   </div>
 </div>
 <div class="feed-bar"><div class="feed-label"><span class="dot"></span> LIVE</div><div class="feed-scroll"><div class="feed-track" id="feed-track"></div></div></div>
 <div class="footer" style="position:fixed;bottom:32px;left:0;right:0"><span>ARAUNAH COCKPIT <span class="ft-accent">EXECUTIVO</span></span><span>Atualização em <span class="ft-accent" id="ft-countdown">1:00</span></span></div>
-<script src="shared/supabase-js.min.js?v=31jul"></script>
-<script src="shared/tv-base.js?v=31jul"></script>
-<script src="shared/cockpit-blocks.js?v=31jul"></script>
+<script src="shared/tv-base.js"></script>
+<script src="shared/cockpit-blocks.js"></script>
 <script>
   var PAGE_CONFIG = { vertical: null, title: 'EXECUTIVO', accent: 'var(--accent)', isExec: true };
   var _origRenderAll = renderAll;

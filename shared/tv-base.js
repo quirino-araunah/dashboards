@@ -3,9 +3,99 @@
    Shared: fetch, formatters, clock, chart, ranking, carteira
    ══════════════════════════════════════════════════════════ */
 
-// Public anon keys — safe for frontend. RLS policies MUST be enforced on all tables.
 var SUPABASE_URL = 'https://qzxabnagqlatytlvwpyq.supabase.co';
 var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY';
+
+
+/* AUTH (19/jun) - TV de numeros (faturamento/ranking/fiscal) so p/ equipe autorizada.
+   Le a sessao SSO compartilhada (.araunahtech.com.br). Editar acesso = TV_ALLOW abaixo. */
+var AUTH_TOKEN=null, AUTH_EMAIL=null;
+var TV_ALLOW=['thiago.quirino@araunah.com','joao.suss@araunah.com','higor.lamonier@araunah.com','yasmim.valim@araunah.com','rodrigo.brey@araunah.com','heros.aguiar@araunah.com'];
+function _tvCookie(n){var m=document.cookie.match(new RegExp('(?:^|; )'+n.replace(/[.$?*|{}()[\]\\/+^]/g,'\\$&')+'=([^;]*)'));return m?decodeURIComponent(m[1]):null;}
+/* ═══ AUTH v2 (10/jul) ═══
+   Se supabase-js estiver carregado -> engine OFICIAL (autoRefreshToken + persistSession em cookie SSO):
+   trava rotacao de refresh_token, respeita janela de reuso, tenta de novo em queda de rede, renova ao acordar.
+   Substitui o refresh caseiro que deslogava a TV. Sem a lib -> cai no engine legado (fallback, inalterado). */
+function _tvAuthorized(){return !!AUTH_TOKEN && TV_ALLOW.indexOf(AUTH_EMAIL)!==-1;}
+var _tvMSLogin, _tvLogin;
+var _TV_HAS_CB=(location.search.indexOf('code=')!==-1)||(location.search.indexOf('error=')!==-1)||(location.hash.indexOf('access_token=')!==-1);
+var _TV_EXCHANGING=false;
+function _tvShowConnecting(){var d=document.createElement('div');d.id='_tvConnecting';d.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b1418;display:flex;align-items:center;justify-content:center;color:#00d4aa;font-family:system-ui,sans-serif;font-size:18px';d.textContent='Entrando...';document.body.appendChild(d);}
+function _tvFailLogin(){var c=document.getElementById('_tvConnecting');if(c)c.remove();if(!_tvAuthorized())_tvShowLogin();}
+function _tvShowLogin(){if(document.getElementById('_tvLoginOv'))return;var den=(typeof sessionStorage!=='undefined'&&sessionStorage.getItem('_tvDenied'))||'';var ov=document.createElement('div');ov.id='_tvLoginOv';ov.style.cssText='position:fixed;inset:0;z-index:99999;background:#0b1418;display:flex;align-items:center;justify-content:center;font-family:system-ui,sans-serif';ov.innerHTML='<div style="background:#13242b;border:1px solid #1e3a44;border-radius:14px;padding:32px 28px;width:340px;color:#e6eef0;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.5)"><div style="font-size:22px;font-weight:700;color:#00d4aa;margin-bottom:4px">COCKPIT</div><div style="font-size:12px;color:#7d99a3;margin-bottom:18px">Acesso restrito</div><button id="_tvMS" style="width:100%;padding:12px;border:0;border-radius:8px;background:#2f6fed;color:#fff;font-weight:700;font-size:14px;cursor:pointer;margin-bottom:14px">Entrar com Microsoft</button><div style="font-size:11px;color:#456b75;margin-bottom:12px">ou e-mail / senha</div><input id="_tvE" type="email" placeholder="e-mail" style="width:100%;box-sizing:border-box;margin-bottom:10px;padding:11px;border-radius:8px;border:1px solid #1e3a44;background:#0b1418;color:#e6eef0;font-size:14px"><input id="_tvP" type="password" placeholder="senha" style="width:100%;box-sizing:border-box;margin-bottom:14px;padding:11px;border-radius:8px;border:1px solid #1e3a44;background:#0b1418;color:#e6eef0;font-size:14px"><button id="_tvB" style="width:100%;padding:10px;border:1px solid #1e3a44;border-radius:8px;background:transparent;color:#e6eef0;font-weight:600;font-size:13px;cursor:pointer">Entrar</button><div id="_tvM" style="font-size:12px;color:#ff6b6b;margin-top:10px;min-height:16px">'+(den?den:'')+'</div></div>';document.body.appendChild(ov);if(typeof sessionStorage!=='undefined')sessionStorage.removeItem('_tvDenied');var e=ov.querySelector('#_tvE'),p=ov.querySelector('#_tvP'),b=ov.querySelector('#_tvB'),m=ov.querySelector('#_tvM');ov.querySelector('#_tvMS').onclick=function(){_tvMSLogin();};function go(){b.disabled=true;m.textContent='...';_tvLogin(e.value.trim(),p.value,b,m);}b.onclick=go;p.addEventListener('keydown',function(ev){if(ev.key==='Enter')go();});}
+
+if(typeof supabase!=='undefined'&&supabase.createClient){
+  /* ---------- ENGINE OFICIAL (supabase-js) ---------- */
+  var _COOKIE_S='Domain=.araunahtech.com.br; Path=/; SameSite=Lax; Secure';
+  var _COOKIE_P='Domain=.araunahtech.com.br; Path=/; SameSite=Lax';
+  function _tvCookieRead(base){
+    var k0=_tvCookie('__Secure-'+base+'.0');if(k0===null)k0=_tvCookie(base+'.0');
+    if(k0!==null){var all=k0;for(var i=1;i<40;i++){var c=_tvCookie('__Secure-'+base+'.'+i);if(c===null)c=_tvCookie(base+'.'+i);if(c===null)break;all+=c;}return all;}
+    var s=_tvCookie('__Secure-'+base);if(s===null)s=_tvCookie(base);return s;
+  }
+  function _tvCookieClear(base){for(var i=0;i<40;i++){document.cookie='__Secure-'+base+'.'+i+'=; '+_COOKIE_S+'; Max-Age=0';document.cookie=base+'.'+i+'=; '+_COOKIE_P+'; Max-Age=0';}document.cookie='__Secure-'+base+'=; '+_COOKIE_S+'; Max-Age=0';document.cookie=base+'=; '+_COOKIE_P+'; Max-Age=0';}
+  /* chunk pelo tamanho ENCODADO (limite Chrome=4096 bytes/cookie INCLUINDO nome; JSON denso infla ~3x no encodeURIComponent
+     e cookie grande o Chrome DESCARTA EM SILENCIO -> corrente quebrada -> sessao ilegivel; bug da noite de 10/jul) */
+  function _tvCookieWrite(base,value){_tvCookieClear(base);var i=0,idx=0;while(i<value.length){var take=Math.min(2000,value.length-i);var enc=encodeURIComponent(value.slice(i,i+take));while(enc.length>3500&&take>100){take=Math.max(100,Math.floor(take*3500/enc.length));enc=encodeURIComponent(value.slice(i,i+take));}document.cookie='__Secure-'+base+'.'+idx+'='+enc+'; '+_COOKIE_S+'; Max-Age='+(60*60*24*30);i+=take;idx++;}}
+  /* sessao MINIMA no cookie: user do Azure vem gordo (identities/metadata ~4KB) e o painel so precisa do email */
+  function _tvSlimSession(v){try{var o=JSON.parse(v);if(o&&o.access_token&&o.user){var u=o.user;o.user={id:u.id,aud:u.aud||'authenticated',role:u.role||'authenticated',email:u.email,phone:u.phone||'',app_metadata:{provider:(u.app_metadata&&u.app_metadata.provider)||'email'},user_metadata:{},identities:[],created_at:u.created_at,updated_at:u.updated_at,is_anonymous:false};return JSON.stringify(o);}}catch(e){}return v;}
+  var _tvCookieStorage={getItem:function(k){var v=_tvCookieRead(k);return (v===null||v===undefined)?null:v;},setItem:function(k,v){try{_tvCookieWrite(k,_tvSlimSession(v));}catch(e){}},removeItem:function(k){try{_tvCookieClear(k);}catch(e){}}};
+  var _tvSB=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:_tvCookieStorage,storageKey:'araunah-auth',autoRefreshToken:true,persistSession:true,detectSessionInUrl:true,flowType:'pkce'}});
+  window._tvSB=_tvSB;
+  function _tvApply(s){var em=((s&&s.user&&s.user.email)||'').toLowerCase();if(s&&s.access_token&&TV_ALLOW.indexOf(em)!==-1){AUTH_TOKEN=s.access_token;AUTH_EMAIL=em;return true;}return false;}
+  _tvSB.auth.onAuthStateChange(function(evt,session){
+    if(evt==='SIGNED_OUT'){AUTH_TOKEN=null;AUTH_EMAIL=null;if(!_TV_HAS_CB)_tvShowLogin();return;}/* nunca zerar em silencio */
+    if(!session)return;
+    var em=((session.user&&session.user.email)||'').toLowerCase();
+    if(TV_ALLOW.indexOf(em)===-1){try{sessionStorage.setItem('_tvDenied','Conta '+(em||'?')+' sem acesso a esta TV.');}catch(e){}_tvSB.auth.signOut();return;}
+    _tvApply(session);
+    if(evt==='SIGNED_IN'&&_TV_HAS_CB){location.reload();}
+  });
+  try{_tvSB.auth.startAutoRefresh();}catch(e){}
+  function _tvWake(){if(document.visibilityState==='visible'){try{_tvSB.auth.startAutoRefresh();}catch(e){}try{_tvSB.auth.getSession();}catch(e){}}}
+  document.addEventListener('visibilitychange',_tvWake);
+  window.addEventListener('online',_tvWake);
+  _tvMSLogin=function(){try{_tvSB.auth.signInWithOAuth({provider:'azure',options:{scopes:'openid profile email',redirectTo:location.origin+location.pathname}});}catch(e){location.href=SUPABASE_URL+'/auth/v1/authorize?provider=azure&scopes=openid%20profile%20email&redirect_to='+encodeURIComponent(location.origin+location.pathname);}};
+  _tvLogin=function(email,pass,b,m){_tvSB.auth.signInWithPassword({email:email,password:pass}).then(function(res){var d=res&&res.data,er=res&&res.error;if(er||!d||!d.session){m.textContent='Login invalido.';b.disabled=false;return;}var em=((d.user&&d.user.email)||'').toLowerCase();if(TV_ALLOW.indexOf(em)===-1){m.textContent='Conta sem acesso a esta TV.';b.disabled=false;_tvSB.auth.signOut();return;}location.reload();}).catch(function(){m.textContent='Erro de rede.';b.disabled=false;});};
+  if(_TV_HAS_CB){document.addEventListener('DOMContentLoaded',function(){_tvShowConnecting();});}
+  document.addEventListener('DOMContentLoaded',function(){
+    _tvSB.auth.getSession().then(function(res){
+      var s=res&&res.data&&res.data.session;
+      if(_tvApply(s))return;
+      /* migra sessao do cookie legado (formato antigo) sem forcar novo login */
+      var lo=null;try{lo=JSON.parse(_tvCookieRead('araunah-auth'));}catch(e){}
+      if(lo&&lo.access_token&&lo.refresh_token){
+        _tvSB.auth.setSession({access_token:lo.access_token,refresh_token:lo.refresh_token}).then(function(r2){
+          var s2=r2&&r2.data&&r2.data.session;
+          if(_tvApply(s2)){location.reload();return;}
+          if(_TV_HAS_CB)return;_tvShowLogin();
+        }).catch(function(){if(!_TV_HAS_CB)_tvShowLogin();});
+        return;
+      }
+      if(_TV_HAS_CB){setTimeout(function(){if(!_tvAuthorized())_tvFailLogin();},9000);return;}
+      _tvShowLogin();
+    }).catch(function(){if(!_TV_HAS_CB)_tvShowLogin();});
+  });
+}else{
+  /* ---------- ENGINE LEGADO (fallback, sem a lib) ---------- */
+  function _tvReadSession(){try{var k0=_tvCookie('__Secure-araunah-auth.0')||_tvCookie('araunah-auth.0');var all;if(k0!==null){all=k0;for(var i=1;i<20;i++){var c=_tvCookie('__Secure-araunah-auth.'+i)||_tvCookie('araunah-auth.'+i);if(c===null)break;all+=c;}}else{all=_tvCookie('__Secure-araunah-auth')||_tvCookie('araunah-auth');if(all===null)return null;}var o=JSON.parse(all);if(!o||!o.access_token)return null;if(o.expires_at&&o.expires_at*1000<Date.now())return null;return{token:o.access_token,email:((o.user&&o.user.email)||'').toLowerCase()};}catch(e){return null;}}
+  function _tvB64urlJson(t){try{var p=t.split('.')[1].replace(/-/g,'+').replace(/_/g,'/');return JSON.parse(decodeURIComponent(escape(atob(p))));}catch(e){return {};}}
+  function _tvHandleOAuth(){if(!location.hash||location.hash.indexOf('access_token=')===-1)return false;var h={};location.hash.substring(1).split('&').forEach(function(kv){var a=kv.split('=');h[a[0]]=decodeURIComponent(a[1]||'');});if(!h.access_token)return false;var claims=_tvB64urlJson(h.access_token);var em=(claims.email||'').toLowerCase();try{history.replaceState(null,'',location.pathname);}catch(e){}if(TV_ALLOW.indexOf(em)===-1){try{sessionStorage.setItem('_tvDenied',em||'?');}catch(e){}return false;}_tvStore({access_token:h.access_token,refresh_token:h.refresh_token||'',token_type:'bearer',expires_in:parseInt(h.expires_in||'3600',10),expires_at:parseInt(h.expires_at||'0',10)||(Math.floor(Date.now()/1000)+3600),user:{email:em}});return true;}
+  function _tvB64url(buf){var s=btoa(String.fromCharCode.apply(null,new Uint8Array(buf)));return s.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+  _tvMSLogin=function(){try{var a=new Uint8Array(32);crypto.getRandomValues(a);var v=_tvB64url(a.buffer);try{localStorage.setItem('_tvPkce',v);}catch(e){}crypto.subtle.digest('SHA-256',new TextEncoder().encode(v)).then(function(hb){location.href=SUPABASE_URL+'/auth/v1/authorize?provider=azure&scopes=openid%20profile%20email&code_challenge='+_tvB64url(hb)+'&code_challenge_method=s256&redirect_to='+encodeURIComponent(location.origin+location.pathname);});}catch(e){location.href=SUPABASE_URL+'/auth/v1/authorize?provider=azure&scopes=openid%20profile%20email&redirect_to='+encodeURIComponent(location.origin+location.pathname);}};
+  function _tvHandleCode(){var m=location.search.match(/[?&]code=([^&]+)/);if(!m)return;_TV_EXCHANGING=true;_tvShowConnecting();var code=decodeURIComponent(m[1]);var ver='';try{ver=localStorage.getItem('_tvPkce')||'';}catch(e){}try{history.replaceState(null,'',location.pathname);}catch(e){}fetch(SUPABASE_URL+'/auth/v1/token?grant_type=pkce',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({auth_code:code,code_verifier:ver})}).then(function(r){return r.json();}).then(function(d){if(!d.access_token){try{sessionStorage.setItem('_tvDenied',(d.error_description||d.msg||d.error||('Microsoft: '+JSON.stringify(d).slice(0,140))));}catch(e){}_tvFailLogin();return;}var em=((d.user&&d.user.email)||'').toLowerCase();if(TV_ALLOW.indexOf(em)===-1){try{sessionStorage.setItem('_tvDenied','Conta '+(em||'?')+' sem acesso a esta TV.');}catch(e){}_tvFailLogin();return;}_tvStore({access_token:d.access_token,refresh_token:d.refresh_token,token_type:'bearer',expires_in:d.expires_in,expires_at:d.expires_at,user:d.user});var chk=_tvReadSession();if(!chk){var c0=_tvCookie('__Secure-araunah-auth.0');var why;if(!c0){why='Navegador bloqueou o cookie da sessao. Libere cookies para araunahtech.com.br.';}else if(d.expires_at&&d.expires_at*1000<Date.now()){why='Relogio do aparelho esta errado (sessao nasce expirada). Ajuste data/hora e tente de novo.';}else{why='Sessao nao persistiu no navegador.';}try{sessionStorage.setItem('_tvDenied',why);}catch(e){}_tvFailLogin();return;}location.reload();}).catch(function(){try{sessionStorage.setItem('_tvDenied','Erro de rede no login.');}catch(e){}_tvFailLogin();});}
+  var _tvRefreshing=false,_tvRefreshTimer=null;
+  function _tvRawSession(){try{var k0=_tvCookie('__Secure-araunah-auth.0')||_tvCookie('araunah-auth.0');var all;if(k0!==null){all=k0;for(var i=1;i<20;i++){var c=_tvCookie('__Secure-araunah-auth.'+i)||_tvCookie('araunah-auth.'+i);if(c===null)break;all+=c;}}else{all=_tvCookie('__Secure-araunah-auth')||_tvCookie('araunah-auth');if(all===null)return null;}return JSON.parse(all);}catch(e){return null;}}
+  function _tvScheduleRefresh(){var o=_tvRawSession();if(!o||!o.expires_at)return;var ms=(o.expires_at*1000)-Date.now()-(5*60*1000);if(ms<15000)ms=15000;if(_tvRefreshTimer)clearTimeout(_tvRefreshTimer);_tvRefreshTimer=setTimeout(function(){_tvRefresh();},ms);}
+  function _tvRefresh(cb){if(_tvRefreshing){if(cb)cb(false);return;}var o=_tvRawSession();if(!o||!o.refresh_token){if(cb)cb(false);return;}_tvRefreshing=true;fetch(SUPABASE_URL+'/auth/v1/token?grant_type=refresh_token',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({refresh_token:o.refresh_token})}).then(function(r){return r.json();}).then(function(d){_tvRefreshing=false;if(!d.access_token){if(cb)cb(false);return;}var em=((d.user&&d.user.email)||(o.user&&o.user.email)||'').toLowerCase();_tvStore({access_token:d.access_token,refresh_token:d.refresh_token,token_type:'bearer',expires_in:d.expires_in,expires_at:d.expires_at,user:{email:em}});AUTH_TOKEN=d.access_token;AUTH_EMAIL=em;_tvScheduleRefresh();if(cb)cb(true);}).catch(function(){_tvRefreshing=false;if(cb)cb(false);});}
+  function _tvStore(o){var u=(o&&o.user)||{};var raw=JSON.stringify({access_token:o.access_token,refresh_token:o.refresh_token||'',token_type:'bearer',expires_in:o.expires_in,expires_at:o.expires_at,user:{email:(u.email||'').toLowerCase()}}),M=3000,n=Math.max(1,Math.ceil(raw.length/M)),dom='Domain=.araunahtech.com.br; Path=/; SameSite=Lax; Secure';for(var i=0;i<20;i++){document.cookie='__Secure-araunah-auth.'+i+'=; '+dom+'; Max-Age=0';document.cookie='araunah-auth.'+i+'=; Domain=.araunahtech.com.br; Path=/; SameSite=Lax; Max-Age=0';}document.cookie='__Secure-araunah-auth=; '+dom+'; Max-Age=0';document.cookie='araunah-auth=; Domain=.araunahtech.com.br; Path=/; SameSite=Lax; Max-Age=0';for(var i=0;i<n;i++)document.cookie='__Secure-araunah-auth.'+i+'='+encodeURIComponent(raw.slice(i*M,(i+1)*M))+'; '+dom+'; Max-Age='+(60*60*24*30);}
+  _tvLogin=function(email,pass,b,m){fetch(SUPABASE_URL+'/auth/v1/token?grant_type=password',{method:'POST',headers:{'apikey':SUPABASE_KEY,'Content-Type':'application/json'},body:JSON.stringify({email:email,password:pass})}).then(function(r){return r.json();}).then(function(d){if(!d.access_token){m.textContent='Login invalido.';b.disabled=false;return;}var em=((d.user&&d.user.email)||'').toLowerCase();if(TV_ALLOW.indexOf(em)===-1){m.textContent='Conta sem acesso a esta TV.';b.disabled=false;return;}_tvStore({access_token:d.access_token,refresh_token:d.refresh_token,token_type:'bearer',expires_in:d.expires_in,expires_at:d.expires_at,user:d.user});location.reload();}).catch(function(){m.textContent='Erro de rede.';b.disabled=false;});};
+  _tvHandleOAuth();
+  _tvHandleCode();
+  (function(){var x=_tvReadSession();if(x){AUTH_TOKEN=x.token;AUTH_EMAIL=x.email;_tvScheduleRefresh();}})();
+  setInterval(function(){var o=_tvRawSession();if(o&&o.refresh_token&&o.expires_at&&(o.expires_at*1000-Date.now())<5*60*1000){_tvRefresh();}},60000);
+  document.addEventListener('DOMContentLoaded',function(){if(_tvAuthorized())return;if(_TV_EXCHANGING)return;var o=_tvRawSession();if(o&&o.refresh_token&&TV_ALLOW.indexOf(((o.user&&o.user.email)||'').toLowerCase())!==-1){_tvRefresh(function(ok){if(ok){location.reload();}else{_tvShowLogin();}});return;}_tvShowLogin();});
+}
 
 var refreshCountdown = 60;
 var refreshTimer = null;
@@ -13,11 +103,18 @@ var clockTimer = null;
 
 /* ═══ SUPABASE FETCH (paginated) ═══ */
 function sbFetch(table, params) { return sbFetchAll(table, params); }
-function sbFetchPage(table, params, offset) {
+function sbFetchPage(table, params, offset, _retried) {
+    if (!_tvAuthorized()) return Promise.resolve([]);
     var sep = params ? '&' : '';
     return fetch(SUPABASE_URL + '/rest/v1/' + table + '?' + params + sep + 'limit=1000&offset=' + offset, {
-        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY }
-    }).then(function(r) { return r.json(); });
+        headers: { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + (AUTH_TOKEN || SUPABASE_KEY) }
+    }).then(function(r) {
+        /* self-heal: token velho (TV dormiu/rede caiu) -> forca refresh e tenta 1x de novo */
+        if (r.status === 401 && !_retried && window._tvSB) {
+            return window._tvSB.auth.refreshSession().then(function(){ return sbFetchPage(table, params, offset, true); });
+        }
+        return r.json();
+    });
 }
 function sbFetchAll(table, params) {
     var allRows = [];
@@ -478,7 +575,7 @@ function renderCarteira(carteira, profMap, carteiraTotal) {
         var rep = carteira[i].representante || carteira[i].consultor || 'N/D';
         rep = profMap[rep] || rep;
         if (!byRep[rep]) byRep[rep] = { valor: 0, pedidos: {} };
-        byRep[rep].valor += safeNum(carteira[i].vlr_total);
+        byRep[rep].valor += safeNum(carteira[i].vlr_carteira != null ? carteira[i].vlr_carteira : carteira[i].vlr_total);
         var pedKey = (carteira[i].chave_cliente || carteira[i].nome_cliente || '') + '|' + (carteira[i].dt_pedido || '');
         byRep[rep].pedidos[pedKey] = true;
         pedidosSet[pedKey] = true;
@@ -530,7 +627,7 @@ function ddConsultor(name){
     var pctM=metaM>0?realM/metaM*100:0,pctY=metaY>0?realY/metaY*100:0;
     /* Carteira */
     var cart=(G.carteira||[]).filter(function(c){var rep=pm[c.representante||c.consultor||'']||(c.representante||c.consultor||'');return rep===name||c.representante===name;});
-    var cartTotal=cart.reduce(function(s,c){return s+safeNum(c.vlr_total);},0);
+    var cartTotal=cart.reduce(function(s,c){return s+safeNum(c.vlr_carteira!=null?c.vlr_carteira:c.vlr_total);},0);
     /* KPIs */
     var h='<div class="dd-kpis">';
     h+='<div class="dd-kpi"><div class="dd-kpi-label">Meta Mês</div><div class="dd-kpi-val" style="color:var(--text)">'+fmtBRL(metaM)+'</div></div>';
@@ -582,11 +679,11 @@ function ddConsultor(name){
     if(cart.length>0){
         h+='<div class="dd-section"><div class="dd-section-title">Carteira de Pedidos ('+cart.length+')</div>';
         h+='<table class="dd-table"><thead><tr><th>Cliente</th><th>Produto</th><th>Valor</th><th>Entrega</th></tr></thead><tbody>';
-        cart.sort(function(a,b){return safeNum(b.vlr_total)-safeNum(a.vlr_total);});
+        cart.sort(function(a,b){return safeNum(b.vlr_carteira||b.vlr_total)-safeNum(a.vlr_carteira||a.vlr_total);});
         cart.slice(0,20).forEach(function(c){
             var dp=(c.dt_previsao_entrega||'').split('-');
             var ov=c.dt_previsao_entrega&&new Date(c.dt_previsao_entrega+'T00:00:00')<new Date();
-            h+='<tr style="'+(ov?'color:var(--red)':'')+'"><td>'+escHtml(c.nome_cliente||'')+'</td><td>'+escHtml(c.produto_nome||'')+'</td><td style="font-weight:700;color:'+(ov?'var(--red)':'var(--accent)')+'">'+fmtBRL(safeNum(c.vlr_total))+'</td><td>'+(dp.length===3?dp[2]+'/'+dp[1]+'/'+dp[0]:'')+'</td></tr>';
+            h+='<tr style="'+(ov?'color:var(--red)':'')+'"><td>'+escHtml(c.nome_cliente||'')+'</td><td>'+escHtml(c.produto_nome||'')+'</td><td style="font-weight:700;color:'+(ov?'var(--red)':'var(--accent)')+'">'+fmtBRL(safeNum(c.vlr_carteira||c.vlr_total))+'</td><td>'+(dp.length===3?dp[2]+'/'+dp[1]+'/'+dp[0]:'')+'</td></tr>';
         });
         h+='</tbody></table></div>';
     }
@@ -613,7 +710,7 @@ function ddCliente(name){
     var pctM=metaM>0?realM/metaM*100:0;
     /* Carteira */
     var cart=(G.carteira||[]).filter(function(c){return(c.nome_cliente||'').toUpperCase().trim()===nameU;});
-    var cartTotal=cart.reduce(function(s,c){return s+safeNum(c.vlr_total);},0);
+    var cartTotal=cart.reduce(function(s,c){return s+safeNum(c.vlr_carteira!=null?c.vlr_carteira:c.vlr_total);},0);
     /* KPIs */
     var h='<div class="dd-kpis">';
     h+='<div class="dd-kpi"><div class="dd-kpi-label">Mês</div><div class="dd-kpi-val" style="color:var(--accent)">'+fmtBRL(realM)+'</div></div>';
@@ -662,7 +759,7 @@ function ddCliente(name){
         cart.forEach(function(c){
             var dp=(c.dt_previsao_entrega||'').split('-');
             var ov=c.dt_previsao_entrega&&new Date(c.dt_previsao_entrega+'T00:00:00')<new Date();
-            h+='<tr style="'+(ov?'color:var(--red)':'')+'"><td>'+escHtml(c.produto_nome||'')+'</td><td>'+safeNum(c.quantidade).toLocaleString('pt-BR',{maximumFractionDigits:0})+'</td><td style="font-weight:700;color:'+(ov?'var(--red)':'var(--accent)')+'">'+fmtBRL(safeNum(c.vlr_total))+'</td><td>'+(dp.length===3?dp[2]+'/'+dp[1]+'/'+dp[0]:'')+'</td></tr>';
+            h+='<tr style="'+(ov?'color:var(--red)':'')+'"><td>'+escHtml(c.produto_nome||'')+'</td><td>'+safeNum(c.quantidade||c.volume_total).toLocaleString('pt-BR',{maximumFractionDigits:0})+'</td><td style="font-weight:700;color:'+(ov?'var(--red)':'var(--accent)')+'">'+fmtBRL(safeNum(c.vlr_carteira||c.vlr_total))+'</td><td>'+(dp.length===3?dp[2]+'/'+dp[1]+'/'+dp[0]:'')+'</td></tr>';
         });
         h+='</tbody></table></div>';
     }
