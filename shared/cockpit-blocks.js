@@ -1438,22 +1438,18 @@ function renderCarteiraDetalhada(kpis, cfg) {
   var cart = kpis.cart || [];
   var byConsultor = {};
   cart.forEach(function(c) {
-    var raw = c.consultor || 'OUTROS';
-    // Normalizar pelo colaboradores
-    var nome = raw;
-    for (var i = 0; i < COLAB.length; i++) {
-      var cn = COLAB[i].nome_agrupado || COLAB[i].nome || '';
-      if (cn && matchPlanName(raw, cn)) { nome = cn; break; }
-    }
-    if (!byConsultor[nome]) byConsultor[nome] = { pedidos: 0, clientes: new Set(), valor: 0 };
-    byConsultor[nome].pedidos++;
-    byConsultor[nome].clientes.add(c.nome_cliente || c.cliente || '');
-    byConsultor[nome].valor += safeNum(c.saldo_carteira != null ? c.saldo_carteira : (c.vlr_carteira || c.valor || c.vlr_total));
+    var n = _normConsultor(c.consultor);
+    var key = n.key;
+    if (!byConsultor[key]) byConsultor[key] = { label: n.label, canonico: n.canonico, pedidos: 0, clientes: new Set(), valor: 0 };
+    if (n.canonico && !byConsultor[key].canonico) { byConsultor[key].label = n.label; byConsultor[key].canonico = true; }
+    byConsultor[key].pedidos++;
+    byConsultor[key].clientes.add((c.nome_cliente || c.cliente || '').toUpperCase());
+    byConsultor[key].valor += safeNum(c.saldo_carteira != null ? c.saldo_carteira : (c.vlr_carteira || c.valor || c.vlr_total));
   });
 
   var total = kpis.carteiraTotal || 1;
   var list = Object.keys(byConsultor).map(function(k) {
-    return { nome: k, pedidos: byConsultor[k].pedidos, clientes: byConsultor[k].clientes.size, valor: byConsultor[k].valor };
+    return { nome: byConsultor[k].label, pedidos: byConsultor[k].pedidos, clientes: byConsultor[k].clientes.size, valor: byConsultor[k].valor };
   });
   var cartDetSortCols = {
     nome: function(r) { return r.nome.toUpperCase(); },
@@ -1521,6 +1517,20 @@ function _rerenderCockpit() {
   else if (typeof renderAll === 'function') renderAll(cfg);
 }
 
+// Nome de consultor chega em grafias diferentes ("Adriano Camargo" x
+// "ADRIANO CAMARGO", "Henrique Guimaraes" x "HENRIQUE GUIMARAES SILVA").
+// COLAB (colaboradores) e a fonte canonica via matchPlanName; o UPPER e so
+// rede de seguranca pra quando COLAB nao carregou ou o nome nao esta la.
+function _normConsultor(raw) {
+  var nome = (raw || '').trim();
+  if (!nome) return { key: 'OUTROS', label: 'OUTROS', canonico: false };
+  for (var i = 0; i < COLAB.length; i++) {
+    var cn = COLAB[i].nome_agrupado || COLAB[i].nome || '';
+    if (cn && matchPlanName(nome, cn)) return { key: cn.toUpperCase(), label: cn, canonico: true };
+  }
+  return { key: nome.toUpperCase(), label: nome, canonico: false };
+}
+
 function _cartSaldo(c) {
   return safeNum(c.saldo_carteira != null ? c.saldo_carteira : (c.vlr_carteira || c.vlr_total));
 }
@@ -1538,12 +1548,12 @@ function renderCarteiraCliente(kpis, cfg) {
     if (!byCliente[nome]) byCliente[nome] = { pedidos: [], valor: 0, consultores: {} };
     byCliente[nome].pedidos.push(c);
     byCliente[nome].valor += val;
-    // Chave em UPPER: o mesmo consultor vem com caixas diferentes na origem
-    // ("Adriano Camargo" e "ADRIANO CAMARGO" sao a mesma pessoa). Sem isso o
-    // cliente aparecia como "2 consult." sendo um so. Guarda o 1o rotulo visto.
+    // Mesma normalizacao do bloco por consultor — senao o mesmo consultor em
+    // duas grafias vira "2 consult." num cliente que tem um so.
     var rep = (c.representante || c.consultor || '').trim();
-    if (rep && !byCliente[nome].consultores[rep.toUpperCase()]) {
-      byCliente[nome].consultores[rep.toUpperCase()] = rep;
+    if (rep) {
+      var rn = _normConsultor(rep);
+      if (!byCliente[nome].consultores[rn.key]) byCliente[nome].consultores[rn.key] = rn.label;
     }
   });
 
