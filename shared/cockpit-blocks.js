@@ -622,6 +622,7 @@ function renderAll(cfg) {
     function() { renderPedidos(cfg); },
     function() { renderMonthlyVision(cfg); },
     function() { renderCarteiraDetalhada(kpis, cfg); },
+    function() { renderCarteiraCliente(kpis, cfg); },
     function() { renderClientes8020(cfg); },
     function() { renderAgendaCheckin(cfg); },
     function() { renderFreteMonitor(cfg); },
@@ -1492,6 +1493,141 @@ function renderCarteiraDetalhada(kpis, cfg) {
   el.innerHTML = html;
 }
 
+/* ═══ BLOCK 8b: CARTEIRA POR CLIENTE (05/08) ═══
+   Agrega o saldo em carteira por CLIENTE (o bloco acima agrega por consultor, e
+   "CARTEIRA DE PEDIDOS — ABERTA" lista pedido a pedido). Clicar no nome expande
+   in-place os pedidos daquele cliente.
+
+   Valor = saldo_carteira (vlr_total - vlr_faturado), mesmo campo do card por
+   consultor e do ticker. NÃO usar vlr_carteira/vlr_total puro aqui: infla o
+   número com o que já virou NF e o bloco deixa de fechar com o resto da tela. */
+var _cartCliExpanded = {};
+// _cartCliKeys é reescrito a cada render: o onclick passa o ÍNDICE da linha, não
+// o nome. Nome de cliente interpolado em atributo HTML é armadilha — escHtml()
+// não escapa aspas (tv-base.js:144), então FAZENDA "BOA VISTA" quebraria o
+// onclick. Índice não precisa de escaping nenhum.
+var _cartCliKeys = [];
+function toggleCartCliente(idx) {
+  var nome = _cartCliKeys[idx];
+  if (nome == null) return;
+  _cartCliExpanded[nome] = !_cartCliExpanded[nome];
+  _rerenderCockpit();
+}
+// renderAll (cockpits por vertical) x renderAllExec (executivo) — o toggle
+// precisa reentrar pelo caminho certo, senão o executivo re-renderiza incompleto.
+function _rerenderCockpit() {
+  var cfg = window._lastCfg || {};
+  if (cfg.isExec && typeof renderAllExec === 'function') renderAllExec(cfg);
+  else if (typeof renderAll === 'function') renderAll(cfg);
+}
+
+function _cartSaldo(c) {
+  return safeNum(c.saldo_carteira != null ? c.saldo_carteira : (c.vlr_carteira || c.vlr_total));
+}
+
+function renderCarteiraCliente(kpis, cfg) {
+  var el = document.getElementById('carteira-cliente');
+  if (!el) return;
+
+  var cart = kpis.cart || [];
+  var byCliente = {};
+  cart.forEach(function(c) {
+    var nome = (c.nome_cliente || c.cliente || 'SEM CLIENTE').trim();
+    var val = _cartSaldo(c);
+    if (val <= 0) return;
+    if (!byCliente[nome]) byCliente[nome] = { pedidos: [], valor: 0, consultores: {} };
+    byCliente[nome].pedidos.push(c);
+    byCliente[nome].valor += val;
+    var rep = (c.representante || c.consultor || '').trim();
+    if (rep) byCliente[nome].consultores[rep] = true;
+  });
+
+  var total = 0;
+  var list = Object.keys(byCliente).map(function(k) {
+    total += byCliente[k].valor;
+    var reps = Object.keys(byCliente[k].consultores);
+    return {
+      nome: k,
+      pedidos: byCliente[k].pedidos.length,
+      valor: byCliente[k].valor,
+      consultor: reps.length === 1 ? reps[0] : (reps.length > 1 ? reps.length + ' consult.' : '—'),
+      itens: byCliente[k].pedidos
+    };
+  });
+
+  var cartCliSortCols = {
+    nome: function(r) { return r.nome.toUpperCase(); },
+    consultor: function(r) { return (r.consultor || '').toUpperCase(); },
+    pedidos: function(r) { return r.pedidos; },
+    valor: function(r) { return r.valor; }
+  };
+  if (!list.length) { el.innerHTML = '<div style="text-align:center;padding:20px;font-family:var(--mono);font-size:10px;color:var(--text-dim)">Sem carteira aberta</div>'; return; }
+
+  // O recorte TOP 25 e SEMPRE por saldo — o titulo do card promete os 25 maiores.
+  // Ordenar antes do slice trocaria QUAIS clientes aparecem (ordenar por nome
+  // mostraria os 25 primeiros do alfabeto). A ordenacao escolhida so reordena
+  // os 25 ja selecionados.
+  var TOP = 25;
+  list.sort(function(a, b) { return b.valor - a.valor; });
+  var shown = list.slice(0, TOP);
+  var restoQtd = list.length - shown.length;
+  var restoVal = list.slice(TOP).reduce(function(s, r) { return s + r.valor; }, 0);
+  if (_sortState['cart-cli']) shown = applySortToList('cart-cli', shown, cartCliSortCols);
+
+  var html = '<table class="cart-table"><thead><tr>';
+  html += '<th>' + sortableHeader('cart-cli', 'nome', 'Cliente', '') + '</th>';
+  html += '<th>' + sortableHeader('cart-cli', 'consultor', 'Consultor', '') + '</th>';
+  html += '<th style="text-align:center">' + sortableHeader('cart-cli', 'pedidos', 'Ped', 'text-align:center') + '</th>';
+  html += '<th style="text-align:right">' + sortableHeader('cart-cli', 'valor', 'Saldo', 'text-align:right') + '</th>';
+  html += '<th style="text-align:right">%</th>';
+  html += '</tr></thead><tbody>';
+
+  // Hoje as 00:00: entrega prevista PARA hoje nao e atraso.
+  var hoje = new Date(); hoje.setHours(0, 0, 0, 0);
+  _cartCliKeys = shown.map(function(r) { return r.nome; });
+  shown.forEach(function(r, idx) {
+    var pct = total > 0 ? r.valor / total * 100 : 0;
+    var aberto = !!_cartCliExpanded[r.nome];
+    html += '<tr style="cursor:pointer" onclick="toggleCartCliente(' + idx + ')">';
+    html += '<td><span class="cart-name">' + (aberto ? '▾ ' : '▸ ') + escHtml(r.nome) + '</span></td>';
+    html += '<td style="color:var(--text-muted)">' + escHtml(r.consultor.split(' ').slice(0, 2).join(' ')) + '</td>';
+    html += '<td class="cart-count">' + r.pedidos + '</td>';
+    html += '<td class="cart-val">' + fmtBRL(r.valor) + '</td>';
+    html += '<td style="text-align:right;color:var(--text-muted)">' + fmtPct(pct) + '</td>';
+    html += '</tr>';
+
+    if (aberto) {
+      var itens = r.itens.slice().sort(function(a, b) { return _cartSaldo(b) - _cartSaldo(a); });
+      itens.forEach(function(c) {
+        // Entrega vencida em vermelho — mesmo critério da carteira aberta.
+        var atrasado = c.dt_previsao_entrega && new Date(c.dt_previsao_entrega + 'T00:00:00') < hoje;
+        var dp = (c.dt_previsao_entrega || '').split('-');
+        var dtTxt = dp.length === 3 ? dp[2] + '/' + dp[1] : '—';
+        html += '<tr style="background:rgba(255,255,255,.03);font-size:10px' + (atrasado ? ';color:var(--red)' : '') + '">';
+        html += '<td style="padding-left:14px;color:var(--text-muted)">' + escHtml(_pedidoProduto(c) || '(s/ produto)') + '</td>';
+        html += '<td style="color:var(--text-muted)">' + escHtml(_pedidoLocal(c)) + '</td>';
+        html += '<td class="cart-count">' + dtTxt + '</td>';
+        html += '<td class="cart-val"' + (atrasado ? ' style="color:var(--red)"' : '') + '>' + fmtBRL(_cartSaldo(c)) + '</td>';
+        html += '<td></td>';
+        html += '</tr>';
+      });
+    }
+  });
+
+  if (restoQtd > 0) {
+    html += '<tr style="color:var(--text-muted)"><td>+ ' + restoQtd + ' clientes</td><td></td><td></td>';
+    html += '<td class="cart-val">' + fmtBRL(restoVal) + '</td><td></td></tr>';
+  }
+
+  html += '<tr style="border-top:2px solid var(--accent);font-weight:700">';
+  // cart.length inclui linhas de saldo zero, que o bloco descarta — contar os agregados.
+  var pedTotal = list.reduce(function(s, r) { return s + r.pedidos; }, 0);
+  html += '<td>TOTAL — ' + list.length + ' clientes</td><td></td><td class="cart-count">' + pedTotal + '</td>';
+  html += '<td class="cart-val">' + fmtBRL(total) + '</td><td></td></tr>';
+  html += '</tbody></table>';
+  el.innerHTML = html;
+}
+
 /* ═══ BLOCK 9: CLIENTES 80/20 ═══ */
 function renderClientes8020(cfg) {
   var el = document.getElementById('clientes-8020');
@@ -2291,6 +2427,7 @@ function renderAllExec(cfg) {
     function() { renderServicoBloco(cfg); },
     function() { renderMonthlyVision(cfg); },
     function() { renderCarteiraDetalhada(kpis, cfg); },
+    function() { renderCarteiraCliente(kpis, cfg); },
     function() { renderClientes8020(cfg); },
     function() { renderAgendaCheckin(cfg); },
     function() { renderFreteMonitor(cfg); },

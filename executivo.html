@@ -8,7 +8,7 @@
 <title>COCKPIT EXECUTIVO — Araunah</title>
 <link rel="stylesheet" href="shared/tv-base.css">
 <link rel="stylesheet" href="shared/leaflet.css">
-<link rel="stylesheet" href="shared/cockpit-blocks.css?v=31jul">
+<link rel="stylesheet" href="shared/cockpit-blocks.css?v=05ago">
 <script src="shared/leaflet.js"></script>
 </head>
 <body class="has-feed">
@@ -48,6 +48,7 @@
   <div class="mosaic">
     <div class="card"><div class="card-header">CARTEIRA DE PEDIDOS — ABERTA</div><div class="card-body" id="pedidos-recentes"></div></div>
     <div class="card"><div class="card-header">CARTEIRA POR CONSULTOR</div><div class="card-body" id="carteira-detalhe"></div></div>
+    <div class="card"><div class="card-header">CARTEIRA POR CLIENTE — TOP 25</div><div class="card-body" id="carteira-cliente"></div></div>
     <div class="card"><div class="card-header">LOCAÇÕES ATIVAS — ÁGUA</div><div class="card-body" id="locacoes-ativas"></div></div>
     <div class="card"><div class="card-header">FUNIL DE LEADS</div><div class="card-body" id="funil-leads"></div></div>
     <div class="card"><div class="card-header">CLIENTES NOVOS vs RECORRENTES</div><div class="card-body" id="clientes-novos-rec"></div></div>
@@ -70,9 +71,9 @@
 </div>
 <div class="feed-bar"><div class="feed-label"><span class="dot"></span> LIVE</div><div class="feed-scroll"><div class="feed-track" id="feed-track"></div></div></div>
 <div class="footer" style="position:fixed;bottom:32px;left:0;right:0"><span>ARAUNAH COCKPIT <span class="ft-accent">EXECUTIVO</span></span><span>Atualização em <span class="ft-accent" id="ft-countdown">1:00</span></span></div>
-<script src="shared/supabase-js.min.js?v=31jul"></script>
-<script src="shared/tv-base.js?v=31jul"></script>
-<script src="shared/cockpit-blocks.js?v=31jul"></script>
+<script src="shared/supabase-js.min.js?v=05ago"></script>
+<script src="shared/tv-base.js?v=05ago"></script>
+<script src="shared/cockpit-blocks.js?v=05ago"></script>
 <script>
   var PAGE_CONFIG = { vertical: null, title: 'EXECUTIVO', accent: 'var(--accent)', isExec: true };
   var _origRenderAll = renderAll;
