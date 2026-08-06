@@ -1538,14 +1538,19 @@ function renderCarteiraCliente(kpis, cfg) {
     if (!byCliente[nome]) byCliente[nome] = { pedidos: [], valor: 0, consultores: {} };
     byCliente[nome].pedidos.push(c);
     byCliente[nome].valor += val;
+    // Chave em UPPER: o mesmo consultor vem com caixas diferentes na origem
+    // ("Adriano Camargo" e "ADRIANO CAMARGO" sao a mesma pessoa). Sem isso o
+    // cliente aparecia como "2 consult." sendo um so. Guarda o 1o rotulo visto.
     var rep = (c.representante || c.consultor || '').trim();
-    if (rep) byCliente[nome].consultores[rep] = true;
+    if (rep && !byCliente[nome].consultores[rep.toUpperCase()]) {
+      byCliente[nome].consultores[rep.toUpperCase()] = rep;
+    }
   });
 
   var total = 0;
   var list = Object.keys(byCliente).map(function(k) {
     total += byCliente[k].valor;
-    var reps = Object.keys(byCliente[k].consultores);
+    var reps = Object.keys(byCliente[k].consultores).map(function(u) { return byCliente[k].consultores[u]; });
     return {
       nome: k,
       pedidos: byCliente[k].pedidos.length,
