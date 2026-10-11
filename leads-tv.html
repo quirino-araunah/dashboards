@@ -69,8 +69,8 @@ const HDR={apikey:ANON,Authorization:"Bearer "+ANON};
 function brParts(n){const b=new Date(Date.now()-(n||0)*864e5-3*3600e3);return b;}
 function brToday(){const b=brParts(0);return b.getUTCFullYear()+"-"+String(b.getUTCMonth()+1).padStart(2,"0")+"-"+String(b.getUTCDate()).padStart(2,"0")+"T03:00:00";}
 function brDate(n){const b=brParts(n);return b.getUTCFullYear()+"-"+String(b.getUTCMonth()+1).padStart(2,"0")+"-"+String(b.getUTCDate()).padStart(2,"0");}
-async function sbGet(q){const r=await fetch(SUPA+"/rest/v1/vw_leads_publico?"+q,{headers:HDR});return r.ok?r.json():[];}
-async function sbCount(filter){const r=await fetch(SUPA+"/rest/v1/vw_leads_publico?select=id&"+filter,{headers:{...HDR,Prefer:"count=exact",Range:"0-0"}});const cr=r.headers.get("content-range")||"";return parseInt((cr.split("/")[1]||"0"),10)||0;}
+async function sbGet(q){const r=await fetch(SUPA+"/rest/v1/vw_tv_leads?"+q,{headers:HDR});return r.ok?r.json():[];}
+async function sbCount(filter){const r=await fetch(SUPA+"/rest/v1/vw_tv_leads?select=id&"+filter,{headers:{...HDR,Prefer:"count=exact",Range:"0-0"}});const cr=r.headers.get("content-range")||"";return parseInt((cr.split("/")[1]||"0"),10)||0;}
 function interesse(l){const s=((l.campanha||"")+" "+(l.produto||"")+" "+(l.cultura||"")).toUpperCase();if(s.includes("COMPOST"))return["Compostagem","var(--compost)"];if(s.includes("ULEXITA")||s.includes("BORO"))return["Ulexita","var(--ulexita)"];if(s.includes("AGUA")||s.includes("ÁGUA")||s.includes("ETA")||s.includes("EFLUENTE"))return["Água","var(--agua)"];return["",""];}
 function temp(l){const t=(l.ai_temperatura||"").toLowerCase();if(t)return t;const s=l.ai_score||0;if(l.prioridade==="alta"||s>=70)return"quente";if(s>=40)return"morno";return"frio";}
 function tcolor(t){return t==="quente"?"var(--quente)":t==="morno"?"var(--morno)":"var(--frio)";}

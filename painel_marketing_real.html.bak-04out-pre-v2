@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PAINEL MARKETING — WAR ROOM</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#06090f;--border:#1e2632;
+  --text:#ffffff;--muted:#6b7685;--sub:#aab4c4;
+  --green:#00e676;--blue:#2da8ff;--orange:#ff8a1f;
+  --red:#ff3b3b;--amber:#ffc107;
+}
+/* glow: número grande "explode" na cor dele (legível de longe na TV) */
+/* glow ESTÁTICO (vivo de cor, NÃO se mexe — acessível p/ baixa visão) */
+.fol-num,.funil-num,.alert-big,.meta-frac{text-shadow:0 0 .14em currentColor}
+/* feedback de "atualizou": fade suave 1×, sem escalar nem rolar dígito */
+@keyframes softin{from{opacity:.45}to{opacity:1}}
+.bump{animation:softin .5s ease-out}
+/* respeita quem pede menos movimento: zera tudo */
+@media (prefers-reduced-motion:reduce){
+  *{animation:none!important;transition:none!important}
+}
+html,body{height:100%;width:100%;background:#000;color:var(--text);
+  font-family:'Inter',sans-serif;overflow:hidden}
+/* canvas fixo 16:9 — escala p/ preencher qualquer tela */
+#stagewrap{position:absolute;left:50%;top:50%;
+  width:1920px;height:1080px;transform-origin:center center}
+.panel{position:absolute;inset:0;background:var(--bg);
+  display:flex;flex-direction:column;overflow:hidden}
+.panel.hidden{display:none}
+
+/* ── PAINEL 2 — CONTEÚDO & MERCADO ── */
+.p2-head{display:flex;justify-content:space-between;align-items:center;
+  padding:18px 42px;border-bottom:1.5px solid var(--border);
+  background:linear-gradient(180deg,#13181f,#0a0e14);flex-shrink:0}
+.p2-title{font-size:30px;font-weight:900;letter-spacing:.8px}
+.p2-sub{font-size:15px;color:var(--muted);margin-top:3px}
+.p2-date{font-size:22px;font-weight:800;color:var(--sub);text-align:right;text-transform:capitalize}
+.p2-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.p2-lbl{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1.8px;
+  color:var(--muted);margin-bottom:14px}
+/* ── SHOWCASE: 3 cards grandes (a imagem do post é o herói) ── */
+.p2-show{flex:1.05;display:flex;flex-direction:column;padding:22px 40px 16px;min-height:0}
+#p2-top{flex:1;display:flex;gap:22px;min-height:0}
+.tp{flex:1;display:flex;flex-direction:column;min-width:0;overflow:hidden;
+  background:rgba(255,255,255,.025);border:1.5px solid var(--border);border-radius:16px}
+.tp-img{flex:1;width:100%;object-fit:contain;background:#11161f;display:flex;
+  align-items:center;justify-content:center;font-size:90px;color:var(--muted);min-height:0}
+.tp-noimg{font-size:40px;font-weight:900;letter-spacing:4px;
+  color:rgba(255,255,255,.55);text-transform:uppercase}
+.tp-noimg.agro{background:linear-gradient(135deg,#0d3320,#0a0e14)}
+.tp-noimg.agua{background:linear-gradient(135deg,#0b2738,#0a0e14)}
+.tp-noimg.florestas{background:linear-gradient(135deg,#332010,#0a0e14)}
+.tp-ft{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;
+  padding:16px 20px;flex-shrink:0}
+.tp-badge{display:inline-block;font-size:14px;font-weight:800;text-transform:uppercase;
+  letter-spacing:1px;padding:4px 12px;border-radius:6px;color:#06090f}
+.tp-badge.reel{background:var(--amber)}.tp-badge.feed{background:var(--blue)}
+.tp-badge.carrossel{background:var(--green)}
+.tp-meta{font-size:17px;color:var(--sub);font-weight:700;margin-top:9px}
+.tp-meta span{color:var(--muted);font-weight:600}
+.tp-er{font-size:60px;font-weight:900;font-variant-numeric:tabular-nums;flex-shrink:0;
+  text-align:right;line-height:.9;text-shadow:0 0 .14em currentColor}
+.tp-er small{display:block;font-size:13px;color:var(--muted);font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;text-shadow:none;margin-top:5px}
+/* ── FAIXA DE DADOS ── */
+.p2-data{flex:.92;display:grid;grid-template-columns:1fr 1fr;
+  border-top:1.5px solid var(--border);overflow:hidden}
+.p2-dcol{display:flex;flex-direction:column;justify-content:space-between;
+  padding:24px 40px;gap:18px;overflow:hidden}
+.p2-dcol.l{border-right:1.5px solid var(--border)}
+.ert{display:flex;align-items:center;gap:20px;margin-bottom:18px}
+.ert-k{font-size:22px;font-weight:800;width:150px;flex-shrink:0;text-transform:uppercase;letter-spacing:1px}
+.ert-bar{flex:1;height:28px;background:rgba(255,255,255,.05);border-radius:7px;overflow:hidden}
+.ert-fill{height:100%;border-radius:7px}
+.ert-v{font-size:34px;font-weight:900;font-variant-numeric:tabular-nums;width:160px;text-align:right;flex-shrink:0}
+.ert-v span{font-size:16px;color:var(--muted);font-weight:700}
+.reach-big{font-size:104px;font-weight:900;line-height:1;color:var(--blue);
+  font-variant-numeric:tabular-nums;text-shadow:0 0 .14em currentColor}
+.reach-sub{font-size:18px;color:var(--muted);font-weight:700;text-transform:uppercase;
+  letter-spacing:1.5px;margin-top:10px}
+.reach-paid{font-size:21px;color:var(--blue);font-weight:800;margin-top:8px;letter-spacing:.3px}
+.header-warn{font-size:17px;color:var(--amber);font-weight:700;margin-top:5px}
+.lb{display:flex;align-items:center;gap:18px;padding:11px 8px;border-radius:8px}
+.lb-pos{font-size:24px;font-weight:900;color:var(--muted);width:2.4ch;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums}
+.lb-h{font-size:23px;font-weight:800;color:var(--sub);width:15ch;flex-shrink:0;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-bar{flex:1;height:24px;background:rgba(255,255,255,.05);border-radius:7px;overflow:hidden;min-width:0}
+.lb-bar i{display:block;height:100%;border-radius:7px;background:var(--sub);opacity:.55}
+.lb-f{font-size:28px;font-weight:900;font-variant-numeric:tabular-nums;width:6.5ch;text-align:right;flex-shrink:0}
+.lb.us{background:rgba(46,230,118,.12)}
+.lb.us .lb-h,.lb.us .lb-f,.lb.us .lb-pos{color:var(--green)}
+.lb.us .lb-bar i{background:var(--green);opacity:.95}
+.mover{font-size:26px;font-weight:800;color:var(--text);line-height:1.45}
+.mover span{color:var(--amber)}
+.mover small{display:block;font-size:16px;color:var(--muted);font-weight:600;margin-top:7px}
+
+/* HEADER */
+.header{display:flex;justify-content:space-between;align-items:center;
+  padding:15px 42px;border-bottom:1.5px solid var(--border);
+  background:linear-gradient(180deg,#13181f,#0a0e14);flex-shrink:0}
+.header-title{font-size:30px;font-weight:900;letter-spacing:0.75px}
+.header-sub{font-size:16.5px;color:var(--muted);margin-top:3px}
+.header-right{display:flex;align-items:center;gap:33px}
+.clock{font-size:36px;font-weight:800;color:var(--green);font-variant-numeric:tabular-nums;line-height:1}
+.date-label{font-size:16.5px;color:var(--muted);margin-top:4.5px;text-transform:capitalize;text-align:right}
+.live{display:flex;align-items:center;gap:12px}
+.live-dot{width:14px;height:14px;border-radius:50%;background:var(--green);flex-shrink:0;
+  box-shadow:0 0 10px var(--green)}
+.live-txt{display:flex;flex-direction:column;line-height:1.15;text-align:right}
+.live-on{font-size:18px;font-weight:800;color:var(--green);text-transform:uppercase;letter-spacing:1.5px}
+.live-age{font-size:15px;font-weight:700;color:var(--sub)}
+.live-age.stale{color:var(--red)}
+
+/* ALERT STRIP */
+.alert-strip{display:flex;flex-shrink:0;border-bottom:1.5px solid var(--border);background:#0d1117}
+.alert-cell{flex:1;display:flex;align-items:center;gap:24px;
+  padding:21px 42px;border-right:1.5px solid var(--border)}
+.alert-cell:last-child{border-right:none}
+.alert-cell.red{border-left:6px solid var(--red)}
+.alert-cell.amber{border-left:6px solid var(--amber)}
+.alert-cell.green{border-left:6px solid var(--green)}
+.alert-big{font-size:69px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.alert-big.red{color:var(--red)}.alert-big.amber{color:var(--amber)}.alert-big.green{color:var(--green)}
+.alert-txt{font-size:21px;color:var(--sub);line-height:1.3;font-weight:600}
+.alert-txt strong{color:var(--text);font-weight:800}
+
+/* MAIN — 3 colunas */
+.main{display:grid;grid-template-columns:1fr 1fr 1fr;flex:1;overflow:hidden}
+.col{border-right:1.5px solid var(--border);display:flex;flex-direction:column;
+  justify-content:space-between;padding:26px 36px;gap:12px;overflow:hidden}
+.col:last-child{border-right:none}
+.col-head{display:flex;justify-content:space-between;align-items:flex-start;flex-shrink:0}
+.col-vertical{font-size:18px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted)}
+.col-handle{font-size:32px;font-weight:900;margin-top:5px}
+.col.agro .col-handle{color:var(--green)}
+.col.agua .col-handle{color:var(--blue)}
+.col.florestas .col-handle{color:var(--orange)}
+.col-owner{font-size:17px;color:var(--muted);text-align:right;font-weight:600}
+.col-owner b{color:var(--sub);font-weight:800}
+
+.lbl{font-size:18px;font-weight:800;text-transform:uppercase;letter-spacing:1.6px;
+  color:var(--muted);margin-bottom:4px}
+.divider{height:1.5px;background:var(--border)}
+
+/* seguidores */
+.fol-num{font-size:104px;font-weight:900;line-height:.9;letter-spacing:-3px;font-variant-numeric:tabular-nums}
+.col.agro .fol-num{color:var(--green)}
+.col.agua .fol-num{color:var(--blue)}
+.col.florestas .fol-num{color:var(--orange)}
+.fol-delta{font-size:30px;font-weight:800;margin-top:8px}
+.fol-delta.up{color:var(--green)}.fol-delta.down{color:var(--red)}.fol-delta.flat{color:var(--sub)}
+.fol-delta small{font-size:18px;color:var(--muted);font-weight:600}
+.fol-vs{font-size:19px;color:var(--sub);font-weight:700;margin-top:8px}
+.fol-vs:empty{display:none}
+.fol-vs b{color:var(--text);font-variant-numeric:tabular-nums}
+.fol-vs span{color:var(--muted);font-weight:600}
+
+/* meta semanal */
+.meta-top{display:flex;align-items:baseline;gap:16px}
+.meta-frac{font-size:60px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.meta-frac small{font-size:28px;color:var(--muted);font-weight:800}
+.meta-state{font-size:21px;font-weight:900;text-transform:uppercase;letter-spacing:1.2px}
+.meta-state.ok{color:var(--green)}.meta-state.mid{color:var(--amber)}.meta-state.low{color:var(--red)}
+.meta-track{height:16px;background:rgba(255,255,255,.05);border-radius:8px;overflow:hidden;margin:9px 0 8px}
+.meta-fill{height:100%;border-radius:8px}
+.meta-fill.ok{background:var(--green)}.meta-fill.mid{background:var(--amber)}.meta-fill.low{background:var(--red)}
+.meta-days{display:flex;gap:9px}
+.meta-day{flex:1;text-align:center}
+.meta-day-dot{height:16px;border-radius:5px;background:rgba(255,255,255,.07)}
+.meta-day-dot.done{background:var(--green)}
+.meta-day-dot.today{outline:3px solid var(--text);outline-offset:2px}
+.meta-day-lbl{font-size:14px;color:var(--muted);font-weight:700;margin-top:4px}
+
+/* ads */
+.ads-row{display:flex;gap:18px}
+.ads-kpi{flex:1;text-align:center}
+.ads-val{font-size:40px;font-weight:900;font-variant-numeric:tabular-nums;line-height:1}
+.ads-lbl{font-size:16px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;
+  margin-top:6px;font-weight:700}
+.ads-none{font-size:24px;color:var(--muted);font-weight:800;line-height:1.4}
+.ads-none b{color:var(--sub)}
+
+/* FUNIL */
+.funil{flex-shrink:0;border-top:1.5px solid var(--border);background:#0d1117;
+  display:flex;align-items:center;padding:18px 42px;gap:36px;position:relative}
+.funil-title{font-size:20px;font-weight:900;text-transform:uppercase;letter-spacing:2.5px;
+  color:var(--sub);writing-mode:vertical-rl;transform:rotate(180deg);
+  border-left:6px solid var(--amber);padding-left:12px;flex-shrink:0}
+.funil-steps{flex:1;display:flex;align-items:center;justify-content:space-around}
+.funil-step{text-align:center;flex:1}
+.funil-num{font-size:104px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums}
+.funil-num.new{color:var(--blue)}.funil-num.todo{color:var(--amber)}.funil-num.won{color:var(--green)}
+.funil-lbl{font-size:22px;font-weight:800;text-transform:uppercase;letter-spacing:2px;
+  color:var(--sub);margin-top:8px}
+.funil-period{font-size:15px;color:var(--muted);margin-top:4px;font-weight:600}
+.funil-arrow{font-size:52px;color:var(--muted);font-weight:300;flex-shrink:0}
+</style>
+</head>
+<body>
+<div id="stagewrap">
+<div id="panel1" class="panel">
+
+<!-- HEADER -->
+<div class="header">
+  <div>
+    <div class="header-title">PAINEL MARKETING — WAR ROOM</div>
+    <div class="header-warn" id="ads-unclassified"></div>
+  </div>
+  <div class="header-right">
+    <div>
+      <div class="clock" id="clock">--:--:--</div>
+      <div class="date-label" id="date-label">...</div>
+    </div>
+    <div class="live">
+      <span class="live-dot"></span>
+      <div class="live-txt">
+        <span class="live-on">AO VIVO</span>
+        <span class="live-age" id="live-age">conectando…</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ALERT STRIP -->
+<div class="alert-strip">
+  <div class="alert-cell green" id="al-leads-cell">
+    <div class="alert-big green" id="al-leads">—</div>
+    <div class="alert-txt"><strong>captação · 7 dias vs 7 ant.</strong><br><span id="al-leads-aged">—</span></div>
+  </div>
+  <div class="alert-cell amber" id="al-gap-cell">
+    <div class="alert-big amber" id="al-gap">—</div>
+    <div class="alert-txt"><strong>contas sem postar</strong><br><span id="al-gap-detail">verificando…</span></div>
+  </div>
+  <div class="alert-cell green" id="al-reach-cell">
+    <div class="alert-big green" id="al-reach">—</div>
+    <div class="alert-txt"><strong>alcance orgânico · mês</strong><br><span id="al-reach-detail">—</span></div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <div class="col agro">
+    <div class="col-head">
+      <div><div class="col-handle">@araunah_oficial</div></div>
+      <div class="col-owner"><b>Higor</b></div>
+    </div>
+    <div>
+      <div class="lbl">Seguidores</div>
+      <div class="fol-num" id="agro-fol">—</div>
+      <div class="fol-delta flat" id="agro-delta">—</div>
+      <div class="fol-vs" id="agro-vs"></div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="lbl">Meta semanal de posts</div>
+      <div class="meta-top"><div class="meta-frac" id="agro-meta">—</div><div class="meta-state" id="agro-meta-st">—</div></div>
+      <div class="meta-track"><div class="meta-fill low" id="agro-meta-fill" style="width:0%"></div></div>
+      <div class="meta-days" id="agro-meta-days"></div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="lbl">Meta Ads · mês + ER</div>
+      <div class="ads-row" id="agro-ads"></div>
+    </div>
+  </div>
+
+  <div class="col agua">
+    <div class="col-head">
+      <div><div class="col-handle">@araunahtech</div></div>
+      <div class="col-owner"><b>Brey</b></div>
+    </div>
+    <div>
+      <div class="lbl">Seguidores</div>
+      <div class="fol-num" id="agua-fol">—</div>
+      <div class="fol-delta flat" id="agua-delta">—</div>
+      <div class="fol-vs" id="agua-vs"></div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="lbl">Meta semanal de posts</div>
+      <div class="meta-top"><div class="meta-frac" id="agua-meta">—</div><div class="meta-state" id="agua-meta-st">—</div></div>
+      <div class="meta-track"><div class="meta-fill low" id="agua-meta-fill" style="width:0%"></div></div>
+      <div class="meta-days" id="agua-meta-days"></div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="lbl">Meta Ads · mês + ER</div>
+      <div class="ads-row" id="agua-ads"></div>
+    </div>
+  </div>
+
+  <div class="col florestas">
+    <div class="col-head">
+      <div><div class="col-handle">@araunahflorestas</div></div>
+      <div class="col-owner"><b>Brey</b></div>
+    </div>
+    <div>
+      <div class="lbl">Seguidores</div>
+      <div class="fol-num" id="florestas-fol">—</div>
+      <div class="fol-delta flat" id="florestas-delta">—</div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="lbl">Meta semanal de posts</div>
+      <div class="meta-top"><div class="meta-frac" id="florestas-meta">—</div><div class="meta-state" id="florestas-meta-st">—</div></div>
+      <div class="meta-track"><div class="meta-fill low" id="florestas-meta-fill" style="width:0%"></div></div>
+      <div class="meta-days" id="florestas-meta-days"></div>
+    </div>
+    <div class="divider"></div>
+    <div>
+      <div class="lbl">Meta Ads · mês + ER</div>
+      <div class="ads-row" id="florestas-ads"></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- LEADS ENTRANDO -->
+<div class="funil">
+  <div class="funil-title">Captação</div>
+  <div class="funil-steps">
+    <div class="funil-step">
+      <div class="funil-num won" id="fn-hoje">—</div>
+      <div class="funil-lbl">Hoje</div>
+      <div class="funil-period">leads captados</div>
+    </div>
+    <div class="funil-step">
+      <div class="funil-num new" id="fn-sem">—</div>
+      <div class="funil-lbl">7 dias</div>
+      <div class="funil-period">últimos 7 dias</div>
+    </div>
+    <div class="funil-step">
+      <div class="funil-num todo" id="fn-mes" style="color:var(--text)">—</div>
+      <div class="funil-lbl">Mês</div>
+      <div class="funil-period">mês atual</div>
+    </div>
+    <div class="funil-step">
+      <div class="funil-num" id="fn-ano" style="color:var(--amber)">—</div>
+      <div class="funil-lbl">Total</div>
+      <div class="funil-period">desde mar/26</div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /#panel1 -->
+
+<div id="panel2" class="panel hidden">
+  <div class="p2-head">
+    <div>
+      <div class="p2-title">CONTEÚDO &amp; MERCADO</div>
+      <div class="p2-sub">Performance de posts e posição no mercado · snapshot diário</div>
+    </div>
+    <div class="p2-date" id="p2-date">—</div>
+  </div>
+  <div class="p2-body">
+    <div class="p2-show">
+      <div class="p2-lbl">Top posts · por engajamento · últimos 30 dias</div>
+      <div id="p2-top"></div>
+    </div>
+    <div class="p2-data">
+      <div class="p2-dcol l">
+        <div>
+          <div class="p2-lbl">Engajamento por tipo · 30 dias</div>
+          <div id="p2-ert"></div>
+        </div>
+        <div>
+          <div class="p2-lbl">Alcance · este mês</div>
+          <div class="reach-big" id="p2-reach">—</div>
+          <div class="reach-sub">conteúdo (posts)</div>
+          <div class="reach-paid" id="p2-reach-paid"></div>
+        </div>
+      </div>
+      <div class="p2-dcol">
+        <div>
+          <div class="p2-lbl">Mercado · Composta — por seguidores</div>
+          <div id="p2-lb"></div>
+        </div>
+        <div>
+          <div class="p2-lbl">Quem mexeu · 30 dias</div>
+          <div class="mover" id="p2-mover">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div><!-- /#stagewrap -->
+
+<script>
+/* ════════ FIT-TO-SCREEN — canvas nativo 1920×1080 (1:1 na TV Full HD);
+   escala só se a fonte tiver outra resolução. ?fit=0.95 = margem anti-corte ════════ */
+function fitParam(){
+  const m = (location.search.match(/[?&]fit=([0-9.]+)/) || [])[1];
+  let f = m ? parseFloat(m) : 1;
+  if (!isFinite(f) || f <= 0) f = 1;
+  return Math.max(0.5, Math.min(1, f));
+}
+const FIT = fitParam();
+function fitStage(){
+  const st = document.getElementById('stagewrap');
+  if (!st) return;
+  const de = document.documentElement;
+  const w = Math.min(window.innerWidth  || 1e9, de.clientWidth  || 1e9);
+  const h = Math.min(window.innerHeight || 1e9, de.clientHeight || 1e9);
+  st.style.transform = `translate(-50%,-50%) scale(${Math.min(w/1920, h/1080)*FIT})`;
+}
+window.addEventListener('resize', fitStage);
+window.addEventListener('orientationchange', fitStage);
+window.addEventListener('load', fitStage);
+fitStage();
+setTimeout(fitStage, 600);
+
+/* ════════ SUPABASE ════════ */
+const SB_URL = 'https://qzxabnagqlatytlvwpyq.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY';
+const H = { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` };
+async function sbFetch(t,p=''){ const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}`,{headers:H}); if(!r.ok) throw new Error(`${t}:${r.status}`); return r.json(); }
+async function sbCount(t,p=''){ const r=await fetch(`${SB_URL}/rest/v1/${t}?${p}&select=id`,{headers:{...H,Prefer:'count=exact',Range:'0-0'}}); const c=r.headers.get('content-range'); return c?parseInt(c.split('/')[1]):null; }
+
+/* ════════ HELPERS ════════ */
+const fmtNum = n => n==null ? '—' : n.toLocaleString('pt-BR');
+const fmtFol = n => n==null ? '—' : (n>=1000 ? (n/1000).toFixed(1).replace('.',',')+'K' : String(n));
+const fmtBRL = n => n==null ? '—' : (n>=1000 ? 'R$'+(n/1000).toFixed(1).replace('.',',')+'k' : 'R$'+Math.round(n));
+const fmtPct = v => (v==null||isNaN(v)) ? '—' : v.toFixed(1).replace('.',',')+'%';
+function mondayOfWeek(ref){ const d=new Date(ref); d.setHours(0,0,0,0); d.setDate(d.getDate()-((d.getDay()+6)%7)); return d; }
+const sameDay = (a,b) => a.getFullYear()===b.getFullYear()&&a.getMonth()===b.getMonth()&&a.getDate()===b.getDate();
+
+/* ════════ CLOCK + "AO VIVO há Xs" (vida = informação, sem animação) ════════ */
+let lastLeads = 0;   // setado por refreshLeads() no sucesso
+function tick(){
+  const n=new Date();
+  document.getElementById('clock').textContent=n.toLocaleTimeString('pt-BR');
+  document.getElementById('date-label').textContent=n.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const ag=document.getElementById('live-age');
+  if(ag){
+    if(!lastLeads){ ag.textContent='conectando…'; ag.classList.remove('stale'); }
+    else {
+      const s=Math.floor((Date.now()-lastLeads)/1000);
+      if(s>150){ ag.textContent=`sem atualizar há ${Math.floor(s/60)}min`; ag.classList.add('stale'); }
+      else { ag.textContent = s<5 ? 'atualizado agora' : `atualizado há ${s}s`; ag.classList.remove('stale'); }
+    }
+  }
+}
+setInterval(tick,1000); tick();
+/* refresh SUAVE a cada 5min: re-roda loadData (repinta tudo + chama refreshLeads)
+   sem recarregar a pagina, preservando o audio do sino destravado.
+   hard reload so as 4h (madrugada) p/ higiene de memoria. */
+setInterval(()=>{ loadData(); }, 5*60*1000);
+setInterval(()=>{ if(new Date().getHours()===4) location.reload(); }, 60*60*1000);
+
+/* ════════ SINO 🔔 — toca quando entra LEAD novo ou sobe SEGUIDOR (war-room TV)
+   Web Audio sintetizado (sem arquivo). Autoplay do browser exige 1 toque/clique
+   na tela p/ liberar — aí mostra o aviso "toque para ativar o som". ════════ */
+let _ac=null;
+function _bellUnlock(){
+  try{ if(!_ac) _ac=new (window.AudioContext||window.webkitAudioContext)(); if(_ac.state==="suspended") _ac.resume(); }catch(e){}
+  const b=document.getElementById("bell-lock"); if(b && _ac && _ac.state==="running") b.style.display="none";
+}
+["click","keydown","touchstart","pointerdown"].forEach(ev=>window.addEventListener(ev,_bellUnlock));
+function ringBell(times){
+  times=Math.min(times||1,3); _bellUnlock();
+  if(!_ac || _ac.state!=="running"){ const b=document.getElementById("bell-lock"); if(b) b.style.display="block"; return; }
+  const ctx=_ac;
+  for(let k=0;k<times;k++){
+    const t0=ctx.currentTime+k*0.24;
+    [[784,1],[1568,0.5],[3136,0.22]].forEach(([f,a])=>{
+      const o=ctx.createOscillator(), g=ctx.createGain();
+      o.type="sine"; o.frequency.value=f;
+      g.gain.setValueAtTime(0.0001,t0);
+      g.gain.exponentialRampToValueAtTime(0.3*a,t0+0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001,t0+1.4);
+      o.connect(g); g.connect(ctx.destination); o.start(t0); o.stop(t0+1.5);
+    });
+  }
+}
+function bellToast(msg){
+  const t=document.getElementById("bell-toast"); if(!t) return;
+  t.textContent="🔔 "+msg; t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+  clearTimeout(t._h); t._h=setTimeout(()=>t.classList.remove("show"),5000);
+}
+function notifyGain(kind,n){
+  ringBell(kind==="lead"?2:1);
+  if(kind==="lead") bellToast(n>1?(n+" leads novos!"):"Lead novo!");
+  else bellToast(n>1?("+"+n+" seguidores!"):"+1 seguidor!");
+}
+(function(){
+  const st=document.createElement("style");
+  st.textContent="#bell-toast{position:fixed;top:18px;left:50%;transform:translateX(-50%) translateY(-24px);z-index:99999;background:linear-gradient(135deg,#16331f,#1c4a2b);color:#7CFFA0;padding:12px 28px;border-radius:14px;font:800 22px/1 system-ui,sans-serif;border:1px solid #2f7d4a;box-shadow:0 8px 30px rgba(0,0,0,.55);opacity:0;transition:opacity .35s,transform .35s;pointer-events:none}#bell-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}#bell-lock{display:none;position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:99999;background:#1c2333;color:#cfe;padding:8px 16px;border-radius:20px;font:600 14px/1 system-ui,sans-serif;border:1px solid #2a3550;cursor:pointer}";
+  document.head.appendChild(st);
+  function mount(){ if(document.getElementById("bell-toast")) return;
+    const toast=document.createElement("div"); toast.id="bell-toast"; document.body.appendChild(toast);
+    const lock=document.createElement("div"); lock.id="bell-lock"; lock.textContent="🔔 toque na tela para ativar o som"; lock.onclick=_bellUnlock; document.body.appendChild(lock);
+  }
+  if(document.body) mount(); else document.addEventListener("DOMContentLoaded",mount);
+})();
+
+/* ════════ GATILHO REMOTO 🔔 — toca sob comando (escrever bell-trigger.json)
+   Permite "mandar um som" pra TV de fora, sem depender de lead/seguidor real. ════════ */
+let _lastBellTs=0, _bellTrigInit=false;
+async function checkBellTrigger(){
+  try{
+    const r=await fetch("bell-trigger.json?t="+Date.now(),{cache:"no-store"});
+    if(!r.ok) return;
+    const d=await r.json();
+    const ts=parseInt(d.ts||0);
+    if(!_bellTrigInit){ _lastBellTs=ts; _bellTrigInit=true; return; }  /* baseline: nao toca na 1a leitura */
+    if(ts>_lastBellTs){
+      _lastBellTs=ts;
+      if(Date.now()-ts < 120000){                                     /* so toca se for fresco (<2min) */
+        ringBell(d.kind==="lead"?2:1);
+        bellToast(d.msg || "🔔");
+      }
+    }
+  }catch(e){}
+}
+setInterval(checkBellTrigger, 8000); checkBellTrigger();
+
+/* ════════ RENDER META ════════ */
+function renderMeta(v, postsWeek, meta){
+  const monday=mondayOfWeek(new Date()), today=new Date(); today.setHours(0,0,0,0);
+  const count=postsWeek.length, pct=Math.min(Math.round(count/meta*100),100);
+  // ritmo: compara com o esperado ATÉ AGORA na semana (não pune começo de semana)
+  const elapsed=Math.min(7,Math.max(1,Math.floor((today-monday)/864e5)+1));
+  const expected=meta*elapsed/7, deficit=expected-count;
+  let cls,label;
+  if(count>=meta){cls='ok';label='no alvo';}
+  else if(deficit<=1){cls='ok';label='no ritmo';}
+  else if(deficit<=meta*0.6){cls='mid';label='atrás';}
+  else{cls='low';label='crítico';}
+  document.getElementById(`${v}-meta`).innerHTML=`${count}<small> / ${meta}</small>`;
+  const st=document.getElementById(`${v}-meta-st`);
+  st.textContent=label; st.className=`meta-state ${cls}`;
+  const fill=document.getElementById(`${v}-meta-fill`); fill.className=`meta-fill ${cls}`; fill.style.width=pct+'%';
+  const names=['S','T','Q','Q','S','S','D'], posted=new Array(7).fill(false);
+  postsWeek.forEach(p=>{ const d=new Date(p.timestamp); const i=Math.floor((new Date(d.getFullYear(),d.getMonth(),d.getDate())-monday)/864e5); if(i>=0&&i<7) posted[i]=true; });
+  let html='';
+  for(let i=0;i<7;i++){ const dd=new Date(monday); dd.setDate(dd.getDate()+i);
+    let c='meta-day-dot'; if(posted[i])c+=' done'; if(sameDay(dd,today))c+=' today';
+    html+=`<div class="meta-day"><div class="${c}"></div><div class="meta-day-lbl">${names[i]}</div></div>`; }
+  document.getElementById(`${v}-meta-days`).innerHTML=html;
+}
+
+/* ════════ RENDER ADS ════════ */
+function renderAds(v, ads, er){
+  const el=document.getElementById(`${v}-ads`);
+  if(!ads || ads.spend===0){ el.innerHTML=`<div class="ads-none">Sem campanha ativa<br><b>orgânico · ER ${fmtPct(er)}</b></div>`; return; }
+  const cpl=ads.leads>0?ads.spend/ads.leads:null;
+  const cC=cpl==null?'var(--muted)':cpl<=10?'var(--green)':cpl<=25?'var(--amber)':'var(--red)';
+  const eC=er==null?'var(--muted)':er>=2?'var(--green)':er>=1?'var(--amber)':'var(--red)';
+  el.innerHTML=`
+    <div class="ads-kpi"><div class="ads-val" style="color:var(--amber)">${fmtBRL(ads.spend)}</div><div class="ads-lbl">Gasto</div></div>
+    <div class="ads-kpi"><div class="ads-val" style="color:var(--green)">${fmtNum(ads.leads)}</div><div class="ads-lbl">Leads CRM</div></div>
+    <div class="ads-kpi"><div class="ads-val" style="color:${cC}">${cpl!=null?'R$'+cpl.toFixed(0):'—'}</div><div class="ads-lbl">CPL</div></div>
+    <div class="ads-kpi"><div class="ads-val" style="color:${eC}">${fmtPct(er)}</div><div class="ads-lbl">ER</div></div>`;
+}
+
+/* ════════ ATUALIZAÇÃO — acessível: troca o valor na hora + fade suave 1×
+   (sem rolar dígito, sem escalar — não atrapalha quem tem baixa visão) ════════ */
+function bumpEl(el){
+  if(!el) return;
+  el.classList.remove('bump'); void el.offsetWidth; el.classList.add('bump');
+  setTimeout(()=>el.classList.remove('bump'), 600);
+}
+function animateCount(el, to){
+  if(!el) return;
+  if(to==null){ el.textContent='—'; return; }
+  const cur = parseInt(String(el.textContent).replace(/\D/g,''));
+  el.textContent = fmtNum(to);
+  if(cur!==to) bumpEl(el);   // mudou → fade suave, sem movimento de dígito
+}
+
+/* ════════ LEADS ENTRANDO — volume, quase tempo real (~60s, sem reload) ════════
+   Marketing capta; quantos leads entram (hoje/7d/mês). Sem conversão/atend (= Vendas).
+   Fonte = banco do CRM (live). IG/Ads continuam no snapshot diário. */
+async function refreshLeads(){
+  try{
+    const now=new Date();
+    const ymd=d=>`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const monthStart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    const hojeISO=(()=>{const b=new Date(Date.now()-3*3600e3);return b.getUTCFullYear()+'-'+String(b.getUTCMonth()+1).padStart(2,'0')+'-'+String(b.getUTCDate()).padStart(2,'0')+'T03:00:00';})();
+    const d7ISO=ymd(new Date(Date.now()-7*864e5));
+    const d14ISO=ymd(new Date(Date.now()-14*864e5));
+    const [hoje, sem, mes, ano, prev] = await Promise.all([
+      sbCount('vw_tv_leads',`created_at=gte.${hojeISO}`),
+      sbCount('vw_tv_leads',`created_at=gte.${d7ISO}`),
+      sbCount('vw_tv_leads',`created_at=gte.${monthStart}`),
+      sbCount('vw_tv_leads','created_at=not.is.null'),  /* Total = todos os leads */
+      sbCount('vw_tv_leads',`created_at=gte.${d14ISO}&created_at=lt.${d7ISO}`),
+    ]);
+    animateCount(document.getElementById('fn-hoje'), hoje);
+    animateCount(document.getElementById('fn-sem'),  sem);
+    animateCount(document.getElementById('fn-mes'),  mes);
+    animateCount(document.getElementById('fn-ano'),  ano);
+    /* SINO leads: total de leads; toca se entrou lead novo */
+    if(ano!=null){ const pl=parseInt(localStorage.getItem("bell_leads")||"0");
+      if(pl>0 && ano>pl) notifyGain("lead", ano-pl);
+      localStorage.setItem("bell_leads", String(ano)); }
+    /* topo = tendência de captação: últimos 7d vs 7d anteriores (não duplica a faixa) */
+    const big=document.getElementById('al-leads');
+    const ag=document.getElementById('al-leads-aged');
+    const cell=document.getElementById('al-leads-cell');
+    if(sem!=null && prev!=null){
+      const diff=sem-prev, up=diff>=0;
+      const pct = prev>0 ? Math.round(diff/prev*100) : null;
+      const arrow = diff>0?'▲':diff<0?'▼':'▬';
+      const txt = pct!=null ? `${arrow} ${diff>=0?'+':''}${pct}%`
+                             : `${arrow} ${diff>=0?'+':''}${fmtNum(diff)}`;
+      if(big.textContent!==txt) bumpEl(big);
+      big.textContent = txt;
+      if(ag) ag.textContent=`${fmtNum(sem)} vs ${fmtNum(prev)} leads`;
+      const tone = diff>0?'green':diff<0?'red':'amber';
+      cell.className=`alert-cell ${tone}`; big.className=`alert-big ${tone}`;
+    } else {
+      big.textContent = sem!=null?fmtNum(sem):'—';
+      if(ag) ag.textContent='últimos 7 dias';
+    }
+    lastLeads = Date.now();   // alimenta o "AO VIVO · atualizado há Xs" do header (fonte única)
+  }catch(e){ console.error('refreshLeads',e); }
+}
+setInterval(refreshLeads, 60*1000);
+
+/* ════════ PAINEL 2 — CONTEÚDO & MERCADO (awareness, snapshot diário) ════════ */
+const P2_HANDLE={agro:'@araunah_oficial',agua:'@araunahtech',florestas:'@araunahflorestas'};
+function tipoOf(t){ t=(t||'').toUpperCase();
+  if(t.includes('REEL')) return ['reel','Reel'];
+  if(t.includes('CAROUSEL')||t.includes('ALBUM')) return ['carrossel','Carrossel'];
+  return ['feed','Feed']; }
+function ddmm(iso){ if(!iso) return ''; const d=new Date(iso);
+  return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}`; }
+
+function renderPanel2(allPosts, concAgro, ourFol, now, paid){
+  document.getElementById('p2-date').textContent =
+    now.toLocaleDateString('pt-BR',{weekday:'long',day:'numeric',month:'long'});
+  const d30=Date.now()-30*864e5;
+  const recent=allPosts.filter(p=>p.timestamp && new Date(p.timestamp)>=d30 && p.reach>0);
+
+  /* 1 — Top posts por ER, preferindo os que TÊM imagem (showcase visual) */
+  const pool=recent.slice().sort((a,b)=>b.er-a.er);
+  const top=pool.filter(p=>p.thumbnail_url)
+    .concat(pool.filter(p=>!p.thumbnail_url))
+    .slice(0,3).sort((a,b)=>b.er-a.er);
+  document.getElementById('p2-top').innerHTML = top.length ? top.map(p=>{
+    const [cls,lbl]=tipoOf(p.media_product_type);
+    const erC = p.er>=3?'var(--green)':p.er>=1?'var(--amber)':'var(--red)';
+    const fb = `<div class=\\'tp-img tp-noimg ${p.vertical}\\'>${lbl}</div>`;
+    const img = p.thumbnail_url
+      ? `<img class="tp-img" src="${p.thumbnail_url}" referrerpolicy="no-referrer" onerror="this.outerHTML='${fb}'">`
+      : `<div class="tp-img tp-noimg ${p.vertical}">${lbl}</div>`;
+    return `<div class="tp">${img}
+      <div class="tp-ft">
+        <div>
+          <span class="tp-badge ${cls}">${lbl}</span>
+          <div class="tp-meta">${P2_HANDLE[p.vertical]||p.vertical}<br><span>${ddmm(p.timestamp)} · ${fmtFol(p.reach)} alcance</span></div>
+        </div>
+        <div class="tp-er" style="color:${erC}">${fmtPct(p.er)}<small>engaj.</small></div>
+      </div></div>`;
+  }).join('') : '<div class="tp-meta">sem posts com alcance nos últimos 30 dias</div>';
+
+  /* 2 — ER por tipo */
+  const byT={};
+  for(const p of recent){ const [cls,lbl]=tipoOf(p.media_product_type);
+    (byT[cls]||=(byT[cls]={lbl,sum:0,n:0})); byT[cls].sum+=p.er; byT[cls].n++; }
+  const order=['reel','feed','carrossel'], cor={reel:'var(--amber)',feed:'var(--blue)',carrossel:'var(--green)'};
+  const rows=order.filter(k=>byT[k]).map(k=>({k,lbl:byT[k].lbl,er:byT[k].sum/byT[k].n,n:byT[k].n}));
+  const maxEr=Math.max(...rows.map(r=>r.er),0.01);
+  document.getElementById('p2-ert').innerHTML = rows.length ? rows.map(r=>`
+    <div class="ert"><div class="ert-k" style="color:${cor[r.k]}">${r.lbl}</div>
+    <div class="ert-bar"><div class="ert-fill" style="width:${Math.round(r.er/maxEr*100)}%;background:${cor[r.k]}"></div></div>
+    <div class="ert-v">${fmtPct(r.er)} <span>· ${r.n}p</span></div></div>`).join('')
+    : '<div class="tp-meta">sem dados</div>';
+
+  /* 3 — Alcance do MES atual (por post, dedupado; ja inclui impulsionamento).
+     Δ vs MESMO periodo do mes anterior (mes-ate-hoje vs mes passado-ate-mesmo-dia) = comparacao justa. */
+  const _y=now.getFullYear(), _m=now.getMonth(), _dom=now.getDate();
+  const curStart=new Date(_y,_m,1).getTime();
+  const prevStart=new Date(_y,_m-1,1).getTime();
+  const prevEnd=new Date(_y,_m-1,_dom,23,59,59,999).getTime();
+  const monthPosts=allPosts.filter(p=>{ if(!p.timestamp||!(p.reach>0))return false; const t=new Date(p.timestamp).getTime(); return t>=curStart; });
+  const prevMonthPosts=allPosts.filter(p=>{ if(!p.timestamp||!(p.reach>0))return false; const t=new Date(p.timestamp).getTime(); return t>=prevStart && t<=prevEnd; });
+  const reach30=monthPosts.reduce((s,p)=>s+(p.reach||0),0);
+  const reachPrev=prevMonthPosts.reduce((s,p)=>s+(p.reach||0),0);
+  document.getElementById('p2-reach').textContent=fmtNum(reach30);
+  const rs=document.querySelector('.reach-sub');
+  if(rs){
+    if(reachPrev>0){
+      const dd=reach30-reachPrev, pct=Math.round(dd/reachPrev*100), up=dd>=0;
+      rs.textContent=`🟢 conteúdo · ${up?'▲':'▼'} ${up?'+':''}${pct}% vs mês ant. · ${monthPosts.length} posts`;
+      rs.style.color=up?'var(--green)':'var(--red)';
+    } else { rs.textContent=`🟢 conteúdo · ${monthPosts.length} posts`; rs.style.color=''; }
+  }
+  const rp=document.getElementById('p2-reach-paid');
+  if(rp) rp.textContent = (paid && paid.reach>0) ? `🔵 campanhas (pago): ${fmtFol(paid.reach)} · ${fmtBRL(paid.spend)}` : '';
+  /* espelha no war-room (painel 1, faixa de alertas) */
+  const alR=document.getElementById('al-reach'), alRc=document.getElementById('al-reach-cell'), alRd=document.getElementById('al-reach-detail');
+  if(alR){
+    alR.textContent=fmtFol(reach30);
+    const upR = reachPrev>0 ? (reach30-reachPrev)>=0 : true, toneR = upR?'green':'amber';
+    if(alRc) alRc.className=`alert-cell ${toneR}`;
+    alR.className=`alert-big ${toneR}`;
+    if(alRd) alRd.innerHTML = (paid&&paid.reach>0) ? `🟢 conteúdo · 🔵 ${fmtFol(paid.reach)} pago` : `🟢 conteúdo orgânico`;
+  }
+
+  /* 4 — Leaderboard Composta (limpa: dedupe, só agro, sem nossas contas,
+     sem perfis PESSOAIS, fol>0). EXCL: augustosilvat = perfil pessoal do dono
+     da Libertas (a conta-marca é @agrolibertas). */
+  const EXCL=['augustosilvat'];
+  const seen={};
+  for(const r of (concAgro||[])){ const u=(r.username||'').toLowerCase(), f=r.followers||0;
+    if(!u||f<=0||u.includes('araunah')||EXCL.includes(u)) continue;
+    if(!seen[u]||f>seen[u].f) seen[u]={u:r.username,f,d:r.followers_delta||0,
+      p30:(r.raw&&r.raw.posts_last_30d!=null)?r.raw.posts_last_30d:null}; }
+  const comp=Object.values(seen);
+  const rk=comp.concat([{u:'araunah_oficial',f:ourFol||0,us:true}]).sort((a,b)=>b.f-a.f);
+  const max=rk[0]?rk[0].f:1;
+  document.getElementById('p2-lb').innerHTML = rk.slice(0,4).map((r,i)=>`
+    <div class="lb${r.us?' us':''}"><div class="lb-pos">${i+1}</div>
+    <div class="lb-h">@${r.u}</div>
+    <div class="lb-bar"><i style="width:${Math.max(Math.round(r.f/max*100),3)}%"></i></div>
+    <div class="lb-f">${fmtFol(r.f)}</div></div>`).join('');
+
+  /* 5 — Quem mexeu (mais ativo 30d; fallback maior) */
+  const act=comp.filter(c=>c.p30!=null).sort((a,b)=>b.p30-a.p30)[0];
+  const mv=document.getElementById('p2-mover');
+  if(act){
+    mv.innerHTML=`<span>@${act.u}</span> — ${act.p30} posts em 30 dias`;
+  } else if(comp.length){
+    const big=comp.slice().sort((a,b)=>b.f-a.f)[0];
+    mv.innerHTML=`Líder <span>@${big.u}</span> — ${fmtFol(big.f)} seguidores`;
+  } else mv.textContent='sem dados de concorrentes';
+}
+
+/* ════════ MAIN ════════ */
+const VERTS=['agro','agua','florestas'], METAS={agro:3,agua:2,florestas:2};
+
+async function loadData(){
+  try{
+    const now=new Date();
+    const monthStart=`${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    const d30iso=new Date(Date.now()-30*864e5).toISOString().slice(0,10);
+    const [daily, mediaRaw, adsRaw, conc, concAgro, adsReach, leadsMes] = await Promise.all([
+      sbFetch('ig_daily_metrics','select=vertical,snapshot_date,followers_total&order=snapshot_date.desc&limit=90'),
+      sbFetch('ig_media_metrics','select=vertical,media_id,reach,total_interactions,timestamp,media_product_type,thumbnail_url&reach=gt.0&order=snapshot_date.desc&limit=1000'),
+      sbFetch('meta_ads_spend',`select=vertical,spend,leads_count&snapshot_date=gte.${monthStart}`),
+      sbFetch('vw_concorrentes_atual','select=username,followers&username=in.(agrolibertas,kobraindtec)').catch(()=>[]),
+      sbFetch('vw_concorrentes_atual','select=username,followers,followers_delta,raw,latest_posted_at&vertical=eq.agro').catch(()=>[]),
+      sbFetch('meta_ads_spend',`select=spend,reach&snapshot_date=gte.${monthStart}`).catch(()=>[]),
+      sbFetch('vw_tv_leads',`select=campanha&created_at=gte.${monthStart}`).catch(()=>[]),
+    ]);
+
+    /* 1 concorrente por vertical (dedupe: maior contagem vence o lixo da view) */
+    const cMax={};
+    for(const r of (conc||[])){ const u=(r.username||'').toLowerCase(), f=r.followers||0;
+      if(f>0 && f>(cMax[u]||0)) cMax[u]=f; }
+    const setVs=(id,handle,f)=>{ const e=document.getElementById(id);
+      if(e) e.innerHTML = f ? `vs <span>@${handle}</span> <b>${fmtFol(f)}</b>` : ''; };
+    setVs('agro-vs','agrolibertas',cMax['agrolibertas']);
+    setVs('agua-vs','kobraindtec',cMax['kobraindtec']);
+
+    const byVert={}; for(const r of daily)(byVert[r.vertical]||=[]).push(r);
+    const mediaMap={}; for(const r of mediaRaw) if(!mediaMap[r.media_id]) mediaMap[r.media_id]=r;
+    const allPosts=Object.values(mediaMap);
+    allPosts.forEach(p=>{ p.er=p.reach>0?(p.total_interactions/p.reach*100):0; });
+    const adsByV={}; for(const r of adsRaw){ const a=(adsByV[r.vertical]||={spend:0,leads:0}); a.spend+=parseFloat(r.spend)||0; a.leads+=parseInt(r.leads_count)||0; }
+    /* leads REAIS do CRM por vertical (classifica pela campanha) — substitui o leads_count inflado da Meta.
+       AGUA = campanha c/ "AGUA"; AGRO = COMPOSTAGEM/COMPOSTA/ULEXITA; WhatsApp/null ficam fora (nao-atribuiveis). */
+    const realLeadsByV={agro:0,agua:0,florestas:0}; let unclAds=0;
+    for(const l of (leadsMes||[])){ const c=(l.campanha||'').toUpperCase();
+      if(c.includes('AGUA')||c.includes('ÁGUA')) realLeadsByV.agua++;
+      else if(c.includes('COMPOSTAGEM')||c.includes('COMPOSTA')||c.includes('ULEXITA')) realLeadsByV.agro++;
+      else if(/\[(FORM|LEADS|CAMPANHA)\]/.test(c)) unclAds++; }
+    /* guard: lead de form pago que nao casou vertical = campanha nova; avisa pra ajustar a regra (senao CPL daquela vertical superestima) */
+    const _uw=document.getElementById('ads-unclassified');
+    if(_uw) _uw.textContent = unclAds>0 ? `⚠ ${unclAds} lead(s) de campanha nova sem classificar — ajustar painel` : '';
+
+    const monday=mondayOfWeek(now);
+    let gaps=[];
+
+    for(const v of VERTS){
+      /* seguidores + delta 7d real */
+      const hist=byVert[v]||[];
+      const folEl=document.getElementById(`${v}-fol`), dEl=document.getElementById(`${v}-delta`);
+      if(hist.length){
+        const latest=hist[0]; folEl.textContent=fmtFol(latest.followers_total);
+        const tgt=new Date(latest.snapshot_date).getTime()-7*864e5;
+        let ref=null,best=Infinity;
+        for(const r of hist){ const df=Math.abs(new Date(r.snapshot_date).getTime()-tgt); if(df<best){best=df;ref=r;} }
+        if(ref&&ref!==latest){
+          const d=latest.followers_total-ref.followers_total, sg=d>0?'+':'';
+          dEl.innerHTML=(d>0?'▲':d<0?'▼':'▬')+` ${sg}${fmtNum(d)} <small>esta semana</small>`;
+          dEl.className='fol-delta '+(d>0?'up':d<0?'down':'flat');
+        } else { dEl.innerHTML='▬ <small>sem histórico 7d</small>'; dEl.className='fol-delta flat'; }
+      } else folEl.textContent='—';
+
+      const posts=allPosts.filter(p=>p.vertical===v);
+      renderMeta(v, posts.filter(p=>p.timestamp&&new Date(p.timestamp)>=monday), METAS[v]);
+
+      const last=posts.reduce((m,p)=>{ const t=p.timestamp?new Date(p.timestamp).getTime():0; return t>m?t:m; },0);
+      const gap=last?Math.floor((Date.now()-last)/864e5):null;
+      if(gap!=null&&gap>=4) gaps.push(`${v==='agro'?'Agro':v==='agua'?'Água':'Florestas'} ${gap}d`);
+
+      const com=posts.filter(p=>p.reach>0).sort((a,b)=>new Date(b.timestamp||0)-new Date(a.timestamp||0)).slice(0,30);
+      const er=com.length?com.reduce((s,p)=>s+p.er,0)/com.length:null;
+      const _adv=adsByV[v]||{spend:0,leads:0};
+      renderAds(v, {spend:_adv.spend, leads:realLeadsByV[v]||0}, er);
+    }
+
+    /* SINO seguidores: soma followers Araunah; toca se subiu vs ultima visita */
+    let _folTot=0; for(const v of VERTS){ const h=byVert[v]; if(h&&h.length) _folTot+=(h[0].followers_total||0); }
+    if(_folTot>0){ const pf=parseInt(localStorage.getItem("bell_fol")||"0");
+      if(pf>0 && _folTot>pf) notifyGain("fol", _folTot-pf);
+      localStorage.setItem("bell_fol", String(_folTot)); }
+    /* alert strip — al-leads + funil são atualizados por refreshLeads() (~1min) */
+    const gc=document.getElementById('al-gap-cell');
+    if(gaps.length){
+      document.getElementById('al-gap').textContent=gaps.length;
+      document.getElementById('al-gap-detail').textContent=gaps.join(' · ');
+      gc.className='alert-cell red'; document.getElementById('al-gap').className='alert-big red';
+    } else {
+      document.getElementById('al-gap').textContent='0';
+      document.getElementById('al-gap-detail').textContent='cadência em dia';
+      gc.className='alert-cell green'; document.getElementById('al-gap').className='alert-big green';
+    }
+
+    /* painel 2 — Conteúdo & Mercado (snapshot diário) */
+    const paid30=(adsReach||[]).reduce((a,r)=>({reach:a.reach+(r.reach||0),spend:a.spend+(parseFloat(r.spend)||0)}),{reach:0,spend:0});
+    renderPanel2(allPosts, concAgro, (byVert['agro']||[])[0]?.followers_total, now, paid30);
+
+    /* funil + leads a atender — quase tempo real via refreshLeads() */
+    refreshLeads();
+
+  }catch(err){
+    console.error('loadData',err);
+    /* sem footer: erro aparece como "—" nos números + header fica "sem atualizar há Xmin" */
+  }
+}
+loadData();
+
+/* ════════ ROTAÇÃO DE PAINÉIS — corte seco, ZERO animação (acessibilidade) ════════ */
+(function(){
+  const seq=[['panel1',40000],['panel2',35000]];
+  let i=0;
+  (function show(){
+    document.getElementById('panel1').classList.toggle('hidden', i!==0);
+    document.getElementById('panel2').classList.toggle('hidden', i!==1);
+    const dur=seq[i][1];
+    i=(i+1)%seq.length;
+    setTimeout(show, dur);
+  })();
+})();
+</script>
+
+<!-- LEADS TICKER (Bloomberg-style, injetado 17/jun) -->
+<style>
+#lead-ticker{position:fixed;left:0;right:0;bottom:0;height:44px;background:linear-gradient(90deg,#0b1018,#0d1320);border-top:2px solid rgba(31,111,235,.45);display:flex;align-items:center;z-index:99999;overflow:hidden;font-family:'Inter',system-ui,sans-serif}
+#lead-ticker .lt-label{flex:0 0 auto;height:100%;display:flex;align-items:center;gap:9px;padding:0 22px 0 18px;background:#1f6feb;color:#fff;font-weight:800;font-size:15px;letter-spacing:1px;clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+#lead-ticker .lt-vp{flex:1;overflow:hidden;height:100%;position:relative}
+#lead-ticker .lt-track{position:absolute;display:flex;align-items:center;height:100%;white-space:nowrap;will-change:transform;animation:lt-scroll linear infinite}
+@keyframes lt-scroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+#lead-ticker .lt-item{display:inline-flex;align-items:center;gap:9px;padding:0 26px;font-size:16px;color:#e6edf6;border-right:1px solid rgba(255,255,255,.08)}
+#lead-ticker .lt-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+#lead-ticker .lt-nome{font-weight:800}
+#lead-ticker .lt-meta{color:#8a98ab;font-size:14px}
+#lead-ticker .lt-int{font-weight:800;padding:1px 9px;border-radius:999px;font-size:12px;color:#0a0e14}
+</style>
+<div id="lead-ticker"><div class="lt-label">🚜 LEADS HOJE</div><div class="lt-vp"><div class="lt-track" id="lt-track"></div></div></div>
+<script>
+(function(){
+  try{
+    var SUPA="https://qzxabnagqlatytlvwpyq.supabase.co";
+    var ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY";
+    function brToday(){var b=new Date(Date.now()-3*3600e3);return b.getUTCFullYear()+"-"+String(b.getUTCMonth()+1).padStart(2,"0")+"-"+String(b.getUTCDate()).padStart(2,"0")+"T03:00:00";}
+    function interesse(l){var s=((l.campanha||"")+" "+(l.produto||"")+" "+(l.cultura||"")).toUpperCase();if(s.indexOf("COMPOST")>=0)return["Compostagem","#22c55e"];if(s.indexOf("ULEXITA")>=0||s.indexOf("BORO")>=0)return["Ulexita","#f59e0b"];if(s.indexOf("AGUA")>=0||s.indexOf("ÁGUA")>=0||s.indexOf("ETA")>=0||s.indexOf("EFLUENTE")>=0)return["Água","#38bdf8"];return["",""];}
+    function tcolor(l){var t=(l.ai_temperatura||"").toLowerCase(),s=l.ai_score||0;if(t==="quente"||l.prioridade==="alta"||s>=70)return"#ef4444";if(t==="morno"||s>=40)return"#f59e0b";return"#38bdf8";}
+    function orig(o){o=(o||"").toLowerCase();if(o.indexOf("insta")>=0)return"📷";if(o.indexOf("whats")>=0)return"💬";if(o.indexOf("face")>=0)return"👍";if(o==="manual")return"✍️";return"•";}
+    function quando(iso){var d=new Date(iso),m=Math.floor((Date.now()-d.getTime())/60000);if(m<1)return"agora";if(m<60)return"há "+m+" min";var b=new Date(d.getTime()-3*3600e3);return String(b.getUTCHours()).padStart(2,"0")+":"+String(b.getUTCMinutes()).padStart(2,"0");}
+    function esc(s){return String(s==null?"":s).replace(/[&<>]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;"}[c];});}
+    function itemHTML(l){var ic=interesse(l),it=ic[0],col=ic[1];var loc=esc(l.cidade||"—")+(l.uf?"/"+esc(l.uf):"");var parts=[];parts.push('<span class="lt-dot" style="background:'+tcolor(l)+'"></span>');parts.push('<span class="lt-nome">'+esc(l.nome||"—")+'</span>');parts.push('<span class="lt-meta">'+orig(l.origem)+' '+loc+'</span>');if(it)parts.push('<span class="lt-int" style="background:'+col+'">'+it+'</span>');parts.push('<span class="lt-meta">'+quando(l.created_at)+'</span>');return '<span class="lt-item">'+parts.join("")+'</span>';}
+    function loadTicker(){
+      fetch(SUPA+"/rest/v1/vw_tv_leads?select=nome,cidade,uf,origem,campanha,produto,cultura,prioridade,ai_temperatura,ai_score,created_at&created_at=gte."+brToday()+"&order=created_at.desc&limit=40",{headers:{apikey:ANON,Authorization:"Bearer "+ANON}})
+        .then(function(r){return r.json();})
+        .then(function(rows){
+          var tr=document.getElementById("lt-track");if(!tr)return;
+          if(!rows||!rows.length){tr.innerHTML='<span class="lt-item"><span class="lt-meta">Nenhum lead ainda hoje 🌱</span></span>';tr.style.animation="none";return;}
+          var html=rows.map(itemHTML).join("");
+          tr.innerHTML=html+html; // duplica p/ loop perfeito (-50%)
+          var dur=Math.max(24,rows.length*4.2);
+          tr.style.animation="lt-scroll "+dur+"s linear infinite";
+        }).catch(function(){});
+    }
+    loadTicker();setInterval(loadTicker,60000);
+  }catch(e){}
+})();
+</script>
+
+
+<!-- AUTO-RELOAD on-change (injetado 17/jun): TV se atualiza sozinha ~5min apos um deploy -->
+<script>
+(function(){
+  try{
+    var seen=null;
+    function chk(){
+      fetch(location.pathname+'?_ar='+Date.now(),{method:'HEAD',cache:'no-store'}).then(function(r){
+        var lm=r.headers.get('last-modified')||r.headers.get('etag');
+        if(!lm)return;
+        if(seen===null){seen=lm;return;}
+        if(lm!==seen){ location.reload(); }
+      }).catch(function(){});
+    }
+    setInterval(chk,5*60*1000);
+  }catch(e){}
+})();
+</script>
+
+</body>
+</html>

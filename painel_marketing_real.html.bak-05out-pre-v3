@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-br"><head><meta charset="utf-8">
+<title>Marketing · Leads e venda</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#06090f;--card:#0d131c;--line:#1e2632;--txt:#fff;--sub:#b9c4d3;--muted:#8a97a8;
+ --green:#00e676;--amber:#ffc107;--red:#ff4545;--blue:#2da8ff}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:100%;height:100%;background:#000;overflow:hidden;font-family:Inter,sans-serif;color:var(--txt)}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;background:var(--bg)}
+.tela{position:absolute;inset:0;padding:44px 64px;display:flex;flex-direction:column;gap:32px}
+.hidden{display:none}
+.topo{display:flex;justify-content:space-between;align-items:baseline}
+.titulo{font-size:64px;font-weight:900;letter-spacing:-1px}
+.titulo b{color:var(--green)}
+.quando{font-size:40px;font-weight:800;color:var(--sub)}
+/* tela 1 */
+table{width:100%;border-collapse:collapse}
+th{font-size:40px;font-weight:800;color:var(--muted);text-align:right;padding:0 0 14px 24px}
+th:first-child,td:first-child{text-align:left;padding-left:0}
+td{font-size:58px;font-weight:900;text-align:right;padding:10px 0 10px 24px;border-top:2px solid var(--line);white-space:nowrap}
+td:first-child{font-size:54px;font-weight:800}
+tr.total td{color:var(--sub);border-top:3px solid #3a4656}
+.red{color:var(--red)}.green{color:var(--green)}.amber{color:var(--amber)}
+.fn-tit{font-size:44px;font-weight:900;color:var(--sub);margin-top:auto}.funil{display:flex;gap:24px}.cinza{color:var(--muted)}
+.etapa{flex:1;background:var(--card);border:2px solid var(--line);border-radius:22px;padding:18px 28px}
+.etapa .lb{font-size:40px;font-weight:800;color:var(--sub)}
+.etapa .nm{font-size:88px;font-weight:900;line-height:1.05}
+.etapa .pc{font-size:40px;font-weight:800;color:var(--muted)}
+.barra{height:16px;border-radius:8px;background:#1b2430;margin-top:14px;overflow:hidden}
+.barra i{display:block;height:100%;background:var(--green)}
+/* tela 2 */
+.grade{flex:1;display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px}
+.caixa{background:var(--card);border:2px solid var(--line);border-radius:28px;padding:36px 48px;display:flex;flex-direction:column;justify-content:center}
+.caixa .nm{font-size:210px;font-weight:900;line-height:1}
+.caixa .lb{font-size:48px;font-weight:800;color:var(--sub);margin-top:14px}
+/* tela 3 */
+.dois{flex:1;display:grid;grid-template-columns:1.25fr 1fr;gap:48px;min-height:0}
+.posts{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;min-height:0}
+.post{background:var(--card);border:2px solid var(--line);border-radius:22px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.post img{flex:1;width:100%;object-fit:cover;min-height:0;background:#11161f}
+.post .sem{flex:1;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:var(--muted)}
+.post .al{font-size:64px;font-weight:900;padding:14px 22px 4px}
+.post .lb{font-size:40px;font-weight:800;color:var(--sub);padding:0 22px 18px}
+.sec{font-size:44px;font-weight:900;color:var(--sub);margin-bottom:18px}
+.lead{display:flex;justify-content:space-between;gap:20px;border-top:2px solid var(--line);padding:18px 0}
+.lead .n{font-size:48px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead .c{font-size:40px;font-weight:700;color:var(--sub);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lead .h{font-size:44px;font-weight:900;color:var(--green);white-space:nowrap}
+.vazio{font-size:48px;font-weight:800;color:var(--muted)}
+</style></head><body>
+<div id="stage">
+
+<section class="tela" id="t1">
+  <div class="topo"><div class="titulo">Anúncio virou <b>venda</b>?</div><div class="quando" id="q1"></div></div>
+  <table><thead><tr><th>Anúncio</th><th>Gasto</th><th>Leads</th><th>Clientes que compraram</th><th>Custo por cliente</th></tr></thead>
+  <tbody id="tb"></tbody></table>
+  <div class="fn-tit" id="fnt"></div><div class="funil" id="fn"></div>
+</section>
+
+<section class="tela hidden" id="t2">
+  <div class="topo"><div class="titulo">Lead <b>parado</b> agora</div><div class="quando">Últimos 30 dias</div></div>
+  <div class="grade" id="gp"></div>
+</section>
+
+<section class="tela hidden" id="t3">
+  <div class="topo"><div class="titulo">Conteúdo e <b>chegada</b></div><div class="quando" id="q3"></div></div>
+  <div class="dois">
+    <div style="display:flex;flex-direction:column;min-height:0"><div class="sec">Pessoas alcançadas pelo post no mês</div><div class="posts" id="ps"></div></div>
+    <div><div class="sec">Leads chegando</div><div id="lc"></div></div>
+  </div>
+</section>
+
+</div>
+<script>
+const SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6eGFibmFncWxhdHl0bHZ3cHlxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU1NDE4NzAsImV4cCI6MjA5MTExNzg3MH0.6liZxZtFY4FE8suxG7Ko9BlCfVh7GIZLv84AO7FHcMY';
+const SB_URL='https://qzxabnagqlatytlvwpyq.supabase.co';
+const qs=new URLSearchParams(location.search);
+const META_24H=80; // proposta: 80% dos leads com contato em até 1 dia útil (sábado e domingo não contam)
+function mesAtual(){const d=new Date(Date.now()-3*3600e3);return d.toISOString().slice(0,7)}
+const MES=qs.get('mes')||mesAtual();
+const NOMES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+const mesNome=(s=>s[0].toUpperCase()+s.slice(1))(NOMES[+MES.slice(5,7)-1])+' de '+MES.slice(0,4);
+async function sb(path){const r=await fetch(`${SB_URL}/rest/v1/${path}`,{headers:{apikey:SB_KEY,Authorization:'Bearer '+SB_KEY}});if(!r.ok)throw new Error(path+' '+r.status);return r.json()}
+const R=v=>'R$ '+Math.round(v).toLocaleString('pt-BR');
+const N=v=>Math.round(v).toLocaleString('pt-BR');
+const pct=(a,b)=>b?Math.round(100*a/b):0;
+
+function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);const st=document.getElementById('stage');st.style.transform=`scale(${s})`;st.style.left=((innerWidth-1920*s)/2)+'px';st.style.top=((innerHeight-1080*s)/2)+'px'}
+addEventListener('resize',fit);fit();
+
+async function tela1(){
+  const [g,f,v]=await Promise.all([sb(`vw_tv_mkt_gasto?mes=eq.${MES}`),sb(`vw_tv_mkt_funil?mes=eq.${MES}`),sb(`vw_tv_mkt_vendas?mes=eq.${MES}`)]);
+  const temas={};
+  const t=k=>temas[k]||(temas[k]={tema:k,gasto:0,leads:0,clientes:0});
+  g.forEach(r=>t(r.tema).gasto+=+r.gasto);
+  f.forEach(r=>t(r.tema).leads+=r.entrou);
+  v.forEach(r=>t(r.tema).clientes+=r.clientes);
+  const rows=Object.values(temas).filter(r=>r.gasto>=50&&r.tema!=='Outros').sort((a,b)=>b.gasto-a.gasto).slice(0,3);
+  const tot={tema:'Total',gasto:0,leads:0,clientes:0};Object.values(temas).forEach(r=>{tot.gasto+=r.gasto;tot.leads+=r.leads;tot.clientes+=r.clientes});
+  // Compostagem fecha por contrato em 45 a 90 dias: sem compra no mês não fica vermelho
+  const custo=r=>r.clientes?R(r.gasto/r.clientes):(r.tema==='Compostagem'?'<span class="cinza">ciclo longo</span>':'<span class="red">sem compra</span>');
+  const corCli=r=>r.clientes?'green':(r.tema==='Compostagem'?'cinza':'red');
+  document.getElementById('tb').innerHTML=rows.concat([tot]).map(r=>`<tr class="${r.tema==='Total'?'total':''}"><td>${r.tema}</td><td>${R(r.gasto)}</td><td>${N(r.leads)}</td><td class="${r.tema==='Total'?'':corCli(r)}">${N(r.clientes)}</td><td>${r.tema==='Total'?(r.clientes?R(r.gasto/r.clientes):'0'):custo(r)}</td></tr>`).join('');
+  const s=f.reduce((a,r)=>{for(const k of ['entrou','contatado_dia_util','prazo_vencido','proposta','perda_contato'])a[k]+=r[k];return a},{entrou:0,contatado_dia_util:0,prazo_vencido:0,proposta:0,perda_contato:0});
+  const pdu=pct(s.contatado_dia_util,s.prazo_vencido);
+  const cor=pdu>=META_24H?'green':pdu>=META_24H*0.75?'amber':'red';
+  const pp=pct(s.proposta,s.entrou), pe=pct(s.perda_contato,s.entrou);
+  document.getElementById('fnt').textContent=`Dos ${N(s.entrou)} leads que entraram em ${NOMES[+MES.slice(5,7)-1]}`;
+  const et=[['Contato em até 1 dia útil',s.contatado_dia_util,pdu,cor,`${pdu}% · META ${META_24H}%`],['Chegaram a proposta',s.proposta,pp,'',`${pp}% dos leads`],['Perderam o contato',s.perda_contato,pe,pe>15?'red':'',`${pe}% dos leads`]];
+  document.getElementById('fn').innerHTML=et.map(([lb,n,p,c,m])=>`<div class="etapa"><div class="lb">${lb}</div><div class="nm ${c}">${N(n)}</div><div class="pc">${m}</div><div class="barra"><i style="width:${Math.max(p,1)}%"></i></div></div>`).join('');
+  document.getElementById('q1').textContent=mesNome;
+}
+
+async function tela2(){
+  const [p]=await sb('vw_tv_mkt_parados');
+  const cx=[['sem_contato_prazo','Sem nenhum contato e passou de 1 dia útil'],['conversa_sem_dono','Em conversa sem consultor dono'],['sem_retorno_7d','Esperando retorno há mais de 7 dias']];
+  document.getElementById('gp').innerHTML=cx.map(([k,lb])=>{const n=p[k];const c=n===0?'green':n<=10?'amber':'red';return `<div class="caixa"><div class="nm ${c}">${N(n)}</div><div class="lb">${lb}</div></div>`}).join('');
+}
+
+function ha(ts){const m=Math.round((Date.now()-new Date(ts))/6e4);if(m<60)return `há ${m} min`;const h=Math.round(m/60);if(h<24)return `há ${h} h`;return `há ${Math.round(h/24)} d`}
+async function tela3(){
+  const ini=MES+'-01';
+  const fim=new Date(Date.UTC(+MES.slice(0,4),+MES.slice(5,7),1)).toISOString().slice(0,10);
+  const [m,l]=await Promise.all([
+    sb(`ig_media_metrics?select=media_id,vertical,reach,thumbnail_url,snapshot_date&timestamp=gte.${ini}&timestamp=lt.${fim}&reach=gt.0&order=snapshot_date.desc&limit=2000`),
+    sb('vw_tv_leads?select=nome,cidade,uf,created_at,origem&origem=in.(Instagram,WhatsApp,Voz)&order=created_at.desc&limit=5')]);
+  const ult={};m.forEach(r=>{if(!ult[r.media_id])ult[r.media_id]=r;else if(!ult[r.media_id].thumbnail_url&&r.thumbnail_url)ult[r.media_id].thumbnail_url=r.thumbnail_url});
+  const top=Object.values(ult).sort((a,b)=>b.reach-a.reach).slice(0,3);
+  const V={agro:'Agro',agua:'Água',florestas:'Florestas'};
+  document.getElementById('ps').innerHTML=top.length?top.map(p=>`<div class="post">${p.thumbnail_url?`<img src="${p.thumbnail_url}" referrerpolicy="no-referrer" onerror="this.outerHTML='<div class=sem>${V[p.vertical]||''}</div>'">`:`<div class="sem">${V[p.vertical]||''}</div>`}<div class="al">${N(p.reach)}</div><div class="lb">${V[p.vertical]||p.vertical}</div></div>`).join(''):'<div class="vazio">Sem post no mês ainda</div>';
+  const tc=s=>(s||'').toLowerCase().replace(/(^|\s)(\S)/g,(a,b,c)=>b+c.toUpperCase()).replace(/ (Da|De|Do|Das|Dos|E) /g,m=>m.toLowerCase());const pn=s=>tc((s||'').trim().split(/\s+/).slice(0,2).join(' '));
+  document.getElementById('lc').innerHTML=l.map(x=>`<div class="lead"><div style="min-width:0"><div class="n">${pn(x.nome)||'Sem nome'}</div><div class="c">${[tc(x.cidade),(x.uf||'').toUpperCase()].filter(Boolean).join(' / ')||x.origem}</div></div><div class="h">${ha(x.created_at)}</div></div>`).join('');
+  document.getElementById('q3').textContent=mesNome;
+}
+
+async function carregar(){for(const f of [tela1,tela2,tela3]){try{await f()}catch(e){console.error(e)}}}
+carregar();setInterval(carregar,5*60e3);
+
+const SEQ=[['t1',40],['t2',30],['t3',30]];
+const fixa=qs.get('tela');
+if(fixa){SEQ.forEach(([id])=>document.getElementById(id).classList.toggle('hidden',id!=='t'+fixa))}
+else{let i=0;const gira=()=>{SEQ.forEach(([id],j)=>document.getElementById(id).classList.toggle('hidden',j!==i));setTimeout(()=>{i=(i+1)%SEQ.length;gira()},SEQ[i][1]*1000)};gira()}
+</script><!-- AUTO-RELOAD on-change: TV se atualiza sozinha ~5min apos um deploy; e recarrega as 4h -->
+<script>
+(function(){
+  try{
+    var seen=null;
+    function chk(){
+      fetch(location.pathname+'?_ar='+Date.now(),{method:'HEAD',cache:'no-store'}).then(function(r){
+        var lm=r.headers.get('last-modified')||r.headers.get('etag');
+        if(!lm)return;
+        if(seen===null){seen=lm;return;}
+        if(lm!==seen){ location.reload(); }
+      }).catch(function(){});
+    }
+    setInterval(chk,5*60*1000);
+    setInterval(function(){ if(new Date().getHours()===4) location.reload(); }, 60*60*1000);
+  }catch(e){}
+})();
+</script>
+</body></html>
