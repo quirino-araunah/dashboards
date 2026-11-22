@@ -3,80 +3,115 @@
 <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Marketing · leads e vendas</title>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@600;700;800;900&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@200;300;400;600&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#061015;--card:#0d1b22;--card2:#10232c;--t1:#ffffff;--t2:#a7b8c3;--t3:#62737e;--g:#5cc610;--b:#3ba7ff;--r:#ff5a5a;--a:#ffc233;--v:#b38cff;--trk:#1a2c35}
-html,body{margin:0;width:100%;height:100%;background:#061015!important;overflow:hidden;font-family:Inter,sans-serif!important;color:#fff;font-variant-numeric:tabular-nums}
-#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0;background:radial-gradient(1400px 700px at 15% 0%,#0b2029 0%,var(--bg) 60%)}
-.tela{position:absolute;inset:0;padding:22px 40px;display:flex;flex-direction:column;gap:14px;box-sizing:border-box}
+/* 17/11: chassi azul da Araunah. Um número principal por tela, rótulo em português simples, texto de leitura >= 44px (TV 32" HD, time a até 3 m). */
+:root{--ac:#4A9EB8;--ac2:#8fd0e6;--t1:#fff;--t2:#a9bfca;--t3:#64818e;--ln:rgba(74,158,184,.38);--ln2:rgba(74,158,184,.18);--gh:#1d3642;--w:#f0a46a;--ouro:#e8c15a}
+html,body{margin:0;width:100%;height:100%;background:#0a1216 radial-gradient(120% 80% at 78% 8%,#16323d 0%,#0d1a20 55%,#0a1216 100%)!important;overflow:hidden;font-family:"Source Sans 3",sans-serif!important;color:#fff;font-variant-numeric:tabular-nums lining-nums}
+#stage{position:absolute;left:0;top:0;width:1920px;height:1080px;transform-origin:0 0}
+.moldura{position:absolute;left:44px;top:44px;right:44px;bottom:44px;border-left:3px solid var(--ln);border-bottom:3px solid var(--ln)}
+.logo{position:absolute;right:92px;top:50px;height:56px;opacity:.92}
+.tela{position:absolute;inset:0}
 .hidden{display:none}
-.topo{display:flex;justify-content:space-between;align-items:center;height:64px}
-.mes{font-size:56px;font-weight:900;letter-spacing:-1px;white-space:nowrap}.mes i{font-style:normal;color:var(--g)}
-.chip{font-size:40px;font-weight:800;color:var(--t2);background:var(--card);border-radius:999px;padding:6px 26px}.chip b{color:#fff}
-.g{color:var(--g)}.r{color:var(--r)}.a{color:var(--a)}.bl{color:var(--b)}.vi{color:var(--v)}.z{color:var(--t3)}
-.card{background:var(--card);border-radius:24px;padding:12px 24px;box-sizing:border-box}
-.lbl{font-size:40px;font-weight:800;color:var(--t2);white-space:nowrap}
-/* tiles */
-.tiles{display:grid;grid-template-columns:1.3fr 1.3fr .75fr 1.15fr;gap:14px;height:286px}
-.hero{display:flex;align-items:baseline;gap:16px;margin:2px 0 8px}
-.hero .n{font-size:74px;font-weight:900;line-height:1;letter-spacing:-1px;white-space:nowrap}
-.pill{font-size:40px;font-weight:900;border-radius:999px;padding:2px 16px;white-space:nowrap}
-.pill.up{background:rgba(92,198,16,.16);color:var(--g)}.pill.dn{background:rgba(255,90,90,.16);color:var(--r)}
-.bar{height:20px;border-radius:10px;background:var(--trk);overflow:hidden;margin:6px 0 6px}
-.bar i{display:block;height:100%;border-radius:10px}
-.bar{position:relative}.bar .rt{position:absolute;top:-6px;bottom:-6px;width:5px;margin-left:-2px;background:#fff;border-radius:3px;box-shadow:0 0 0 2px #061015}
-.bar.fina{height:10px}
-.lin{display:flex;justify-content:space-between;gap:12px;font-size:40px;font-weight:800;color:var(--t2);white-space:nowrap;line-height:1.15}
-.lin b{color:#fff}
-/* mês a mês */
-table.mm{width:100%;border-collapse:separate;border-spacing:8px 3px;margin:-3px -8px}
-.mm th{font-size:40px;font-weight:800;color:var(--t3);text-align:right;padding:0 12px;line-height:1.05}
-.mm th:first-child{text-align:left}
-.mm td{font-size:40px;font-weight:900;text-align:right;padding:0 12px;line-height:1.05;white-space:nowrap;border-radius:10px;position:relative}
-.mm td:first-child{text-align:left;color:var(--t2);font-weight:800}
-.mm th.cur{color:var(--g)}
-.mm td.db{background:linear-gradient(90deg,var(--c) var(--w),transparent var(--w))}
-/* baixo */
-.baixo{display:grid;grid-template-columns:1fr 540px;grid-template-rows:minmax(0,1fr);gap:14px;flex:1;min-height:0}.baixo>.card{min-height:0;overflow:hidden}
-.sec{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
-.sec .tt{font-size:42px;font-weight:900}
-.leg{font-size:40px;font-weight:800;color:var(--t2)}.leg i{display:inline-block;width:26px;height:26px;border-radius:6px;margin:0 10px 0 22px;vertical-align:-2px}
-.chart{display:grid;grid-template-columns:repeat(31,minmax(0,1fr));grid-template-rows:100%;gap:5px;height:calc(100% - 64px)}
-.col{display:flex;flex-direction:column;align-items:center;height:100%}
-.bars{position:relative;width:86%;flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:center;margin-top:44px}
-.gs{position:absolute;bottom:0;left:0;right:0;background:#22343e;border-radius:6px 6px 0 0}
-.bb{position:relative;width:62%;background:var(--b);border-radius:6px 6px 0 0}
-.vv{position:absolute;left:50%;transform:translateX(-50%);font-size:40px;font-weight:900;line-height:1}
-.dt{font-size:40px;font-weight:800;color:var(--t3);height:44px;white-space:nowrap;margin-top:4px}
-.col.hj .bb{background:var(--g)}.col.hj .vv,.col.hj .dt{color:var(--g)}
-.tema{display:grid;grid-template-columns:1fr auto;align-items:center;margin-top:4px;line-height:1.1}.tema .bar{height:12px;margin:4px 0 2px}
-.tema .nm{font-size:40px;font-weight:800;color:var(--t2)}.tema .vl{font-size:40px;font-weight:900}
-.tema .ref{grid-column:1/3;font-size:40px;font-weight:700;color:var(--t3)}
-/* tela 2 */
-.ya{background:linear-gradient(90deg,#0d2a3a,#0d1b22);border-radius:26px;padding:14px 30px;display:flex;align-items:center;gap:34px;height:150px;box-sizing:border-box;box-shadow:inset 6px 0 0 var(--b)}
-.ft{width:104px;height:104px;border-radius:50%;object-fit:cover;background:#1a2c35;display:flex;align-items:center;justify-content:center;font-size:44px;font-weight:900;color:var(--t2);flex:none}
-.ya .nm{font-size:50px;font-weight:900;line-height:1.05}.ya .pp{font-size:40px;font-weight:800;color:var(--b);white-space:nowrap}
+.kick{position:absolute;left:104px;top:58px;font-size:44px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:var(--ac);white-space:nowrap}
+.rot{font-size:58px;font-weight:400;color:var(--t2);line-height:1.1;white-space:nowrap}
+b{font-weight:400}
+/* tela 1: leads */
+.esq{position:absolute;left:104px;top:164px;width:990px}
+.heroi{display:flex;align-items:flex-end;gap:64px;margin-top:-6px}
+.num{font-size:330px;font-weight:200;line-height:.86;letter-spacing:-8px}
+.cmp{padding-bottom:26px}
+.cmp .cl{display:block;font-size:50px;color:var(--t3);line-height:1.1}
+.cmp .cn{display:block;font-size:130px;font-weight:200;color:var(--t2);line-height:1}
+.graf{margin-top:38px}
+.gtop{display:flex;justify-content:space-between;align-items:baseline;font-size:46px;color:var(--t3)}
+.gtop b{color:var(--t2)}
+.leg i{display:inline-block;width:26px;height:26px;border-radius:4px;margin:0 12px 0 34px;vertical-align:-1px}
+.bars{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:9px;height:262px;align-items:end;margin-top:54px;border-bottom:3px solid var(--ln)}
+.c{position:relative;height:100%;display:flex;align-items:flex-end;justify-content:center}
+.c .g{position:absolute;left:0;right:0;bottom:0;background:var(--gh);border-radius:5px 5px 0 0}
+.c .b{position:relative;width:64%;background:var(--ac);border-radius:5px 5px 0 0}
+.c.hj .b{background:#fff}
+.c .v{position:absolute;left:50%;transform:translateX(-50%);font-size:46px;line-height:1;white-space:nowrap}
+.eixo{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:9px;font-size:44px;color:var(--t3);margin-top:8px}
+.eixo span{text-align:center;white-space:nowrap}
+.dir{position:absolute;left:1170px;top:164px;right:92px}
+.bl{padding:0 0 24px;margin-bottom:24px;border-bottom:3px solid var(--ln2)}
+.bl:last-child{border-bottom:0;margin-bottom:0}
+.bl .n2{font-size:112px;font-weight:300;line-height:1.02;letter-spacing:-2px;white-space:nowrap}
+.sb{font-size:48px;color:var(--t3);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb b{color:var(--t2)}
+/* tela 2: vendas e meta */
+.duo{position:absolute;left:104px;right:92px;top:164px;display:grid;grid-template-columns:1fr 1fr}
+.vert{padding-right:64px;min-width:0}
+.vert+.vert{padding:0 0 0 64px;border-left:3px solid var(--ln2)}
+.vnum{font-size:168px;font-weight:200;line-height:1.02;letter-spacing:-4px;white-space:nowrap}
+.mb{position:relative;height:16px;border-radius:8px;background:var(--gh);margin-top:22px}
+.mb i{display:block;height:100%;border-radius:8px;background:var(--ac)}
+.mb .hj{position:absolute;top:-12px;bottom:-12px;width:5px;margin-left:-2px;background:#fff;border-radius:3px}
+.mbl{position:relative;height:50px;font-size:40px;color:var(--t3);margin-top:10px}
+.mbl span{position:absolute;top:0;white-space:nowrap}
+.ml{font-size:58px;color:var(--t2);line-height:1.15;white-space:nowrap;margin-top:4px}
+.ml b{color:#fff}
+.m6t{font-size:46px;color:var(--t3);margin-top:40px;white-space:nowrap}
+.m6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px;margin-top:10px}
+.m6 .k{display:flex;flex-direction:column;align-items:center}
+.m6 .pv{font-size:46px;line-height:1.1;color:var(--t2);white-space:nowrap}
+.m6 .k.ok .pv{color:#fff}
+.m6 .bx{width:100%;height:118px;display:flex;align-items:flex-end;border-bottom:3px solid var(--ln)}
+.m6 .bx i{display:block;width:100%;background:#2b5263;border-radius:5px 5px 0 0}
+.m6 .k.ok .bx i{background:var(--ac)}
+.m6 .mn{font-size:44px;color:var(--t3);line-height:1.2}
+.m6 .k.cur .mn{color:var(--ac2)}
+/* tela 3: origem */
+.t3l{position:absolute;left:104px;top:164px;width:590px}
+.lg3{font-size:42px;color:var(--t3);margin-top:6px;white-space:nowrap}
+.lg3 i{display:inline-block;width:24px;height:24px;border-radius:4px;margin-right:10px;vertical-align:-1px}
+.tm{margin-top:20px}
+.tm .l1{display:flex;justify-content:space-between;align-items:baseline}
+.tm .nm{font-size:54px;color:var(--t2)}
+.tm .vl{font-size:84px;font-weight:300;line-height:1;letter-spacing:-1px}
+.tm .ba{height:14px;border-radius:7px;background:var(--ac);margin-top:8px;min-width:6px}
+.tm .bo{height:10px;border-radius:5px;background:#2b5263;margin-top:7px;min-width:6px}
+.t3l.c5 .tm{margin-top:10px}.t3l.c5 .tm .vl{font-size:68px}.t3l.c5 .tm .nm{font-size:50px}
+.t3r{position:absolute;left:776px;right:92px;top:164px}
+.h6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:18px;margin-top:8px}
+.h6 .k{display:flex;flex-direction:column;align-items:center}
+.h6 .pv{font-size:48px;line-height:1.1;color:var(--t2);white-space:nowrap}
+.h6 .k.cur .pv{color:#fff}
+.h6 .bx{width:100%;height:150px;display:flex;align-items:flex-end;border-bottom:3px solid var(--ln)}
+.h6 .bx i{display:block;width:100%;background:#2b5263;border-radius:5px 5px 0 0;min-height:3px}
+.h6 .k.cur .bx i{background:var(--ac)}
+.h6 .mn{font-size:44px;color:var(--t3);line-height:1.2}
+.h6 .k.cur .mn{color:var(--ac2)}
+.t3r .rot+.h6{margin-bottom:26px}
+.insta{position:absolute;left:104px;right:92px;bottom:70px;padding-top:16px;border-top:3px solid var(--ln2);font-size:46px;color:var(--t3);white-space:nowrap;display:flex;justify-content:space-between;align-items:baseline}
+.insta .ik{color:var(--t2)}
+.insta b{color:#fff}.insta em{font-style:normal;color:var(--ac2)}
+/* tela 4: consultores */
+.ya{position:absolute;left:104px;right:92px;top:150px;height:150px;display:flex;align-items:center;gap:36px;border-bottom:3px solid var(--ln2);padding-bottom:16px;box-sizing:content-box}
+.ft{border-radius:50%;object-fit:cover;background:var(--gh);display:flex;align-items:center;justify-content:center;font-weight:400;color:var(--t2);flex:none}
+.ya .ft{width:118px;height:118px;font-size:54px}
+.ya .nm{font-size:62px;line-height:1.05}.ya .pp{font-size:44px;color:var(--ac);white-space:nowrap}
 .ya .st{display:flex;flex-direction:column;align-items:center;flex:1}
-.ya .st b{font-size:70px;font-weight:900;line-height:1}.ya .st span{font-size:40px;font-weight:800;color:var(--t2);white-space:nowrap}
-.rk{flex:1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:14px;min-height:0}
-.cd{background:var(--card);border-radius:22px;padding:6px 22px;display:grid;grid-template-columns:62px 88px minmax(0,1fr) auto;grid-template-rows:repeat(3,1fr);grid-template-areas:'pos ft nm sts' 'pos ft cv sts' 'pos ft tm tm';column-gap:18px;align-items:center;min-height:0}
-.cd .pos{grid-area:pos;font-size:48px;font-weight:900;color:var(--t3);text-align:center}
-.cd.top .pos{color:var(--g)}
-.cd .ft{grid-area:ft;width:88px;height:88px;font-size:40px}
-.cd .nm{grid-area:nm}.cd .cvb{grid-area:cv;min-width:0}.cd .tm3{grid-area:tm}
-.cd .nm{font-size:44px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1}
-.cd .cvb{display:flex;align-items:center;gap:14px}
-.cd .cvb .bar{flex:1;height:16px;margin:0}
-.cd .cvb span{font-size:40px;font-weight:800;color:var(--t2);white-space:nowrap}.cd .cvb b{color:#fff}
-.cd .tm3{font-size:40px;font-weight:700;color:var(--t3);white-space:nowrap;line-height:1.15}.cd .tm3 b{color:var(--t2)}
-.cd .sts{grid-area:sts;display:flex;flex-direction:column;align-items:flex-end;gap:4px}
-.cd .sts .pill{font-size:40px;line-height:1.1;padding:0 14px}
-.pill.neu{background:#1a2c35;color:var(--t2)}.pill.neu b{color:#fff}
-.pill.rd{background:rgba(255,90,90,.16);color:var(--r)}
-.seg{font-size:40px;font-weight:800;color:var(--t3);text-align:right;height:44px;line-height:44px;white-space:nowrap}.seg b{color:var(--t2)}
-@keyframes pisca{0%,100%{box-shadow:inset 0 0 0 0 rgba(92,198,16,0)}50%{box-shadow:inset 0 0 0 6px rgba(92,198,16,.95);background:#14361a}}
-.pisca{animation:pisca 1s ease-in-out infinite}
-#toast{position:absolute;left:50%;top:26px;transform:translate(-50%,-30px);opacity:0;transition:opacity .4s,transform .4s;z-index:50;background:linear-gradient(135deg,#16331f,#1f5a2e);color:#9dff6a;font-size:52px;font-weight:900;padding:18px 40px;border-radius:24px;white-space:nowrap;box-shadow:0 12px 40px rgba(0,0,0,.6)}
+.ya .st b{font-size:100px;font-weight:300;line-height:1}.ya .st span{font-size:44px;color:var(--t3);white-space:nowrap}
+.ya .st b.w{color:var(--w)}
+.rkh,.rk{position:absolute;left:104px;right:92px;display:grid;grid-template-columns:1fr 1fr;column-gap:72px}
+.rkh{top:330px}
+.gr{display:grid;grid-template-columns:78px minmax(0,1fr) 156px 128px 156px;column-gap:12px;align-items:center}
+.rkh .gr span{font-size:38px;line-height:1.05;color:var(--t3);text-align:right;white-space:nowrap}
+.rk{top:420px;bottom:66px;grid-auto-flow:column;grid-template-rows:repeat(var(--r),minmax(0,1fr))}
+.cd{border-bottom:2px solid rgba(74,158,184,.13)}
+.cd .ft{width:76px;height:76px;font-size:36px}
+.cd .nm{font-size:52px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cd .x{font-size:60px;font-weight:300;text-align:right;line-height:1}
+.cd .x.z{color:var(--t3)}.cd .x.w{color:var(--w)}
+@keyframes pisca{0%,100%{background:rgba(74,158,184,0)}50%{background:rgba(74,158,184,.34)}}
+.pisca{animation:pisca 1s ease-in-out infinite;border-radius:14px}
+/* avisos */
+#toast{position:absolute;left:50%;top:26px;transform:translate(-50%,-30px);opacity:0;transition:opacity .4s,transform .4s;z-index:50;background:#0f2630;border-left:10px solid var(--ac);color:#fff;font-size:56px;font-weight:400;padding:20px 44px;border-radius:14px;white-space:nowrap;box-shadow:0 14px 44px rgba(0,0,0,.65)}
+#toast.venda{border-left-color:var(--ouro);color:var(--ouro);font-size:64px}
+#toast.on{opacity:1;transform:translate(-50%,0)}
 #flash{position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:0}
 #flash.venda{animation:clarao 4.5s linear}
 #flash.lead{animation:claraoLead 1.6s linear}
@@ -84,29 +119,42 @@ table.mm{width:100%;border-collapse:separate;border-spacing:8px 3px;margin:-3px 
 @keyframes claraoLead{0%{opacity:0;background:#3ba7ff}10%{opacity:.85;background:#3ba7ff}25%{opacity:.1}40%{opacity:.75;background:#3ba7ff}100%{opacity:0}}
 .conf{position:fixed;top:-40px;z-index:9001;pointer-events:none;width:22px;height:34px;border-radius:4px;animation:cai linear forwards}
 @keyframes cai{to{transform:translateY(115vh) rotate(900deg)}}
-#toast.venda{background:linear-gradient(135deg,#3a2a00,#7a5a00);color:#ffe066;font-size:64px}
-#toast.on{opacity:1;transform:translate(-50%,0)}
-#somlock{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:50;background:#1a2c35;color:var(--t2);font-size:40px;font-weight:800;padding:6px 26px;border-radius:999px;display:none}
-.erro{position:absolute;right:52px;bottom:8px;font-size:40px;font-weight:800;color:var(--r)}
+#somlock{position:absolute;left:50%;bottom:2px;transform:translateX(-50%);z-index:50;color:var(--t3);font-size:34px;white-space:nowrap;display:none}
+.erro{position:absolute;right:92px;bottom:2px;font-size:34px;color:var(--w)}
 </style></head><body>
 <div id="stage">
+<div class="moldura"></div>
+<img class="logo" src="araunah-branca.png" alt="Araunah">
 <section class="tela" id="t1">
-  <div class="topo"><div class="mes" id="mes1"></div><div class="seg" id="seg"></div></div>
-  <div class="tiles">
-    <div class="card" id="vAG"></div>
-    <div class="card" id="vAU"></div>
-    <div class="card" id="kL"></div>
-    <div class="card" id="kP"></div>
+  <div class="kick" id="k1"></div>
+  <div class="esq">
+    <div class="rot">Leads que chegaram no mês</div>
+    <div class="heroi"><div class="num" id="nlm"></div><div class="cmp"><span class="cl" id="cl"></span><span class="cn" id="cn"></span></div></div>
+    <div class="graf">
+      <div class="gtop"><span>Por dia</span><span class="leg"><i style="background:var(--ac)"></i><b id="lg1"></b><i style="background:#2a4a59"></i><span id="lg2"></span></span></div>
+      <div class="bars" id="bars"></div><div class="eixo" id="eixo"></div>
+    </div>
   </div>
-  <div class="card"><table class="mm" id="mm"></table></div>
-  <div class="baixo">
-    <div class="card"><div class="sec"><span class="tt">Leads por dia</span><span class="leg"><i style="background:var(--b)"></i><span id="lg1"></span><i style="background:#22343e"></i><span id="lg2"></span></span></div><div class="chart" id="ch"></div></div>
-    <div class="card"><div class="sec"><span class="tt">Por tema</span><span class="lbl" id="tmr"></span></div><div id="tm"></div></div>
+  <div class="dir">
+    <div class="bl"><div class="rot">Chegaram hoje</div><div class="n2" id="hj"></div><div class="sb" id="ult"></div></div>
+    <div class="bl"><div class="rot">Investido em anúncio</div><div class="n2" id="inv"></div><div class="sb" id="inva"></div></div>
+    <div class="bl"><div class="rot">Vendas vindas de lead</div><div class="n2" id="vd"></div><div class="sb" id="vda"></div></div>
   </div>
 </section>
 <section class="tela hidden" id="t2">
-  <div class="topo"><div class="mes">Leads por consultor</div><div class="chip" id="inf2"></div></div>
+  <div class="kick" id="k2"></div>
+  <div class="duo"><div class="vert" id="vAG"></div><div class="vert" id="vAU"></div></div>
+</section>
+<section class="tela hidden" id="t3">
+  <div class="kick" id="k3"></div>
+  <div class="t3l" id="t3l"></div>
+  <div class="t3r" id="t3r"></div>
+  <div class="insta" id="insta"></div>
+</section>
+<section class="tela hidden" id="t4">
+  <div class="kick">Leads com os consultores</div>
   <div class="ya" id="ya"></div>
+  <div class="rkh" id="rkh"></div>
   <div class="rk" id="rk"></div>
 </section>
 <div class="erro" id="erro"></div>
@@ -117,7 +165,6 @@ table.mm{width:100%;border-collapse:separate;border-spacing:8px 3px;margin:-3px 
 const QS=new URLSearchParams(location.search);
 const NOMES=['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
 const CURTO=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
-const cap=s=>s[0].toUpperCase()+s.slice(1);
 function hojeBR(){return new Date(Date.now()-3*3600e3)}
 const H=hojeBR(), ANO=H.getUTCFullYear(), MES=H.getUTCMonth()+1, DIA=H.getUTCDate();
 const ym=(y,m)=>`${y}-${String(m).padStart(2,'0')}`;
@@ -127,133 +174,126 @@ const MES_ANT=ym(PM.y,PM.m);
 const dmes=d=>String(d).slice(0,7), ddia=d=>+String(d).slice(8,10);
 const N=v=>Math.round(v).toLocaleString('pt-BR');
 function R(v){v=+v||0;const a=Math.abs(v);if(a>=1e6)return 'R$ '+(v/1e6).toLocaleString('pt-BR',{maximumFractionDigits:1})+' mi';if(a>=1e3)return 'R$ '+(v/1e3).toLocaleString('pt-BR',{maximumFractionDigits:a>=1e5?0:1})+' mil';return 'R$ '+N(v)}
+const Rc=v=>R(v).replace('R$ ','');
 const pct=(a,b)=>b?a/b*100:0;
-const P=v=>(Math.round(v*10)/10).toLocaleString('pt-BR')+'%';
-function varia(a,b){if(!b)return '';const p=Math.round((a-b)/b*100);const c=p>=0?'g':'r';return ` <span class="${c}">${p>=0?'+':''}${p}%</span>`}
-function corAting(p){return p>=100?'g':p>=80?'a':'r'}
 const sum=(arr,f)=>arr.reduce((s,x)=>s+(+f(x)||0),0);
+const horaBR=iso=>new Date(new Date(iso)-3*3600e3).toISOString().slice(11,16).replace(':','h');
+const tit=s=>String(s||'').toLowerCase().replace(/(^|[\s\-])(\S)/g,(m,a,b)=>a+b.toUpperCase());
 // margem de segurança: TV costuma cortar as bordas (overscan); ?margem=0 desliga
 const MARGEM=QS.has('margem')?(+QS.get('margem')||0)/100:0.04;
 // a TV Android (05/10) informa viewport 1088x612 mas tela 962x541: usa o menor dos dois pra não cortar
 function tela_wh(){const v=window.visualViewport;let W=v?v.width:document.documentElement.clientWidth||innerWidth,H0=v?v.height:document.documentElement.clientHeight||innerHeight;
   if(screen&&screen.width&&screen.height&&screen.width<W*0.98){W=Math.min(W,screen.width);H0=Math.min(H0,screen.height)}return [W,H0]}
-function fit(){const [W,H0]=tela_wh();const s=Math.min(W*(1-2*MARGEM)/1920,H0*(1-2*MARGEM)/1080);const innerWidth=W,innerHeight=H0;const st=document.getElementById('stage');st.style.transform=`scale(${s})`;st.style.left=((innerWidth-1920*s)/2)+'px';st.style.top=((innerHeight-1080*s)/2)+'px'}
+function fit(){const [W,H0]=tela_wh();const s=Math.min(W*(1-2*MARGEM)/1920,H0*(1-2*MARGEM)/1080);const st=document.getElementById('stage');st.style.transform=`scale(${s})`;st.style.left=((W-1920*s)/2)+'px';st.style.top=((H0-1080*s)/2)+'px'}
 addEventListener('resize',fit);fit();
 try{const [W,H0]=tela_wh();new Image().src=`d/tela.gif?w=${W}&h=${H0}&iw=${window.innerWidth}&ih=${window.innerHeight}&sw=${screen.width}&sh=${screen.height}&dpr=${window.devicePixelRatio}`}catch(e){}
-const ini6=ym(MES<=6?ANO-1:ANO,((MES+5)%12)+1)+'-01';
 
-async function contaBase(){
-  const r=await fetch(SUPABASE_URL+'/rest/v1/vw_tv_leads?select=id',{method:'HEAD',headers:{apikey:SUPABASE_KEY,Authorization:'Bearer '+SUPABASE_KEY,Prefer:'count=exact',Range:'0-0'}});
-  return +((r.headers.get('content-range')||'').split('/')[1]||0);
-}
-
-
-// sem login, igual ao painel antigo: os dados vêm de d/painel.json, gerado a cada 5 min na robusta (~/scripts/tv_marketing/gerar_json.py)
+// sem login: os dados vêm de d/painel.json, gerado a cada minuto na robusta (~/scripts/tv_marketing/gerar_json.py)
 let DADOS=null;
-const MAPA={vw_plan_vs_real_vertical:'plan',vw_tvm_leads_dia:'leads_dia',vw_tvm_gasto_dia:'gasto_dia',vw_tvm_vendas_lead:'vendas_lead',vw_tvm_coorte:'coorte',vw_tvm_consultores:'consultores',vw_tvm_yasmim:'yasmim'};
 async function carregaDados(){const r=await fetch(`d/painel.json?_=${Date.now()}`,{cache:'no-store'});if(!r.ok)throw new Error('dados '+r.status);DADOS=await r.json();}
-function sbFetch(v){return Promise.resolve((DADOS&&DADOS[MAPA[v]])||[])}
-async function contaBase(){return DADOS&&DADOS.base&&DADOS.base[0]?DADOS.base[0].n:null}
+// Florestas fica fora dos números de lead, gasto e venda (decisão do Thiago, 05/10)
+const sf=a=>(a||[]).filter(r=>r.vertical!=='FLORESTAS');
 // ritmo: dias úteis (seg a sex) já corridos no mês, contando hoje
 function diasUteis(y,m,ate){let n=0;const fim=new Date(Date.UTC(y,m,0)).getUTCDate();for(let d=1;d<=Math.min(ate,fim);d++){const w=new Date(Date.UTC(y,m-1,d)).getUTCDay();if(w>0&&w<6)n++}return n}
 const RITMO=diasUteis(ANO,MES,DIA)/Math.max(1,diasUteis(ANO,MES,31));
-const corRitmo=(real,alvo)=>!alvo?'var(--t2)':real>=alvo?'var(--g)':real>=alvo*0.8?'var(--a)':'var(--r)';
-const corAt=p=>p>=100?'var(--g)':p>=80?'var(--a)':'var(--r)';
-const pill=(a,b)=>{if(!b)return '';const p=Math.round((a-b)/b*100);return `<span class="pill ${p>=0?'up':'dn'}">${p>=0?'▲':'▼'} ${Math.abs(p)}%</span>`};
-async function tela1(){
-  const [plan,ld,gd,vl,co,base]=await Promise.all([
-    sbFetch('vw_plan_vs_real_vertical',`select=vertical,mes,id_tempo,meta,realizado&id_tempo=like.${ANO}*&vertical=in.(AGRO,AGUA)`),
-    sbFetch('vw_tvm_leads_dia',`select=dia,vertical,tema,n&dia=gte.${ini6}`),
-    sbFetch('vw_tvm_gasto_dia',`select=dia,vertical,gasto&dia=gte.${ini6}`),
-    sbFetch('vw_tvm_vendas_lead',`select=dia,vertical,lead_id,valor&dia=gte.${ini6}`),
-    sbFetch('vw_tvm_coorte','select=mes,vertical,leads,convertidos'),
-    contaBase().catch(()=>null)]);
-  const sf=a=>a.filter(r=>r.vertical!=='FLORESTAS');
-  const ldA=sf(ld),gdA=sf(gd),vlA=sf(vl),coA=sf(co);
-  const SM=CURTO[PM.m-1];
-  document.getElementById('mes1').innerHTML=`${cap(NOMES[MES-1])} <i>${ANO}</i>`;
-  const gm=sum(gdA.filter(r=>dmes(r.dia)===MES_ATUAL),r=>r.gasto), ga=sum(gdA.filter(r=>dmes(r.dia)===MES_ANT),r=>r.gasto);
+const el=id=>document.getElementById(id);
 
-  // vendas x META
-  const tileV=(v,nome)=>{const m=plan.filter(r=>r.vertical===v&&+r.mes===MES), a=plan.filter(r=>r.vertical===v&&+r.mes<=MES);
+function tela1(){
+  const ld=sf(DADOS.leads_dia),gd=sf(DADOS.gasto_dia),vl=sf(DADOS.vendas_lead);
+  const lm=ld.filter(r=>dmes(r.dia)===MES_ATUAL),la=ld.filter(r=>dmes(r.dia)===MES_ANT),lpa=la.filter(r=>ddia(r.dia)<=DIA);
+  el('k1').textContent='Marketing · '+NOMES[MES-1];
+  el('nlm').textContent=N(sum(lm,r=>r.n));
+  el('cl').innerHTML=NOMES[PM.m-1]+'<br>até o dia '+DIA;
+  el('cn').textContent=N(sum(lpa,r=>r.n));
+  const pd=a=>{const o={};a.forEach(r=>o[ddia(r.dia)]=(o[ddia(r.dia)]||0)+(+r.n));return o};
+  const dA=pd(lm),dP=pd(la),fim=new Date(Date.UTC(ANO,MES,0)).getUTCDate();
+  const mx=Math.max(1,...Object.values(dA),...Object.values(dP));
+  let pico=0,dpico=0;for(let d=1;d<=DIA;d++)if((dA[d]||0)>pico){pico=dA[d];dpico=d}
+  let h='',e='';for(let d=1;d<=fim;d++){const a=dA[d]||0,p=dP[d]||0,fut=d>DIA,ha=fut?0:100*a/mx;
+    h+=`<div class="c${d===DIA?' hj':''}"><div class="g" style="height:${100*p/mx}%"></div><div class="b" style="height:${ha}%"></div>${d===dpico&&d!==DIA?`<div class="v" style="bottom:calc(${ha}% + 8px)">${a}</div>`:''}</div>`;
+    e+=`<span>${(d===1||d%10===0)?d:''}</span>`}
+  for(const id of ['bars','eixo'])el(id).style.setProperty('--n',fim);
+  el('bars').innerHTML=h;el('eixo').innerHTML=e;
+  el('lg1').textContent=NOMES[MES-1];el('lg2').textContent=NOMES[PM.m-1];
+  el('hj').textContent=N(dA[DIA]||0);
+  const u=(DADOS.ultimos||[])[0];
+  el('ult').innerHTML=u?`último às <b>${horaBR(u.created_at)}</b>`+(u.cidade?` · ${tit(u.cidade)}`:''):'';
+  el('inv').textContent=R(sum(gd.filter(r=>dmes(r.dia)===MES_ATUAL),r=>r.gasto));
+  el('inva').innerHTML=NOMES[PM.m-1]+' inteiro: <b>'+R(sum(gd.filter(r=>dmes(r.dia)===MES_ANT),r=>r.gasto))+'</b>';
+  el('vd').textContent=R(sum(vl.filter(r=>dmes(r.dia)===MES_ATUAL),r=>r.valor));
+  el('vda').innerHTML=NOMES[PM.m-1]+' inteiro: <b>'+R(sum(vl.filter(r=>dmes(r.dia)===MES_ANT),r=>r.valor))+'</b>';
+}
+
+function tela2(){
+  const plan=(DADOS.plan||[]).filter(r=>String(r.id_tempo).slice(0,4)===String(ANO));
+  el('k2').textContent='Vendas e meta · '+NOMES[MES-1];
+  const bloco=(v,nome)=>{const m=plan.filter(r=>r.vertical===v&&+r.mes===MES), a=plan.filter(r=>r.vertical===v&&+r.mes<=MES);
     const rm=sum(m,r=>r.realizado),mm=sum(m,r=>r.meta),ra=sum(a,r=>r.realizado),ma=sum(a,r=>r.meta),pm=pct(rm,mm),pa=pct(ra,ma);
-    // marca branca na barra = quanto da META já devia ter entrado até hoje; a cor segue essa marca
-    const am=mm*RITMO, aa=sum(plan.filter(r=>r.vertical===v&&+r.mes<MES),r=>r.meta)+am;
-    const cm=corRitmo(rm,am), ca=corRitmo(ra,aa);
     // META do mês batida: comemora uma vez por mês e vertical
     if(pm>=100){const kf=`tvmkt_meta_${MES_ATUAL}_${v}`;let ja=null;try{ja=localStorage.getItem(kf)}catch(e){}
       if(!ja){try{localStorage.setItem(kf,'1')}catch(e){};setTimeout(()=>{som('venda');setTimeout(()=>som('venda'),2600);clarao('venda');
-        const ta=document.getElementById('toast');ta.classList.add('venda');aviso(`META de ${NOMES[MES-1]} batida no ${nome}!`);setTimeout(()=>ta.classList.remove('venda'),9500)},1500)}}
-    return `<div class="lbl">Vendas ${nome}</div><div class="hero"><span class="n" style="color:${cm}">${R(rm)}</span></div>
-      <div class="bar"><i style="width:${Math.min(100,pm)}%;background:${cm}"></i><span class="rt" style="left:${Math.min(100,100*am/Math.max(1,mm))}%"></span></div>
-      <div class="lin"><span>META <b>${R(mm)}</b></span><b style="color:${cm}">${Math.round(pm)}%</b></div>
-      <div class="bar fina"><i style="width:${Math.min(100,pa)}%;background:${ca}"></i><span class="rt" style="left:${Math.min(100,100*aa/Math.max(1,ma))}%"></span></div>
-      <div class="lin"><span>até ${CURTO[MES-1]} <b>${R(ra)}</b></span><b style="color:${ca}">${Math.round(pa)}%</b></div>`};
-  const sg=(DADOS&&DADOS.seguidores)||[];const sgl=v=>{const x=sg.find(r=>r.vertical===v);if(!x)return '';const d=x.fim_mes_ant!=null?x.atual-x.fim_mes_ant:null;return `${v==='agro'?' ':' · '}${({agro:'Agro',agua:'Água',florestas:'Florestas'})[v]} <b>${N(x.atual)}</b>`+(d!=null?` <span class="${d>=0?'g':'r'}">${d>=0?'▲':'▼'}${N(Math.abs(d))}</span>`:'')};
-  document.getElementById('seg').innerHTML='Seguidores'+sgl('agro')+sgl('agua')+sgl('florestas');
-  document.getElementById('vAG').innerHTML=tileV('AGRO','Agro');
-  document.getElementById('vAU').innerHTML=tileV('AGUA','Água');
-  // leads e pedidos
-  const lm=ldA.filter(r=>dmes(r.dia)===MES_ATUAL), lpa=ldA.filter(r=>dmes(r.dia)===MES_ANT&&ddia(r.dia)<=DIA), la=ldA.filter(r=>dmes(r.dia)===MES_ANT);
-  const nlm=sum(lm,r=>r.n), nlp=sum(lpa,r=>r.n);
-  const lv=v=>sum(lm.filter(r=>r.vertical===v),r=>r.n), lvp=v=>sum(lpa.filter(r=>r.vertical===v),r=>r.n);
-  document.getElementById('kL').innerHTML=`<div class="lbl">Leads no mês</div><div class="hero"><span class="n">${N(nlm)}</span>${pill(nlm,nlp)}</div>
-    <div class="lin"><span>${SM} 1 a ${DIA}</span><b>${N(nlp)}</b></div>
-    <div class="lin"><span>Agro</span><span><b>${N(lv('AGRO'))}</b><span class="z">/${N(lvp('AGRO'))}</span></span></div><div class="lin"><span>Água</span><span><b>${N(lv('AGUA'))}</b><span class="z">/${N(lvp('AGUA'))}</span></span></div>`;
-  const vm=vlA.filter(r=>dmes(r.dia)===MES_ATUAL), vpa=vlA.filter(r=>dmes(r.dia)===MES_ANT&&ddia(r.dia)<=DIA);
-  const rm=sum(vm,r=>r.valor), rp=sum(vpa,r=>r.valor);
-  const cm=coA.filter(r=>r.mes===MES_ATUAL), ca=coA.filter(r=>r.mes===MES_ANT);
-  const pm=pct(sum(cm,r=>r.convertidos),sum(cm,r=>r.leads)), pa=pct(sum(ca,r=>r.convertidos),sum(ca,r=>r.leads));
-  document.getElementById('kP').innerHTML=`<div class="lbl">Pedidos de leads</div><div class="hero"><span class="n g">${R(rm)}</span>${pill(rm,rp)}</div>
-    <div class="lin"><span>${SM} 1 a ${DIA}</span><b>${R(rp)}</b></div>
-    <div class="lin"><span>conversão</span><b>${P(pm)}</b></div><div class="lin"><span>conversão ${SM}</span><b>${P(pa)}</b></div>`;
-  // mês a mês com barras
-  const meses=[];for(let i=5;i>=0;i--){let m=MES-i,y=ANO;if(m<1){m+=12;y--}meses.push({y,m,k:ym(y,m)})}
-  const ef=meses.map(x=>{const c=coA.filter(r=>r.mes===x.k);return {x,g:sum(gdA.filter(r=>dmes(r.dia)===x.k),r=>r.gasto),l:sum(ldA.filter(r=>dmes(r.dia)===x.k),r=>r.n),rv:sum(vlA.filter(r=>dmes(r.dia)===x.k),r=>r.valor),cv:pct(sum(c,r=>r.convertidos),sum(c,r=>r.leads))}});
-  const linha=(nome,k,fmt,cor)=>{const mx=Math.max(1,...ef.map(e=>e[k]));return `<tr><td>${nome}</td>${ef.map(e=>`<td class="db" style="--c:${cor};--w:${Math.round(100*e[k]/mx)}%">${fmt(e[k])}</td>`).join('')}</tr>`};
-  document.getElementById('mm').innerHTML=`<tr><th>Mês a mês</th>${ef.map(e=>`<th class="${e.x.k===MES_ATUAL?'cur':''}">${CURTO[e.x.m-1]}</th>`).join('')}</tr>`+
-    ['AGRO','AGUA'].map(v=>`<tr><td>Vendas ${v==='AGRO'?'Agro':'Água'}</td>${ef.map(e=>{const r=plan.filter(x=>x.vertical===v&&+x.mes===e.x.m&&e.x.y===ANO);const re=sum(r,x=>x.realizado),me=sum(r,x=>x.meta),p=pct(re,me);
-      const alvo=e.x.k===MES_ATUAL?me*RITMO:me;const c=corRitmo(re,alvo);return `<td style="color:${me?c:'var(--t3)'}">${me?Math.round(p)+'%':''}</td>`}).join('')}</tr>`).join('')+
-    linha('Investimento','g',R,'rgba(59,167,255,.22)')+linha('Leads','l',N,'rgba(59,167,255,.22)')+linha('Pedidos de leads','rv',R,'rgba(92,198,16,.22)')+linha('Conversão','cv',P,'rgba(92,198,16,.22)');
-  // por tema (mesmo período)
-  const T=['Ulexita','Compostagem','Enxofre','Água','Outros'];
-  const tv=T.map(t=>({t,a:sum(lm.filter(r=>r.tema===t),r=>r.n),b:sum(lpa.filter(r=>r.tema===t),r=>r.n)})).filter(x=>x.a||x.b);
-  const tmx=Math.max(1,...tv.map(x=>Math.max(x.a,x.b)));
-  document.getElementById('tmr').textContent=`${SM} 1 a ${DIA}`;
-  document.getElementById('tm').innerHTML=tv.map(x=>`<div class="tema"><span class="nm">${x.t}</span><span class="vl">${N(x.a)} <span class="z">/ ${N(x.b)}</span></span>
-    <div class="bar" style="grid-column:1/3;position:relative"><i style="position:absolute;inset:0 auto 0 0;width:${100*x.b/tmx}%;background:#22343e"></i><i style="position:absolute;inset:0 auto 0 0;width:${100*x.a/tmx}%;background:var(--b)"></i></div></div>`).join('');
-  // leads por dia
-  document.getElementById('lg1').textContent=NOMES[MES-1];document.getElementById('lg2').textContent=NOMES[PM.m-1];
-  const porDia=a=>{const o={};a.forEach(r=>{o[ddia(r.dia)]=(o[ddia(r.dia)]||0)+(+r.n)});return o};
-  const dA=porDia(lm),dP=porDia(la);const mx=Math.max(1,...Object.values(dA),...Object.values(dP));
-  let h='';for(let d=1;d<=31;d++){const a=dA[d]||0,p=dP[d]||0,fut=d>DIA;const ha=fut?0:Math.round(100*a/mx),hp=Math.round(100*p/mx);const lab=(d===1||d%5===0||d===DIA)?d:'';
-    h+=`<div class="col${d===DIA?' hj':''}"><div class="bars"><div class="gs" style="height:${hp}%"></div><div class="bb" style="height:${ha}%"></div>${fut?'':`<div class="vv" style="bottom:calc(${ha}% + 4px)">${a}</div>`}</div><div class="dt">${lab}</div></div>`}
-  document.getElementById('ch').innerHTML=h;
+        const ta=el('toast');ta.classList.add('venda');aviso(`META de ${NOMES[MES-1]} batida no ${nome}!`);setTimeout(()=>ta.classList.remove('venda'),9500)},1500)}}
+    const tk=Math.min(100,100*RITMO), tl=Math.max(0,Math.min(62,tk-18));
+    const ms=[];for(let i=5;i>=0;i--){const mi=MES-i;if(mi>=1)ms.push(mi)}
+    const ps=ms.map(mi=>{const r=plan.filter(x=>x.vertical===v&&+x.mes===mi);const me=sum(r,x=>x.meta);return {mi,p:me?pct(sum(r,x=>x.realizado),me):null}});
+    const hm=Math.max(100,...ps.map(x=>x.p||0));
+    return `<div class="rot">Vendas ${nome} em ${NOMES[MES-1]}</div><div class="vnum">${R(rm)}</div>
+      <div class="mb"><i style="width:${Math.min(100,pm)}%"></i><span class="hj" style="left:${tk}%"></span></div>
+      <div class="mbl"><span style="left:${tl}%">esperado até hoje</span><span style="right:0">meta</span></div>
+      <div class="ml"><b>${Math.round(pm)}%</b> da meta de <b>${R(mm)}</b></div>
+      <div class="sb">no ano: <b>${R(ra)}</b> · <b>${Math.round(pa)}%</b> da meta</div>
+      <div class="m6t">Quanto da meta bateu em cada mês</div>
+      <div class="m6">${ps.map(x=>`<div class="k${x.p>=100?' ok':''}${x.mi===MES?' cur':''}"><span class="pv">${x.p==null?'':Math.round(x.p)+'%'}</span><div class="bx"><i style="height:${x.p==null?0:Math.max(3,100*x.p/hm)}%"></i></div><span class="mn">${CURTO[x.mi-1]}</span></div>`).join('')}</div>`};
+  el('vAG').innerHTML=bloco('AGRO','Agro');
+  el('vAU').innerHTML=bloco('AGUA','Água');
 }
+
+function tela3(){
+  const ld=sf(DADOS.leads_dia),vl=sf(DADOS.vendas_lead);
+  const lm=ld.filter(r=>dmes(r.dia)===MES_ATUAL),lpa=ld.filter(r=>dmes(r.dia)===MES_ANT&&ddia(r.dia)<=DIA);
+  el('k3').textContent='De onde vêm os leads · '+NOMES[MES-1];
+  const T=['Ulexita','Compostagem','Enxofre','Água','Outros'];
+  const tv=T.map(t=>({t,a:sum(lm.filter(r=>r.tema===t),r=>r.n),b:sum(lpa.filter(r=>r.tema===t),r=>r.n)})).filter(x=>x.a||x.b)
+    .sort((x,y)=>(x.t==='Outros')-(y.t==='Outros')||y.a-x.a);
+  const tmx=Math.max(1,...tv.map(x=>Math.max(x.a,x.b)));
+  el('t3l').classList.toggle('c5',tv.length>4);
+  el('t3l').innerHTML=`<div class="rot">Leads do mês por assunto</div>
+    <div class="lg3"><i style="background:var(--ac)"></i>${NOMES[MES-1]}<i style="background:#2b5263;margin-left:30px"></i>${NOMES[PM.m-1]} até o dia ${DIA}</div>`+
+    tv.map(x=>`<div class="tm"><div class="l1"><span class="nm">${x.t==='Outros'?'Outros assuntos':x.t}</span><span class="vl">${N(x.a)}</span></div>
+      <div class="ba" style="width:${100*x.a/tmx}%"></div><div class="bo" style="width:${100*x.b/tmx}%"></div></div>`).join('');
+  const meses=[];for(let i=5;i>=0;i--){let m=MES-i,y=ANO;if(m<1){m+=12;y--}meses.push({m,k:ym(y,m)})}
+  const ef=meses.map(x=>({x,l:sum(ld.filter(r=>dmes(r.dia)===x.k),r=>r.n),rv:sum(vl.filter(r=>dmes(r.dia)===x.k),r=>r.valor)}));
+  const serie=(k,fmt)=>{const mx=Math.max(1,...ef.map(e=>e[k]));return `<div class="h6">${ef.map(e=>`<div class="k${e.x.k===MES_ATUAL?' cur':''}"><span class="pv">${fmt(e[k])}</span><div class="bx"><i style="height:${100*e[k]/mx}%"></i></div><span class="mn">${CURTO[e.x.m-1]}</span></div>`).join('')}</div>`};
+  el('t3r').innerHTML=`<div class="rot">Leads por mês</div>${serie('l',N)}<div class="rot">Vendas vindas de lead, em R$</div>${serie('rv',Rc)}`;
+  const sg=DADOS.seguidores||[];
+  el('insta').innerHTML=`<span class="ik">Seguidores, e novos no mês</span>`+['agro','agua','florestas'].map(v=>{const x=sg.find(r=>r.vertical===v);if(!x)return '';const d=x.fim_mes_ant!=null?x.atual-x.fim_mes_ant:null;
+    return `<span>${({agro:'Agro',agua:'Água',florestas:'Florestas'})[v]} <b>${N(x.atual)}</b>${d!=null?` <em>${d>=0?'+':'−'}${N(Math.abs(d))}</em>`:''}</span>`}).join('');
+}
+
 const FOTO_BASE='https://crm.araunah.com';
 function foto(url,nome){const ini=(nome||'?').trim()[0];return url?`<img class="ft" src="${url.startsWith('http')?url:FOTO_BASE+url}" onerror="this.outerHTML='<div class=ft>${ini}</div>'">`:`<div class="ft">${ini}</div>`}
-async function tela2(){
-  const [cs,[y]]=await Promise.all([sbFetch('vw_tvm_consultores','select=*'),sbFetch('vw_tvm_yasmim','select=*')]);
-  document.getElementById('inf2').innerHTML=`conversão <b>${ANO}</b> · parados: leads de <b>90 dias</b>`;
-  document.getElementById('ya').classList.toggle('pisca',PISCAR['Mesa']>Date.now());
-  if(y){document.getElementById('ya').innerHTML=`${foto(y.foto_url,'Yasmim')}<div><div class="nm">Yasmim</div><div class="pp">Mesa de leads</div></div>
-    <div class="st"><b class="bl">${N(y.na_mesa)}</b><span>na Mesa</span></div>
-    <div class="st"><b class="${y.na_mesa_2d?'r':'g'}">${N(y.na_mesa_2d)}</b><span>parados</span></div>
-    <div class="st"><b class="${y.sem_consultor?'vi':'g'}">${N(y.sem_consultor)}</b><span>sem consultor</span></div>
-    <div class="st"><b>${N(y.passados_mes)}</b><span>passados no mês</span></div>`}
-  const lista=cs.map(c=>({...c,cv:pct(c.convertidos_ano,c.leads_ano)})).sort((a,b)=>b.cv-a.cv||b.convertidos_ano-a.convertidos_ano||b.leads_ano-a.leads_ano).slice(0,10);
-  const mx=Math.max(0.1,...lista.map(c=>c.cv));
-  document.getElementById('rk').innerHTML=lista.map((c,i)=>{const nm=curto(c.nome);
-    const tm=c.vertical==='AGRO'?`<div class="tm3">Ulexita <b>${c.novos_ulexita}</b> · Compostagem <b>${c.novos_compostagem}</b></div>`:`<div class="tm3">Água</div>`;
-    return `<div class="cd${i<3?' top':''}${PISCAR[curto(c.nome)]>Date.now()?' pisca':''}" data-nome="${curto(c.nome)}"><span class="pos">${i+1}º</span>${foto(c.foto_url,nm)}
-      <div class="nm">${nm}</div><div class="cvb"><div class="bar"><i style="width:${100*c.cv/mx}%;background:var(--g)"></i></div><span><b>${P(c.cv)}</b> ${c.convertidos_ano}/${N(c.leads_ano)}</span></div>${tm}
-      <div class="sts"><span class="pill neu">novos no mês <b>${c.novos_mes}</b></span><span class="pill ${c.parados_2d?'rd':'neu'}">parados <b>${N(c.parados_2d)}</b></span></div></div>`}).join('');
-}
 const curto=n=>{const p=(n||'').split(' ');return (p.join(' ').length<=11)?p.slice(0,2).join(' '):p[0]};
 const PISCAR={};
+function tela4(){
+  const cs=DADOS.consultores||[],y=(DADOS.yasmim||[])[0];
+  el('ya').classList.toggle('pisca',PISCAR['Mesa']>Date.now());
+  if(y){el('ya').innerHTML=`${foto(y.foto_url,'Yasmim')}<div><div class="nm">Yasmim</div><div class="pp">Mesa de leads</div></div>
+    <div class="st"><b>${N(y.na_mesa)}</b><span>na Mesa agora</span></div>
+    <div class="st"><b class="${y.na_mesa_2d?'w':''}">${N(y.na_mesa_2d)}</b><span>parados na Mesa</span></div>
+    <div class="st"><b class="${y.sem_consultor?'w':''}">${N(y.sem_consultor)}</b><span>sem consultor</span></div>
+    <div class="st"><b>${N(y.passados_mes)}</b><span>passados no mês</span></div>`}
+  const lista=cs.slice().sort((a,b)=>b.convertidos_ano-a.convertidos_ano||b.novos_mes-a.novos_mes||a.nome.localeCompare(b.nome)).slice(0,12);
+  const cab=`<div class="gr"><span></span><span></span><span>compraram<br>em ${ANO}</span><span>novos<br>no mês</span><span>parados<br>há 2 dias+</span></div>`;
+  el('rkh').innerHTML=cab+(lista.length>1?cab:'');
+  el('rk').style.setProperty('--r',Math.max(1,Math.ceil(lista.length/2)));
+  el('rk').innerHTML=lista.map(c=>{const nm=curto(c.nome);
+    return `<div class="cd gr${PISCAR[nm]>Date.now()?' pisca':''}" data-nome="${nm}">${foto(c.foto_url,nm)}<div class="nm">${nm}</div>
+      <div class="x${c.convertidos_ano?'':' z'}">${N(c.convertidos_ano)}</div><div class="x${c.novos_mes?'':' z'}">${N(c.novos_mes)}</div><div class="x ${c.parados_2d?'w':'z'}">${N(c.parados_2d)}</div></div>`}).join('');
+}
+
 let _ac=null;
 function somLiberar(){try{if(!_ac)_ac=new (window.AudioContext||window.webkitAudioContext)();if(_ac.state==='suspended')_ac.resume()}catch(e){}
-  const sl=document.getElementById('somlock');const ok=_ac&&_ac.state==='running';sl.style.display=ok?'none':'block';clearTimeout(sl._h);if(!ok)sl._h=setTimeout(()=>sl.style.display='none',20000)}
+  const sl=el('somlock');const ok=_ac&&_ac.state==='running';sl.style.display=ok?'none':'block';clearTimeout(sl._h);if(!ok)sl._h=setTimeout(()=>sl.style.display='none',20000)}
 ['click','keydown','touchstart','pointerdown'].forEach(ev=>addEventListener(ev,somLiberar));
 function tom(ctx,f,t0,dur,tipo,vol,f2){const o=ctx.createOscillator(),g=ctx.createGain();o.type=tipo||'sine';o.frequency.setValueAtTime(f,t0);if(f2)o.frequency.exponentialRampToValueAtTime(f2,t0+dur);
   g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(vol||0.3,t0+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t0+dur);o.connect(g);g.connect(ctx.destination);o.start(t0);o.stop(t0+dur+0.05)}
@@ -268,16 +308,12 @@ function som(tipo){somLiberar();if(!_ac||_ac.state!=='running')return;const c=_a
     [[523,0.35],[659,0.5],[784,0.65],[1047,0.8]].forEach(([f,d])=>tom(c,f,t+d,0.22,'sawtooth',0.12));
     [523,659,784,1047].forEach(f=>tom(c,f,t+1.05,1.4,'triangle',0.16))}
   else if(tipo==='seguidor'){tom(c,600,t,0.14,'sine',0.25,1200)}}
-function sino(vezes){somLiberar();if(!_ac||_ac.state!=='running')return;const ctx=_ac;
-  for(let k=0;k<Math.min(vezes||1,3);k++){const t0=ctx.currentTime+k*0.24;
-    [[784,1],[1568,0.5],[3136,0.22]].forEach(([f,a])=>{const o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=f;
-      g.gain.setValueAtTime(0.0001,t0);g.gain.exponentialRampToValueAtTime(0.3*a,t0+0.008);g.gain.exponentialRampToValueAtTime(0.0001,t0+1.4);
-      o.connect(g);g.connect(ctx.destination);o.start(t0);o.stop(t0+1.5)})}}
-function clarao(tipo){const fl=document.getElementById('flash');fl.className='';void fl.offsetWidth;fl.className=tipo;
+function clarao(tipo){const fl=el('flash');fl.className='';void fl.offsetWidth;fl.className=tipo;
   if(tipo==='venda'){const cores=['#5cc610','#ffd400','#3ba7ff','#ff5a5a','#ffffff','#b38cff'];
     for(let i=0;i<160;i++){const c=document.createElement('div');c.className='conf';c.style.left=(Math.random()*100)+'vw';c.style.background=cores[i%cores.length];
       c.style.animationDuration=(2.5+Math.random()*2.5)+'s';c.style.animationDelay=(Math.random()*1.2)+'s';document.body.appendChild(c);setTimeout(()=>c.remove(),6500)}}}
-function aviso(txt){const t=document.getElementById('toast');t.textContent=txt;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),9000)}
+function aviso(txt){const t=el('toast');t.textContent=txt;t.classList.add('on');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.remove('on'),9000)}
+const T_CONS=3; // tela dos consultores: é pra ela que a TV pula quando chega lead ou venda
 function eventos(){
   const ult=DADOS.ultimos||[],rep=DADOS.repasses||[];
   let vistos=null;try{vistos=JSON.parse(localStorage.getItem('tvmkt_vistos')||'null')}catch(e){}
@@ -295,34 +331,35 @@ function eventos(){
   const sg=DADOS.seguidores||[];let sa=null;try{sa=JSON.parse(localStorage.getItem('tvmkt_seg')||'null')}catch(e){}
   const tot=sg.reduce((s,x)=>s+(+x.atual||0),0);try{localStorage.setItem('tvmkt_seg',JSON.stringify(tot))}catch(e){}
   if(sa!=null&&tot>sa&&!nl.length&&!nr.length&&!nv.length){som('seguidor');aviso(`+${N(tot-sa)} seguidor${tot-sa>1?'es':''} no Instagram`)}
-  if(nv.length){const x=nv[0];const ta=document.getElementById('toast');
+  if(nv.length){const x=nv[0];const ta=el('toast');
     som('venda');setTimeout(()=>som('venda'),2600);
     clarao('venda');
     if(x.responsavel)PISCAR[curto(x.responsavel)]=Date.now()+120e3;
     ta.classList.add('venda');aviso(`VENDA de lead! ${R(x.total)} · ${x.tema}${x.responsavel?' · '+curto(x.responsavel):''}`);setTimeout(()=>ta.classList.remove('venda'),9500);
-    if(!fixa)mostra(1,60e3);return}
+    if(!fixa)mostra(T_CONS,60e3);return}
   if(!nl.length&&!nr.length)return;
   const ate=Date.now()+90e3;
   nl.forEach(x=>PISCAR[x.responsavel==='Mesa'?'Mesa':curto(x.responsavel)]=ate);
   nr.forEach(x=>PISCAR[curto(x.responsavel)]=ate);
   som(nl.length?'lead':'repasse');if(nl.length)clarao('lead');
-  if(nl.length){const x=nl[0];const onde=[x.cidade,x.uf].filter(Boolean).join('/');
+  if(nl.length){const x=nl[0];const onde=[tit(x.cidade),x.uf].filter(Boolean).join('/');
     aviso((nl.length>1?nl.length+' leads novos':'Lead novo')+` · ${x.tema}${onde?' · '+onde:''} → ${x.responsavel==='Mesa'?'Mesa da Yasmim':curto(x.responsavel)}`)}
   else{aviso(`Lead passado → ${curto(nr[0].responsavel)}`)}
-  if(!fixa)mostra(1,60e3);
+  if(!fixa)mostra(T_CONS,60e3);
 }
-async function carregar(){const e=document.getElementById('erro');let falha=[];
+async function carregar(){const e=el('erro');let falha=[];
   try{await carregaDados()}catch(err){e.textContent='sem atualizar';return}
-  for(const f of [tela1,tela2]){try{await f()}catch(err){console.error(err);falha.push(f.name)}}
-  try{eventos();tela2()}catch(err){console.error(err)}
+  for(const f of [tela1,tela2,tela3,tela4]){try{f()}catch(err){console.error(err);falha.push(f.name)}}
+  try{eventos();tela4()}catch(err){console.error(err)}
   const idade=(Date.now()-new Date(DADOS.gerado_em))/6e4;
-  e.textContent=falha.length?'sem atualizar: '+falha.join(', '):(idade>20?'dados de '+new Date(DADOS.gerado_em).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'');}
+  e.textContent=falha.length?'sem atualizar: '+falha.join(', '):(idade>20?'dados de '+horaBR(DADOS.gerado_em):'');
+  document.body.dataset.ok=1;}
 document.addEventListener('DOMContentLoaded',()=>{carregar();setInterval(carregar,60e3);somLiberar()});
-const SEQ=[['t1',45],['t2',30]];
+const SEQ=[['t1',40],['t2',25],['t3',25],['t4',35]];
 const fixa=QS.get('tela');
-if(fixa){SEQ.forEach(([id])=>document.getElementById(id).classList.toggle('hidden',id!=='t'+fixa))}
+if(fixa){SEQ.forEach(([id])=>el(id).classList.toggle('hidden',id!=='t'+fixa))}
 let _gi=0,_gt=null;
-function mostra(i,ms){_gi=i;SEQ.forEach(([id],j)=>document.getElementById(id).classList.toggle('hidden',j!==i));clearTimeout(_gt);_gt=setTimeout(()=>mostra((_gi+1)%SEQ.length,SEQ[(_gi+1)%SEQ.length][1]*1000),ms)}
+function mostra(i,ms){_gi=i;SEQ.forEach(([id],j)=>el(id).classList.toggle('hidden',j!==i));clearTimeout(_gt);_gt=setTimeout(()=>mostra((_gi+1)%SEQ.length,SEQ[(_gi+1)%SEQ.length][1]*1000),ms)}
 if(!fixa)mostra(0,SEQ[0][1]*1000)
 </script>
 <!-- AUTO-RELOAD on-change: TV se atualiza sozinha ~5min apos um deploy; e recarrega as 4h -->
