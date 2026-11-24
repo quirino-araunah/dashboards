@@ -239,7 +239,7 @@ function tela2(){
     const hm=Math.max(100,...ps.map(x=>x.p||0));
     return `<div class="rot">Vendas ${nome} em ${NOMES[MES-1]}</div><div class="vnum">${R(rm)}</div>
       <div class="mb"><i style="width:${Math.min(100,pm)}%"></i><span class="hj" style="left:${tk}%"></span></div>
-      <div class="mbl"><span style="left:${tl}%">esperado até hoje</span><span style="right:0">meta</span></div>
+      <div class="mbl"><span style="${tk>50?`right:${100-tk}%`:`left:${tl}%`}">esperado até hoje</span>${tk<88?'<span style="right:0">meta</span>':''}</div>
       <div class="ml"><b>${Math.round(pm)}%</b> da meta de <b>${R(mm)}</b></div>
       <div class="sb">no ano: <b>${R(ra)}</b> · <b>${Math.round(pa)}%</b> da meta</div>
       <div class="m6t">Quanto da meta bateu em cada mês</div>
@@ -368,4 +368,80 @@ if(!fixa)mostra(0,SEQ[0][1]*1000)
 chk();setInterval(chk,5*60*1000);setInterval(function(){if(new Date().getHours()===4)location.reload();},60*60*1000);}catch(e){}})();
 </script>
 <div id="flash"></div>
+<!-- 24/11: VÍDEO PRO TIME. O Thiago manda um vídeo (~/bin/tv-video na robusta), a TV pausa os painéis, passa em tela cheia e volta sozinha.
+     Lê d/video.json (ou d/video_<canal>.json com ?canal=) a cada 15 s. Campos: id, tipo (mp4|youtube), src, titulo, vezes, ate. -->
+<style>
+#vid{position:fixed;inset:0;z-index:200;background:#05090b;display:none}
+#vid.on{display:block}
+#vid .vbg{position:absolute;inset:0;background:#0a1216 radial-gradient(120% 80% at 78% 8%,#16323d 0%,#0d1a20 55%,#0a1216 100%)}
+#vv,#yt,#yt iframe{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;object-fit:contain}
+#vid .vtop{position:absolute;left:0;right:0;top:0;padding:3.2vh 4.5vw 7vh;background:linear-gradient(#000c,#0000);display:flex;align-items:baseline;gap:2.2vw;transition:opacity 1.2s;font-family:"Source Sans 3",sans-serif;pointer-events:none}
+#vid .vtop.some{opacity:0}
+#vid .vk{font-size:3.4vh;font-weight:600;letter-spacing:.22em;color:#4A9EB8;white-space:nowrap}
+#vid #vt{font-size:4.6vh;font-weight:400;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#vid .vlogo{position:absolute;right:3.5vw;bottom:4vh;height:4.2vh;opacity:.55;pointer-events:none}
+#vid #vsom{position:absolute;left:50%;bottom:4vh;transform:translateX(-50%);padding:1.2vh 2.4vw;border-radius:99px;background:#000a;color:#a9bfca;font-size:3.4vh;font-family:"Source Sans 3",sans-serif;white-space:nowrap;display:none}
+#vid .vbar{position:absolute;left:0;bottom:0;height:.6vh;background:#4A9EB8;width:0}
+</style>
+<div id="vid"><div class="vbg"></div><video id="vv" playsinline preload="auto"></video><div id="yt"></div>
+  <div class="vtop"><span class="vk">PARA O TIME</span><span id="vt"></span></div>
+  <img class="vlogo" src="araunah-branca.png" alt=""><div id="vsom">Aperte OK no controle para ligar o som</div><div class="vbar"></div></div>
+<script>
+(function(){
+const CANAL=(new URLSearchParams(location.search).get('canal')||'').replace(/[^a-z0-9_-]/gi,'');
+const ARQ='d/video'+(CANAL?'_'+CANAL:'')+'.json';
+const V={on:false,id:null,dados:null,yt:null};
+const $=id=>document.getElementById(id);
+const avisa=ev=>{try{new Image().src=`d/tela.gif?vid=${encodeURIComponent(V.id||'')}&ev=${ev}&_=${Date.now()}`}catch(e){}};
+const conta=id=>{try{return +localStorage.getItem('tvvid_'+id)||0}catch(e){return V['c_'+id]||0}};
+const soma=id=>{const n=conta(id)+1;try{localStorage.setItem('tvvid_'+id,n)}catch(e){V['c_'+id]=n}};
+
+// enquanto o vídeo passa, a troca de telas e os sons do painel esperam
+const mostraOrig=window.mostra, somOrig=window.som;
+if(typeof mostraOrig==='function')window.mostra=function(i,ms){if(V.on)return;mostraOrig(i,ms)};
+if(typeof somOrig==='function')window.som=function(t){if(V.on)return;somOrig(t)};
+
+function titulo(){const t=$('vid').querySelector('.vtop');t.classList.remove('some');clearTimeout(t._h);t._h=setTimeout(()=>t.classList.add('some'),9000)}
+function semSom(){$('vsom').style.display='block'}
+function comSom(){$('vsom').style.display='none'}
+function abre(d){V.on=true;V.id=d.id;V.dados=d;$('vt').textContent=d.titulo||'';$('vid').classList.add('on');titulo();avisa('inicio');
+  if(d.tipo==='youtube')abreYT(d);else abreMP4(d)}
+function fecha(motivo){if(!V.on)return;avisa(motivo||'fim');V.on=false;
+  const v=$('vv');try{v.pause();v.removeAttribute('src');v.load()}catch(e){}
+  try{if(V.yt){V.yt.destroy();V.yt=null}}catch(e){}$('yt').innerHTML='';
+  $('vid').classList.remove('on');comSom();
+  if(typeof mostraOrig==='function'&&!(new URLSearchParams(location.search).get('tela')))mostraOrig(0,40e3)}
+function terminou(){soma(V.id);const d=V.dados;
+  if(conta(d.id)<(+d.vezes||1)&&Date.now()<Date.parse(d.ate)){titulo();avisa('repete');
+    if(d.tipo==='youtube'){try{V.yt.seekTo(0);V.yt.playVideo()}catch(e){fecha('erro')}}else{const v=$('vv');v.currentTime=0;v.play().catch(()=>{})}}
+  else fecha('fim')}
+
+function abreMP4(d){const v=$('vv');v.style.display='block';$('yt').style.display='none';
+  v.onended=terminou;v.onerror=()=>fecha('erro');
+  v.ontimeupdate=()=>{if(v.duration)$('vid').querySelector('.vbar').style.width=(100*v.currentTime/v.duration)+'%'};
+  v.src=d.src;v.muted=false;
+  v.play().then(comSom).catch(()=>{v.muted=true;semSom();v.play().catch(()=>fecha('erro'))})}
+
+function abreYT(d){$('vv').style.display='none';const y=$('yt');y.style.display='block';y.innerHTML='<div id="ytp"></div>';
+  const cria=()=>{V.yt=new YT.Player('ytp',{videoId:d.src,width:'100%',height:'100%',
+    playerVars:{autoplay:1,controls:0,rel:0,modestbranding:1,playsinline:1,iv_load_policy:3},
+    events:{onReady:e=>{e.target.unMute();e.target.playVideo();setTimeout(()=>{try{if(e.target.isMuted())semSom()}catch(x){}},1500)},
+      onStateChange:e=>{if(e.data===0)terminou()},onError:()=>fecha('erro')}})};
+  if(window.YT&&YT.Player)cria();else{window.onYouTubeIframeAPIReady=cria;const s=document.createElement('script');s.src='https://www.youtube.com/iframe_api';document.head.appendChild(s)}}
+
+// o OK do controle liga o som (a TV não deixa tocar áudio sem um toque antes)
+['keydown','click','touchstart','pointerdown'].forEach(ev=>addEventListener(ev,()=>{if(!V.on)return;
+  const v=$('vv');if(v.muted){v.muted=false;v.play().catch(()=>{})}
+  try{if(V.yt&&V.yt.isMuted()){V.yt.unMute()}}catch(e){}comSom()}));
+
+async function confere(){let d=null;
+  try{const r=await fetch(`${ARQ}?_=${Date.now()}`,{cache:'no-store'});if(r.ok)d=await r.json()}catch(e){return}
+  const valido=d&&d.id&&d.src&&Date.now()<Date.parse(d.ate);
+  if(V.on){if(!valido||d.id!==V.id)fecha('parado');return}
+  if(valido&&conta(d.id)<(+d.vezes||1))abre(d)}
+confere();setInterval(confere,15e3);
+window.tvVideo=V;
+})();
+</script>
+
 </body></html>
